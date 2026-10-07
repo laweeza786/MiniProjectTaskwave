@@ -1,0 +1,1613 @@
+TASKWAVE - COMPLETE FULL-STACK BUILD FROM SCRATCH
+============================================================
+
+ROLE
+============================================================
+
+You are the lead senior full-stack engineer responsible for building the complete TaskWave application from zero.
+
+I am going to attach a complete set of TaskWave UI/UX screenshots with this prompt.
+
+IMPORTANT:
+These screenshots are the PRIMARY VISUAL SOURCE OF TRUTH.
+
+The final website must look as close as realistically possible to the attached screenshots.
+
+This is a completely NEW project.
+
+THERE IS NO EXISTING TASKWAVE PROJECT.
+
+Do NOT assume that any frontend, backend, database, routes, components, APIs, models, authentication system, or project structure already exists.
+
+Build the application from scratch.
+
+Do not ask me to manually describe every screenshot. Study the attached screenshots yourself.
+
+============================================================
+1. CORE REQUIREMENT
+============================================================
+
+Build TaskWave as a REAL full-stack application.
+
+TaskWave is a:
+
+TASK MANAGEMENT & COLLABORATION SYSTEM
+
+It is designed for companies, organizations, and internal teams to:
+
+- Create projects
+- Create tasks
+- Assign tasks to employees/team members
+- Set priorities
+- Set deadlines
+- Track progress
+- Organize work
+- Review submitted work
+- Request changes
+- Approve completed work
+- Communicate with team members
+- Share files
+- Monitor workload
+- View analytics
+- Generate reports
+- Manage employees
+- Manage departments
+- Manage roles and permissions
+- Manage internal overtime requests
+
+This is NOT a freelancing marketplace.
+
+Do NOT create:
+
+- Freelancer marketplace
+- Public job marketplace
+- Freelancer bidding
+- Client/freelancer matching
+- Public task listings
+- Escrow
+- Public payment system
+- Freelancer profiles
+- Public task acceptance
+
+All work is controlled internally by the organization.
+
+============================================================
+2. START COMPLETELY FROM ZERO
+============================================================
+
+There is NO existing project.
+
+You must create:
+
+- Complete project directory
+- Django project
+- Django applications
+- Backend architecture
+- Database models
+- MySQL database integration
+- Migrations
+- API layer
+- Authentication
+- Authorization
+- Frontend templates
+- CSS
+- JavaScript
+- Reusable UI components
+- WebSocket system
+- Redis/Memurai integration
+- File upload system
+- Notifications
+- Analytics
+- Reports
+- Testing
+- Documentation
+- Environment configuration
+
+Do not waste time searching for an existing TaskWave implementation.
+
+Start by creating a clean, professional project architecture.
+
+============================================================
+3. TECHNOLOGY STACK
+============================================================
+
+FRONTEND
+
+Use:
+
+- HTML5
+- CSS3
+- Bootstrap 5
+- Vanilla JavaScript
+- Chart.js
+- Bootstrap Icons or another professional icon library
+
+BACKEND
+
+Use:
+
+- Python
+- Django
+- Django REST Framework
+
+DATABASE
+
+Use:
+
+- MySQL
+
+REAL-TIME
+
+Use:
+
+- Django Channels
+- WebSockets
+- Redis / Memurai
+
+DEVELOPMENT
+
+Use:
+
+- VS Code
+- Git
+- GitHub
+
+Do not introduce unnecessary frameworks.
+
+Do NOT replace Django with Node.js.
+
+Do NOT replace MySQL with MongoDB.
+
+Do NOT replace Bootstrap with React.
+
+Use the requested technology stack unless there is a genuine technical reason otherwise.
+
+============================================================
+4. SCREENSHOTS ARE THE VISUAL SOURCE OF TRUTH
+============================================================
+
+I will attach multiple screenshots showing the approved TaskWave UI.
+
+Study ALL screenshots before implementing the frontend.
+
+The final website must closely reproduce the screenshots.
+
+Match:
+
+- Page structure
+- Layout
+- Sidebar
+- Header
+- Navigation
+- Spacing
+- Typography
+- Font sizes
+- Font weights
+- Colors
+- Background
+- Cards
+- Tables
+- Forms
+- Buttons
+- Icons
+- Charts
+- Status badges
+- Modals
+- Empty states
+- Filters
+- Tabs
+- Page hierarchy
+- Responsive behavior
+
+Do NOT redesign the screenshots.
+
+Do NOT interpret the screenshots as general inspiration.
+
+Treat them as the actual design specification.
+
+If a screenshot shows a component, reproduce that component.
+
+If multiple screenshots use the same component, create one reusable component and use it consistently.
+
+============================================================
+5. VISUAL STYLE
+============================================================
+
+The website should look:
+
+- Professional
+- Enterprise-grade
+- Clean
+- Mature
+- Minimal
+- Human-designed
+- Functional
+- Easy to understand
+- Consistent
+- Premium but restrained
+
+Preferred visual direction:
+
+- White
+- Warm white
+- Cream
+- Light gray
+- Charcoal
+- Black
+- Small muted accent colors
+
+Analytics may use a few additional coordinated colors.
+
+Do NOT use:
+
+- Purple gradients
+- Blue-heavy AI-style designs
+- Neon colors
+- Cyberpunk styling
+- Excessive glassmorphism
+- Excessive gradients
+- Excessive rounded cards
+- Pill-shaped buttons everywhere
+- Emoji icons
+- Fake AI illustrations
+- Fake testimonials
+- Fake reviews
+- Fake statistics
+- Fake customer counters
+- Fake company logos
+- Cursor-following animations
+- Excessive parallax
+- Excessive scroll animations
+- Unnecessary 3D effects
+
+Do not make the website look like a generic AI-generated SaaS template.
+
+The screenshots have priority.
+
+============================================================
+6. RESPONSIVE DESIGN
+============================================================
+
+Build the application responsively from the beginning.
+
+Support:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Do not simply scale down desktop content.
+
+Implement proper responsive behavior.
+
+Examples:
+
+- Sidebar becomes mobile navigation/drawer
+- Tables become responsive
+- Cards reorganize
+- Forms stack properly
+- Charts remain readable
+- Modals work on mobile
+- Navigation remains usable
+
+============================================================
+7. COMPLETE PAGE LIST
+============================================================
+
+Build all of these screens:
+
+01. Dashboard
+02. Projects
+03. Project Details
+04. Create Project
+05. Tasks
+06. Task Details
+07. Create Task
+08. Edit Task
+09. Kanban Board
+10. Calendar
+11. Members
+12. Departments
+13. Messages / Chat
+14. Notifications
+15. Analytics
+16. Overtime
+17. Reports
+18. Settings
+19. Profile
+20. Meetings / Video Conference
+21. Task Submission & Review
+22. Login
+23. Account Activation / Complete Registration
+24. Forgot Password
+25. Reset Link Sent
+26. Create New Password
+27. Password Reset Successful
+28. Admin Dashboard
+29. User Management
+30. Roles & Permissions
+31. Activity / Audit Logs
+32. File Management
+33. Help & Support
+34. 404 / Error Page
+35. Empty States & Confirmation Modals
+
+These pages must not be isolated mockups.
+
+They must be connected to the backend and database wherever functionality requires it.
+
+============================================================
+8. AUTHENTICATION
+============================================================
+
+Implement real authentication.
+
+Required:
+
+- Login
+- Logout
+- Password hashing
+- Sessions
+- Password reset
+- Account activation
+- Protected routes
+- Authentication middleware
+- Secure password handling
+
+There is NO public employee signup.
+
+Admin creates employee accounts.
+
+Admin should be able to create:
+
+- Full name
+- Email / User ID
+- Department
+- Role
+- Temporary password
+- Account status
+
+Employee can activate their account and create/change their password.
+
+============================================================
+9. ROLE-BASED ACCESS CONTROL
+============================================================
+
+Create proper RBAC.
+
+Minimum roles:
+
+- Administrator
+- Project Manager
+- Team Lead
+- Employee
+- Viewer
+
+Create configurable permissions.
+
+Permissions can include:
+
+- View dashboard
+- Manage projects
+- Manage tasks
+- Manage Kanban
+- Manage calendar
+- View members
+- Manage departments
+- Send messages
+- View notifications
+- View analytics
+- Manage overtime
+- Generate reports
+- Manage files
+- Manage meetings
+- Manage settings
+- Manage users
+- Manage roles
+- View audit logs
+
+IMPORTANT:
+
+Permissions must be enforced on the BACKEND.
+
+Do not simply hide buttons in HTML.
+
+An unauthorized user must not be able to call the endpoint directly.
+
+============================================================
+10. DATABASE
+============================================================
+
+Create a proper MySQL relational database.
+
+Use Django models and migrations.
+
+At minimum create models/entities for:
+
+- User
+- Role
+- Permission
+- Department
+- Project
+- ProjectMember
+- Task
+- TaskAssignee
+- TaskCategory
+- TaskTag
+- TaskComment
+- TaskAttachment
+- TaskSubmission
+- TaskReview
+- TaskStatusHistory
+- Notification
+- NotificationPreference
+- Conversation
+- ConversationMember
+- Message
+- MessageAttachment
+- CalendarEvent
+- Meeting
+- MeetingParticipant
+- OvertimeRequest
+- Report
+- ActivityLog
+- File
+- FileShare
+- SystemSettings
+- AccountActivation
+- PasswordReset
+
+Use:
+
+- Foreign keys
+- Many-to-many relationships where appropriate
+- Database constraints
+- Indexes
+- Timestamps
+- Created/updated fields
+- Proper deletion behavior
+- Transactions where required
+
+Avoid unnecessary duplication.
+
+============================================================
+11. PROJECT MANAGEMENT
+============================================================
+
+Projects should contain:
+
+- Project name
+- Description
+- Department
+- Manager
+- Members
+- Start date
+- End date
+- Priority
+- Status
+- Goals
+- Milestones
+- Progress
+
+Statuses:
+
+- Planning
+- Active
+- On Hold
+- Completed
+- Archived
+
+All project information must be stored in MySQL.
+
+============================================================
+12. TASK MANAGEMENT
+============================================================
+
+Tasks are the core of TaskWave.
+
+Task fields should include:
+
+- Title
+- Description
+- Project
+- Department
+- Category
+- Tags
+- Priority
+- Status
+- Assignee
+- Multiple assignees where appropriate
+- Start date
+- Due date
+- Estimated hours
+- Actual hours
+- Progress
+- Subtasks
+- Dependencies
+- Attachments
+- Comments
+- Activity history
+- Related tasks
+- Submission
+- Review
+
+Priority:
+
+- Low
+- Medium
+- High
+- Critical
+
+============================================================
+13. TASK WORKFLOW
+============================================================
+
+Implement a real workflow:
+
+ASSIGNED
+    ↓
+IN PROGRESS
+    ↓
+SUBMITTED FOR REVIEW
+    ↓
+ADMIN REVIEW
+    ↓
+COMPLETED
+
+If changes are required:
+
+SUBMITTED FOR REVIEW
+    ↓
+CHANGES REQUESTED
+    ↓
+IN PROGRESS
+    ↓
+RESUBMIT
+
+Every important status change must:
+
+- Update database
+- Create status history
+- Update activity log
+- Trigger relevant notification
+- Update analytics
+
+============================================================
+14. KANBAN
+============================================================
+
+Create a fully functional Kanban board.
+
+Columns:
+
+- Assigned
+- In Progress
+- Review
+- Completed
+
+Implement:
+
+- Drag and drop
+- Status updates
+- Task filtering
+- Search
+- Task creation
+- Task details
+- Assignee information
+- Priority
+- Due dates
+
+When a task moves:
+
+- Save the new status
+- Update the database
+- Record status history
+- Generate notification when appropriate
+- Record activity
+- Update analytics
+
+Do not make the Kanban board a visual-only component.
+
+============================================================
+15. TASK SUBMISSION AND REVIEW
+============================================================
+
+Employee:
+
+- Uploads work
+- Adds comments
+- Adds attachments
+- Submits task
+
+Reviewer/Admin:
+
+- Opens submission
+- Downloads files
+- Reviews work
+- Adds comments
+- Approves
+- Requests changes
+- Rejects where appropriate
+
+Approved:
+
+SUBMITTED FOR REVIEW → COMPLETED
+
+Changes:
+
+SUBMITTED FOR REVIEW → CHANGES REQUESTED → IN PROGRESS
+
+Maintain submission history.
+
+Do not overwrite previous submissions.
+
+============================================================
+16. NOTIFICATIONS
+============================================================
+
+Create real database-backed notifications.
+
+Examples:
+
+- Task assigned
+- Task reassigned
+- Deadline approaching
+- Deadline passed
+- Task submitted
+- Task approved
+- Changes requested
+- New message
+- Mention
+- Project update
+- Overtime request
+- Overtime decision
+- Meeting invitation
+- File shared
+
+Support:
+
+- Unread/read state
+- Mark read
+- Mark all read
+- Notification preferences
+- Notification count
+
+============================================================
+17. REAL-TIME CHAT
+============================================================
+
+Implement real-time messaging using:
+
+Django Channels
++
+WebSockets
++
+Redis/Memurai
+
+Support:
+
+- Direct chat
+- Group chat
+- Real-time messages
+- Online/offline state
+- Message timestamps
+- Read state
+- File attachments
+- Conversation list
+- Search
+- Typing indicator if practical
+
+Do not create a fake chat interface.
+
+Messages must be stored in the database.
+
+============================================================
+18. FILE MANAGEMENT
+============================================================
+
+Implement secure file management.
+
+Files can belong to:
+
+- Projects
+- Tasks
+- Submissions
+- Chat conversations
+
+Support:
+
+- Upload
+- Download
+- Preview where possible
+- Rename
+- Delete
+- Share
+- Access control
+
+Store:
+
+- Filename
+- Type
+- Size
+- Uploaded by
+- Date
+- Related object
+
+Validate file type and size.
+
+Prevent dangerous uploads.
+
+============================================================
+19. CALENDAR
+============================================================
+
+Calendar should display:
+
+- Task deadlines
+- Project milestones
+- Meetings
+- Reviews
+- Important events
+
+Views:
+
+- Month
+- Week
+- Day
+- List
+
+Provide filters.
+
+Use real database data.
+
+============================================================
+20. ANALYTICS
+============================================================
+
+Use Chart.js.
+
+Analytics must be calculated from real database information.
+
+Examples:
+
+- Completion rate
+- Task status distribution
+- Project progress
+- Department workload
+- Member workload
+- Priority distribution
+- Completion trends
+- Overdue tasks
+- Overtime statistics
+
+Do NOT hard-code numbers.
+
+Date range filters should change the data shown.
+
+============================================================
+21. OVERTIME
+============================================================
+
+Implement an INTERNAL overtime workflow.
+
+After regular assigned work is completed, an employee may request additional work.
+
+Workflow:
+
+Employee requests overtime
+↓
+Admin reviews
+↓
+Approved / Rejected
+↓
+Additional task assigned
+↓
+Employee completes task
+↓
+Admin reviews
+
+Track:
+
+- Employee
+- Project
+- Task
+- Description
+- Requested hours
+- Approved hours
+- Rate
+- Status
+- Dates
+- Approval details
+
+IMPORTANT:
+
+There is NO payment gateway.
+
+The rate/payment amount is only an internal administrative record.
+
+Do not implement real payment processing.
+
+============================================================
+22. REPORTS
+============================================================
+
+Create real reports using database information.
+
+Reports:
+
+- Task report
+- Project report
+- Employee/member report
+- Department report
+- Overtime report
+- Completion report
+- Productivity report
+
+Support:
+
+- Filters
+- Date ranges
+- CSV export
+- Excel export where practical
+- Print
+- PDF where practical
+
+============================================================
+23. ADMIN DASHBOARD
+============================================================
+
+Create a central administrative dashboard.
+
+Admin can manage:
+
+- Users
+- Departments
+- Projects
+- Tasks
+- Roles
+- Permissions
+- Reports
+- Analytics
+- Overtime
+- Files
+- Notifications
+- Audit logs
+- Settings
+
+All operations must be real.
+
+============================================================
+24. USER MANAGEMENT
+============================================================
+
+Admin can:
+
+- Create user
+- Edit user
+- Activate user
+- Deactivate user
+- Change department
+- Change role
+- Reset password
+- View user activity
+- View assigned projects/tasks
+
+Do not delete important historical records unnecessarily.
+
+============================================================
+25. AUDIT LOGS
+============================================================
+
+Create real audit logging.
+
+Record important actions:
+
+- Login
+- Logout
+- User creation
+- User deactivation
+- Role changes
+- Project creation
+- Project modification
+- Task creation
+- Task assignment
+- Task status change
+- Task submission
+- Task approval
+- File upload
+- File deletion
+- Settings changes
+
+Store:
+
+- User
+- Action
+- Module
+- Object
+- Timestamp
+- IP where appropriate
+- Description
+- Result/status
+
+============================================================
+26. SETTINGS
+============================================================
+
+Implement:
+
+- General
+- Organization
+- Users
+- Roles
+- Permissions
+- Notifications
+- Security
+- Appearance
+- Email
+- Backup/Maintenance
+- System
+
+Do not create settings that have no actual effect.
+
+============================================================
+27. SECURITY
+============================================================
+
+Use proper Django security.
+
+Implement:
+
+- CSRF
+- Secure password hashing
+- Authentication
+- Authorization
+- Input validation
+- File validation
+- Secure sessions
+- Backend permission checks
+- ORM-based database access
+- XSS protection
+- Secure error handling
+- Environment variables
+
+Never hard-code:
+
+- Database password
+- Secret key
+- API keys
+- Redis credentials
+
+Create:
+
+.env.example
+
+============================================================
+28. PROJECT STRUCTURE
+============================================================
+
+Create a clean structure.
+
+For example:
+
+TaskWave/
+│
+├── manage.py
+├── requirements.txt
+├── .env.example
+├── README.md
+│
+├── config/
+│   ├── settings/
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+│
+├── apps/
+│   ├── accounts/
+│   ├── users/
+│   ├── departments/
+│   ├── projects/
+│   ├── tasks/
+│   ├── notifications/
+│   ├── messaging/
+│   ├── calendar/
+│   ├── meetings/
+│   ├── analytics/
+│   ├── overtime/
+│   ├── reports/
+│   ├── files/
+│   ├── audit/
+│   └── core/
+│
+├── templates/
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── icons/
+│
+├── media/
+│
+└── tests/
+
+You may adjust the structure if there is a better professional Django architecture, but keep it modular and maintainable.
+
+============================================================
+29. FRONTEND ARCHITECTURE
+============================================================
+
+Create reusable components for:
+
+- Sidebar
+- Header
+- Navigation
+- Cards
+- Tables
+- Forms
+- Buttons
+- Modals
+- Notifications
+- Status badges
+- Filters
+- Pagination
+- Empty states
+- Error states
+
+Do not duplicate the same HTML/CSS unnecessarily.
+
+Use reusable Django templates/includes where appropriate.
+
+============================================================
+30. NO FAKE DATA
+============================================================
+
+Do not hard-code production metrics.
+
+Bad:
+
+Completed Tasks = 87
+
+if 87 is simply written into HTML.
+
+Good:
+
+Calculate the value from the database.
+
+This applies to:
+
+- Dashboard
+- Analytics
+- Projects
+- Tasks
+- Members
+- Notifications
+- Overtime
+- Reports
+- Activity logs
+- Charts
+
+Create a development seed command:
+
+python manage.py seed_data
+
+Seed data is acceptable for development/testing.
+
+============================================================
+31. FORM VALIDATION
+============================================================
+
+Validate both frontend and backend.
+
+Validate:
+
+- Required fields
+- Email
+- Password
+- Dates
+- Due dates
+- File types
+- File size
+- Duplicate accounts
+- Permissions
+- Relationships
+
+Display useful errors.
+
+============================================================
+32. EMPTY STATES
+============================================================
+
+Create reusable empty states for:
+
+- No projects
+- No tasks
+- No members
+- No files
+- No notifications
+- No messages
+- No overtime
+- No calendar events
+- No search results
+- No activity
+
+Match the screenshots where empty states are shown.
+
+============================================================
+33. ERROR PAGES
+============================================================
+
+Implement:
+
+- 404
+- 403
+- 500
+- Authentication errors
+- Permission errors
+- Validation errors
+- File upload errors
+- API errors
+
+Do not show stack traces to normal users.
+
+============================================================
+34. MEETINGS / VIDEO CONFERENCE
+============================================================
+
+Create the meeting-management interface shown in the screenshots.
+
+Support where practical:
+
+- Schedule meeting
+- Meeting details
+- Participants
+- Invitations
+- Meeting link
+- Start meeting
+- Join meeting
+- Meeting chat
+- Participant list
+
+IMPORTANT:
+
+Do not pretend a real video-conferencing engine exists if it has not actually been implemented.
+
+If actual video/audio infrastructure is outside the current scope, implement meeting management and integration-ready architecture honestly.
+
+============================================================
+35. HELP & SUPPORT
+============================================================
+
+Create:
+
+- Help page
+- FAQs
+- Support information
+- Documentation links
+- Support request/ticket interface if included in the screenshots
+
+Keep the UI consistent with TaskWave.
+
+============================================================
+36. 404 / ERROR UI
+============================================================
+
+Create a professional TaskWave-branded error page.
+
+It should match the visual language of the screenshots.
+
+============================================================
+37. CONFIRMATION MODALS
+============================================================
+
+Create reusable confirmation modals for:
+
+- Delete
+- Deactivate
+- Logout
+- Submit
+- Approve
+- Reject
+- Request changes
+- Discard changes
+- Delete file
+- Change status
+
+============================================================
+38. RESPONSIVE SCREENSHOT FIDELITY
+============================================================
+
+Desktop screenshots are the primary reference.
+
+When implementing mobile/tablet versions, preserve the same design language.
+
+Do not introduce a completely different mobile visual style.
+
+============================================================
+39. TESTING
+============================================================
+
+Create automated tests for important backend functionality.
+
+Test:
+
+- Authentication
+- Authorization
+- User management
+- Project CRUD
+- Task CRUD
+- Assignment
+- Status transitions
+- Kanban updates
+- Submission
+- Review
+- Notifications
+- File permissions
+- Chat
+- Overtime
+- Reports
+- Roles
+- Permissions
+- Audit logs
+
+Also manually verify the major UI workflows.
+
+Fix actual errors.
+
+Do not simply document unresolved errors as "known issues" and call the project complete.
+
+============================================================
+40. DATABASE MIGRATIONS
+============================================================
+
+After creating models:
+
+- Create migrations
+- Apply migrations
+- Verify tables
+- Verify relationships
+- Verify constraints
+- Test database operations
+
+Make sure a new developer can set up the database from a clean installation.
+
+============================================================
+41. SEED DATA
+============================================================
+
+Create:
+
+python manage.py seed_data
+
+Generate realistic development data for:
+
+- Administrator
+- Project Managers
+- Team Leads
+- Employees
+- Departments
+- Projects
+- Tasks
+- Notifications
+- Messages
+- Calendar events
+- Overtime requests
+
+Clearly document development credentials in README.
+
+Do not use real people's private information.
+
+============================================================
+42. DOCUMENTATION
+============================================================
+
+Create a professional README.md containing:
+
+- Project overview
+- Features
+- Technology stack
+- System architecture
+- Installation
+- Python environment setup
+- MySQL setup
+- Redis/Memurai setup
+- Environment variables
+- Migrations
+- Seed data
+- Run commands
+- WebSocket configuration
+- Project structure
+- Development credentials
+- Troubleshooting
+
+Also create:
+
+requirements.txt
+.env.example
+
+============================================================
+43. IMPLEMENTATION ORDER
+============================================================
+
+Build systematically.
+
+PHASE 1:
+Project setup
+
+- Create Django project
+- Create apps
+- Configure settings
+- Configure static/media
+- Configure MySQL
+- Configure environment variables
+
+PHASE 2:
+Database
+
+- Create models
+- Create relationships
+- Create migrations
+- Apply migrations
+
+PHASE 3:
+Authentication
+
+- Login
+- Logout
+- Account activation
+- Password reset
+- Roles
+- Permissions
+
+PHASE 4:
+Core management
+
+- Users
+- Departments
+- Projects
+- Tasks
+
+PHASE 5:
+Task workflow
+
+- Task assignment
+- Status transitions
+- Kanban
+- Submission
+- Review
+
+PHASE 6:
+Communication
+
+- Notifications
+- Messaging
+- WebSockets
+- Redis/Memurai
+
+PHASE 7:
+Productivity
+
+- Calendar
+- Files
+- Meetings
+- Overtime
+
+PHASE 8:
+Analytics
+
+- Dashboard
+- Analytics
+- Reports
+
+PHASE 9:
+Administration
+
+- User management
+- Roles
+- Permissions
+- Audit logs
+- Settings
+
+PHASE 10:
+Visual refinement
+
+Compare every page against the attached screenshots.
+
+Fix:
+- Spacing
+- Sizing
+- Typography
+- Colors
+- Alignment
+- Component dimensions
+- Icons
+- Tables
+- Forms
+- Responsive behavior
+
+PHASE 11:
+Testing
+
+Run tests and fix issues.
+
+PHASE 12:
+Final audit
+
+Verify every feature and page.
+
+============================================================
+44. VISUAL QUALITY CONTROL
+============================================================
+
+After implementing the frontend, perform a screenshot-by-screenshot comparison.
+
+For every attached reference:
+
+1. Open/reference the screenshot.
+2. Open the implemented page.
+3. Compare them.
+4. Identify differences.
+5. Fix the differences.
+6. Repeat.
+
+Pay particular attention to:
+
+- Sidebar width
+- Header position
+- Content width
+- Card spacing
+- Font hierarchy
+- Button size
+- Border radius
+- Shadows
+- Table row height
+- Form spacing
+- Chart dimensions
+- Status colors
+- Icon placement
+- Empty-state placement
+
+Do not stop at "similar enough" if obvious differences remain.
+
+============================================================
+45. IMPORTANT: DO NOT OVER-ENGINEER THE VISUAL DESIGN
+============================================================
+
+Do not add design elements that are not present in the screenshots just to make the site look impressive.
+
+No:
+
+- Random gradients
+- Extra animations
+- Random illustrations
+- Decorative 3D objects
+- Fake statistics
+- Marketing sections
+- Testimonials
+- Pricing pages
+- Landing-page content unrelated to TaskWave
+
+Build what is shown and what is required.
+
+============================================================
+46. FINAL COMPLETION CHECKLIST
+============================================================
+
+Before saying:
+
+"TaskWave is complete"
+
+verify:
+
+[ ] Project created from scratch
+[ ] Django configured
+[ ] MySQL configured
+[ ] Migrations working
+[ ] Authentication working
+[ ] Authorization working
+[ ] Roles working
+[ ] Permissions working
+[ ] Dashboard working
+[ ] Projects working
+[ ] Tasks working
+[ ] Kanban working
+[ ] Calendar working
+[ ] Members working
+[ ] Departments working
+[ ] Chat working
+[ ] WebSockets working
+[ ] Redis/Memurai configured
+[ ] Notifications working
+[ ] Analytics working
+[ ] Overtime working
+[ ] Reports working
+[ ] Settings working
+[ ] Profile working
+[ ] Meetings working
+[ ] Task submission working
+[ ] Task review working
+[ ] User management working
+[ ] Audit logs working
+[ ] File management working
+[ ] Password reset working
+[ ] Account activation working
+[ ] Error pages working
+[ ] Responsive design working
+[ ] Security checked
+[ ] Tests executed
+[ ] Seed data working
+[ ] README completed
+[ ] .env.example created
+[ ] requirements.txt created
+[ ] All major buttons functional
+[ ] No major fake/static functionality
+[ ] Database-backed analytics
+[ ] Database-backed notifications
+[ ] Database-backed tasks/projects/users
+[ ] Visual comparison completed
+[ ] Screenshots closely matched
+
+============================================================
+47. FINAL RULE - MOST IMPORTANT
+============================================================
+
+BUILD THE WEBSITE FROM SCRATCH.
+
+The screenshots define HOW IT SHOULD LOOK.
+
+This specification defines HOW IT SHOULD WORK.
+
+Both requirements are mandatory.
+
+The result must be a real:
+
+DJANGO + MYSQL + BOOTSTRAP + JAVASCRIPT + CHANNELS + REDIS
+
+Task Management & Collaboration System.
+
+It must NOT be a static HTML demo.
+
+It must NOT be a frontend-only prototype.
+
+It must NOT be a collection of disconnected pages.
+
+It must NOT contain fake functionality.
+
+It must NOT invent a different UI.
+
+Every major page must be connected to the correct backend functionality.
+
+Every important piece of data must be stored in the database.
+
+Every permission must be enforced server-side.
+
+Every workflow must actually work.
+
+============================================================
+48. START NOW
+============================================================
+
+FIRST:
+
+1. Read and study ALL attached screenshots.
+2. Understand the complete visual design system.
+3. Create the TaskWave project from scratch.
+4. Set up the Django backend.
+5. Set up MySQL.
+6. Create the database architecture.
+7. Create the frontend structure.
+8. Implement the UI to closely match the screenshots.
+9. Connect the frontend to the backend.
+10. Implement all required workflows.
+11. Implement authentication and authorization.
+12. Implement real-time features.
+13. Implement analytics and reports.
+14. Test everything.
+15. Compare the final UI against the screenshots.
+16. Fix visual and functional differences.
+17. Produce the final project audit.
+
+Do not stop after creating a plan.
+
+Begin building the actual TaskWave application.

@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Help & Support - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Breadcrumb & Top Header Row -->
+  <div class="d-flex align-items-center gap-2 mb-2 text-muted" style="font-size: 0.8rem;">
+    <a href="{% url 'core:dashboard' %}" class="text-decoration-none text-muted">Dashboard</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span class="text-dark fw-medium">Help & Support</span>
+  </div>
+
+  <div class="dash-header-row mb-4">
+    <div>
+      <h1 class="dash-title">Help & Support</h1>
+      <div class="dash-subtitle">Find answers, guides, and get support for using TaskWave.</div>
+    </div>
+  </div>
+
+  <!-- Search Box Banner -->
+  <div class="bg-white border rounded-3 p-3 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+    <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2 flex-grow-1" style="position: relative;">
+        <i class="ri-search-line" style="position: absolute; left: 14px; color: #94a3b8; font-size: 1.1rem;"></i>
+        <input type="text" placeholder="Search for help articles, guides, or common questions..." class="form-control" style="border-radius: 8px; border: 1px solid #e2e8f0; padding-left: 42px; font-size: 0.88rem; height: 42px; background-color: #fff;">
+      </div>
+      <button class="btn text-white px-4" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 42px; display: flex; align-items: center; gap: 6px;">
+        <i class="ri-search-line"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 Quick Resource Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="bg-white border rounded-3 p-3 shadow-sm d-flex align-items-center justify-content-between h-100" style="border-color: #edf2f7 !important; cursor: pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #ffedd5; color: #ea580c; font-size: 1.25rem;">
+            <i class="ri-book-open-line"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 0.88rem;">User Guide</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Learn how to use TaskWave</div>
+          </div>
+        </div>
+        <i class="ri-arrow-right-s-line text-muted"></i>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="bg-white border rounded-3 p-3 shadow-sm d-flex align-items-center justify-content-between h-100" style="border-color: #edf2f7 !important; cursor: pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e0f2fe; color: #0284c7; font-size: 1.25rem;">
+            <i class="ri-play-circle-line"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 0.88rem;">Video Tutorials</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Step-by-step guides</div>
+          </div>
+        </div>
+        <i class="ri-arrow-right-s-line text-muted"></i>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="bg-white border rounded-3 p-3 shadow-sm d-flex align-items-center justify-content-between h-100" style="border-color: #edf2f7 !important; cursor: pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #dcfce7; color: #16a34a; font-size: 1.25rem;">
+            <i class="ri-file-text-line"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 0.88rem;">FAQs</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Common questions</div>
+          </div>
+        </div>
+        <i class="ri-arrow-right-s-line text-muted"></i>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="bg-white border rounded-3 p-3 shadow-sm d-flex align-items-center justify-content-between h-100" style="border-color: #edf2f7 !important; cursor: pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #f3e8ff; color: #9333ea; font-size: 1.25rem;">
+            <i class="ri-message-3-line"></i>
+          </div>
+          <div>
+            <div class="fw-bold text-dark" style="font-size: 0.88rem;">Contact Support</div>
+            <div class="text-muted" style="font-size: 0.72rem;">Get help from admin</div>
+          </div>
+        </div>
+        <i class="ri-arrow-right-s-line text-muted"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (FAQs & Tickets Left + Contact & Resources Right) -->
+  <div class="row g-4">
+    <!-- Left Section -->
+    <div class="col-lg-8">
+      <div class="d-flex flex-column gap-4">
+        <!-- Frequently Asked Questions Accordion -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Frequently Asked Questions</h6>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+          </div>
+
+          <div class="d-flex flex-column gap-2">
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How do I get my login credentials?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How to create and assign a task?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How to upload files to a project?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How to request overtime work?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How to join a video meeting?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">What should I do if I forget my password?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">How to update my profile information?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="border rounded p-3 d-flex align-items-center justify-content-between" style="cursor: pointer; background-color: #fff;">
+              <span class="text-dark fw-medium" style="font-size: 0.84rem;">Who can I contact if I face an issue?</span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Support Tickets -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">My Support Tickets</h6>
+            <div class="d-flex align-items-center gap-3">
+              <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+              <button class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.78rem;">+ New Ticket</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle mb-0" style="font-size: 0.82rem;">
+              <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.74rem;">
+                <tr>
+                  <th style="width: 30px;">#</th>
+                  <th>Subject</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Created On</th>
+                  <th>Last Update</th>
+                  <th style="width: 30px; text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td class="text-muted">1</td>
+                  <td class="fw-semibold text-dark">Login issue - unable to access account</td>
+                  <td class="text-secondary">Account Access</td>
+                  <td>
+                    <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #fee2e2; color: #ef4444; font-size: 0.7rem; font-weight: 600;">
+                      <span style="width: 5px; height: 5px; border-radius: 50%; background-color: #ef4444;"></span> Open
+                    </span>
+                  </td>
+                  <td class="text-muted">12 Oct 2026</td>
+                  <td class="text-muted">12 Oct 2026</td>
+                  <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+                </tr>
+
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td class="text-muted">2</td>
+                  <td class="fw-semibold text-dark">Task assignment not showing</td>
+                  <td class="text-secondary">Task Management</td>
+                  <td>
+                    <span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.7rem; font-weight: 600;">In Progress</span>
+                  </td>
+                  <td class="text-muted">10 Oct 2026</td>
+                  <td class="text-muted">11 Oct 2026</td>
+                  <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+                </tr>
+
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td class="text-muted">3</td>
+                  <td class="fw-semibold text-dark">File upload error</td>
+                  <td class="text-secondary">File Management</td>
+                  <td>
+                    <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.7rem; font-weight: 600;">Resolved</span>
+                  </td>
+                  <td class="text-muted">08 Oct 2026</td>
+                  <td class="text-muted">09 Oct 2026</td>
+                  <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+                </tr>
+
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td class="text-muted">4</td>
+                  <td class="fw-semibold text-dark">Request for new project access</td>
+                  <td class="text-secondary">Access Request</td>
+                  <td>
+                    <span class="badge" style="background-color: #f1f5f9; color: #64748b; font-size: 0.7rem; font-weight: 600;">Closed</span>
+                  </td>
+                  <td class="text-muted">05 Oct 2026</td>
+                  <td class="text-muted">06 Oct 2026</td>
+                  <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+                </tr>
+
+                <tr>
+                  <td class="text-muted">5</td>
+                  <td class="fw-semibold text-dark">Video meeting not working</td>
+                  <td class="text-secondary">Meetings</td>
+                  <td>
+                    <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.7rem; font-weight: 600;">Resolved</span>
+                  </td>
+                  <td class="text-muted">02 Oct 2026</td>
+                  <td class="text-muted">03 Oct 2026</td>
+                  <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Contact Support Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">Contact Support</h6>
+          <div class="text-muted mb-3" style="font-size: 0.74rem;">Need more help? Reach out to your administrator.</div>
+
+          <div class="border rounded-3 p-3 bg-light d-flex align-items-start gap-3 mb-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-white shadow-sm text-primary" style="width: 36px; height: 36px; flex-shrink: 0; font-size: 1.15rem;">
+              <i class="ri-headphone-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 0.84rem;">Admin Support</div>
+              <div class="text-muted" style="font-size: 0.7rem;">For technical issues, account access, or system-related queries.</div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2 mb-4" style="font-size: 0.8rem;">
+            <div class="d-flex align-items-center gap-2 text-secondary">
+              <i class="ri-mail-line text-muted"></i>
+              <span>support@taskwave.com</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-secondary">
+              <i class="ri-phone-line text-muted"></i>
+              <span>+91 98765 43210</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-secondary">
+              <i class="ri-time-line text-muted"></i>
+              <span>Mon - Fri, 9:00 AM - 6:00 PM</span>
+            </div>
+          </div>
+
+          <button class="btn w-100 text-white" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.84rem; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="ri-send-plane-fill"></i> Send Support Request
+          </button>
+        </div>
+
+        <!-- Useful Resources Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Useful Resources</h6>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #e0f2fe; color: #0284c7; font-size: 1rem;">
+                  <i class="ri-file-text-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">User Manual</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Complete system documentation</div>
+                </div>
+              </div>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fee2e2; color: #ef4444; font-size: 1rem;">
+                  <i class="ri-play-circle-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Video Tutorials</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Watch step-by-step guides</div>
+                </div>
+              </div>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #dcfce7; color: #16a34a; font-size: 1rem;">
+                  <i class="ri-lightbulb-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Best Practices</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Tips for better productivity</div>
+                </div>
+              </div>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #f3e8ff; color: #9333ea; font-size: 1rem;">
+                  <i class="ri-settings-3-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">System Requirements</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Technical requirements and browser support</div>
+                </div>
+              </div>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

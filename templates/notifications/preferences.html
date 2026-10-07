@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Notification Preferences - TaskWave{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="page-header-row mb-4">
+      <div>
+        <h1 class="page-title">Notification Preferences</h1>
+        <div class="page-subtitle">Configure email dispatch and in-app alert subscriptions.</div>
+      </div>
+      <a href="{% url 'notifications:list' %}" class="btn-outline-tw">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </a>
+    </div>
+
+    <div class="tw-card">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="list-group list-group-flush mb-4">
+          <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <div>
+              <h6 class="fw-bold mb-1">Email Notifications</h6>
+              <div class="text-muted small">Receive important system emails when tasks are assigned to you.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="email_notifications" {% if preferences.email_notifications %}checked{% endif %}>
+            </div>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <div>
+              <h6 class="fw-bold mb-1">In-Browser Desktop Alerts</h6>
+              <div class="text-muted small">Trigger toast notifications inside the browser tab when online.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="browser_notifications" {% if preferences.browser_notifications %}checked{% endif %}>
+            </div>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <div>
+              <h6 class="fw-bold mb-1">Task Assignment & Review Updates</h6>
+              <div class="text-muted small">Get notified on status changes, submissions, and manager approvals.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="task_updates" {% if preferences.task_updates %}checked{% endif %}>
+            </div>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <div>
+              <h6 class="fw-bold mb-1">Project Milestone Announcements</h6>
+              <div class="text-muted small">Receive updates when project milestones are completed.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="project_updates" {% if preferences.project_updates %}checked{% endif %}>
+            </div>
+          </div>
+
+          <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <div>
+              <h6 class="fw-bold mb-1">Direct Messages & Chat Alerts</h6>
+              <div class="text-muted small">Receive badges when coworkers send messages.</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="message_notifications" {% if preferences.message_notifications %}checked{% endif %}>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn-primary-tw">Save Preferences</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tasks - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Tasks</h1>
+      <p class="dash-subtitle">Create, assign, and track tasks across all projects.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn-import-tw" type="button">
+        <i class="ri-upload-2-line"></i> Import
+      </button>
+      <a href="{% url 'tasks:task_create' %}" class="btn-new-entity">
+        <i class="ri-add-line"></i> New Task
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stat Cards Row (4 cards) -->
+  <div class="dash-kpi-grid">
+    <!-- Total Tasks -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-file-text-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Tasks</span>
+          <span class="dash-kpi-value">{{ total_tasks }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- In Progress -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-play-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">In Progress</span>
+          <span class="dash-kpi-value">{{ in_progress_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Completed -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-check-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed</span>
+          <span class="dash-kpi-value">{{ completed_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Overdue -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-error-warning-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Overdue</span>
+          <span class="dash-kpi-value">{{ overdue_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 5%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="dash-filter-bar">
+    <div class="filter-search-box">
+      <i class="ri-search-line"></i>
+      <input type="text" placeholder="Search tasks..." value="{{ query }}">
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <span class="text-muted small">Project</span>
+      <div class="dash-select-pill">
+        <span>All Projects</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <span class="text-muted small">Assignee</span>
+      <div class="dash-select-pill">
+        <span>All Members</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <span class="text-muted small">Status</span>
+      <div class="dash-select-pill">
+        <span>All Status</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <span class="text-muted small">Priority</span>
+      <div class="dash-select-pill">
+        <span>All Priority</span>
+        <i class="ri-arrow-down-s-line"></i>
+      </div>
+    </div>
+    <div class="dash-select-pill">
+      <i class="ri-calendar-line me-1 text-muted"></i>
+      <span>Start Date - End Date</span>
+    </div>
+    <button class="dash-clear-btn" type="button">Clear</button>
+  </div>
+
+  <!-- Tasks Tabs Row -->
+  <div class="tasks-tabs-nav mb-3">
+    <button class="tasks-tab-btn active" type="button">All Tasks (128)</button>
+    <button class="tasks-tab-btn" type="button">My Tasks (18)</button>
+    <button class="tasks-tab-btn" type="button">Assigned to Others (92)</button>
+    <button class="tasks-tab-btn" type="button">Overdue (12)</button>
+    <button class="tasks-tab-btn" type="button">Completed (64)</button>
+  </div>
+
+  <!-- Tasks Table Card -->
+  <div class="dash-card">
+    <div class="table-responsive">
+      <table class="dash-custom-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;"><input type="checkbox" class="form-check-input"></th>
+            <th style="width: 36px;">#</th>
+            <th>Task Title</th>
+            <th>Project</th>
+            <th>Assignee</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Due Date <i class="ri-arrow-up-down-line small ms-1"></i></th>
+            <th>Progress</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in sample_tasks %}
+          <tr>
+            <td><input type="checkbox" class="form-check-input"></td>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span style="background-color: {{ t.icon_bg }}; color: {{ t.icon_color }}; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; flex-shrink: 0;"><i class="{{ t.icon_class }}"></i></span>
+                <div>
+                  <div class="fw-semibold text-dark">{{ t.title }}</div>
+                  <div class="small text-muted">{{ t.subtitle }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="text-muted">{{ t.project }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static t.assignee_avatar %}" alt="{{ t.assignee }}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <span class="text-dark">{{ t.assignee }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="priority-pill {{ t.priority_class }}">{{ t.priority }}</span>
+            </td>
+            <td>
+              <span class="priority-pill {{ t.status_class }}">{{ t.status }}</span>
+            </td>
+            <td class="{% if t.status == 'Overdue' %}text-danger fw-semibold{% else %}text-muted{% endif %}">{{ t.due_date }}</td>
+            <td style="width: 120px;">
+              <div class="d-flex align-items-center gap-2">
+                <div class="project-box-progress-bar flex-grow-1" style="margin: 0;">
+                  <div class="project-box-progress-fill" style="width: {{ t.progress }}%; background-color: {{ t.bar_color }};"></div>
+                </div>
+                <span class="small text-muted fw-semibold" style="width: 32px;">{{ t.progress }}%</span>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+      <div class="small text-muted">Showing 1 to 12 of 128 tasks</div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="small text-muted">Rows per page</span>
+          <div class="dash-select-pill">
+            <span>12</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </div>
+        </div>
+        <div class="dash-pagination-btns">
+          <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
+          <button class="dash-page-btn active" type="button">1</button>
+          <button class="dash-page-btn" type="button">2</button>
+          <button class="dash-page-btn" type="button">3</button>
+          <button class="dash-page-btn" type="button">4</button>
+          <button class="dash-page-btn" type="button">5</button>
+          <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

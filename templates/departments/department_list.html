@@ -1,0 +1,469 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Departments - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Departments</h1>
+      <p class="dash-subtitle">Organize your team into departments and manage department settings.</p>
+    </div>
+    <div>
+      <a href="{% url 'departments:department_create' %}" class="btn-new-entity">
+        <i class="ri-add-line"></i> Add Department
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stat Cards Row (4 cards) -->
+  <div class="dash-kpi-grid">
+    <!-- Total Departments -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dbeafe; color: #2563eb;">
+          <i class="ri-community-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Departments</span>
+          <span class="dash-kpi-value">6</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up" style="color: #64748b;"><i class="ri-arrow-up-line"></i> 0%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
+    </div>
+
+    <!-- Total Members -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-user-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Members</span>
+          <span class="dash-kpi-value">24</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
+    </div>
+
+    <!-- Total Projects -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-file-text-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Projects</span>
+          <span class="dash-kpi-value">12</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 33%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
+    </div>
+
+    <!-- Active Departments -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-orange">
+          <i class="ri-checkbox-circle-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Active Departments</span>
+          <span class="dash-kpi-value">6</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up" style="color: #64748b;"><i class="ri-arrow-up-line"></i> 0%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="dash-filter-bar">
+    <div class="filter-search-box">
+      <i class="ri-search-line"></i>
+      <input type="text" placeholder="Search departments...">
+    </div>
+    <div class="dash-select-pill">
+      <span>All Status</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <button class="dash-clear-btn" type="button">Clear</button>
+  </div>
+
+  <!-- Top Split: Table Left, Details Right -->
+  <div class="row g-4 mb-4">
+    <!-- Left Table -->
+    <div class="col-xl-8">
+      <div class="dash-card">
+        <div class="table-responsive">
+          <table class="dash-custom-table">
+            <thead>
+              <tr>
+                <th style="width: 32px;"><input type="checkbox" class="form-check-input"></th>
+                <th style="width: 36px;">#</th>
+                <th>Department Name</th>
+                <th>Description</th>
+                <th>Head</th>
+                <th>Members</th>
+                <th>Projects</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>1</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #e0f2fe; color: #0284c7; border-radius: 6px;"><i class="ri-code-s-slash-line"></i></div>
+                    <span class="fw-semibold text-dark">Development</span>
+                  </div>
+                </td>
+                <td class="text-muted small" style="max-width: 220px;">Handles software development and technical implementation.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Aman Sharma</div>
+                      <div class="text-muted" style="font-size: 10px;">aman@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">6</td>
+                <td class="text-muted">4</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>2</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #fee2e2; color: #dc2626; border-radius: 6px;"><i class="ri-palette-line"></i></div>
+                    <span class="fw-semibold text-dark">Design</span>
+                  </div>
+                </td>
+                <td class="text-muted small">UI/UX design, graphics and product design.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Neha Tiwari</div>
+                      <div class="text-muted" style="font-size: 10px;">neha@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">4</td>
+                <td class="text-muted">2</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>3</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #ede9fe; color: #7c3aed; border-radius: 6px;"><i class="ri-shield-check-line"></i></div>
+                    <span class="fw-semibold text-dark">Quality Assurance</span>
+                  </div>
+                </td>
+                <td class="text-muted small">Testing, bug tracking and quality control.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Vikram Singh</div>
+                      <div class="text-muted" style="font-size: 10px;">vikram@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">3</td>
+                <td class="text-muted">2</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>4</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #ffedd5; color: #ea580c; border-radius: 6px;"><i class="ri-megaphone-line"></i></div>
+                    <span class="fw-semibold text-dark">Marketing</span>
+                  </div>
+                </td>
+                <td class="text-muted small">Product marketing, content and brand management.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/sneha_gupta.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Sneha Gupta</div>
+                      <div class="text-muted" style="font-size: 10px;">sneha@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">4</td>
+                <td class="text-muted">2</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>5</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #dcfce7; color: #16a34a; border-radius: 6px;"><i class="ri-team-line"></i></div>
+                    <span class="fw-semibold text-dark">Human Resources</span>
+                  </div>
+                </td>
+                <td class="text-muted small">Recruitment, employee management and training.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Pooja Sharma</div>
+                      <div class="text-muted" style="font-size: 10px;">pooja@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">3</td>
+                <td class="text-muted">1</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="form-check-input"></td>
+                <td>6</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="team-avatar-mini" style="background-color: #e0f2fe; color: #0284c7; border-radius: 6px;"><i class="ri-headphone-line"></i></div>
+                    <span class="fw-semibold text-dark">Customer Support</span>
+                  </div>
+                </td>
+                <td class="text-muted small">Client support and issue resolution.</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/rohan_das.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    <div>
+                      <div class="small fw-semibold text-dark">Rohan Das</div>
+                      <div class="text-muted" style="font-size: 10px;">rohan@taskwave.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">4</td>
+                <td class="text-muted">1</td>
+                <td><span class="priority-pill badge-low">Active</span></td>
+                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+          <div class="small text-muted">Showing 1 to 6 of 6 departments</div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted">Rows per page</span>
+              <div class="dash-select-pill"><span>10</span><i class="ri-arrow-down-s-line"></i></div>
+            </div>
+            <div class="dash-pagination-btns">
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
+              <button class="dash-page-btn active" type="button">1</button>
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Department Details -->
+    <div class="col-xl-4">
+      <div class="dash-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-2" style="background-color: #e0f2fe; color: #0284c7; font-size: 1.2rem;">
+              <i class="ri-code-s-slash-line"></i>
+            </div>
+            <div>
+              <h3 class="fs-6 fw-bold text-dark mb-0">Development</h3>
+              <span class="priority-pill badge-low mt-1">Active</span>
+            </div>
+          </div>
+          <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mb-3 small">
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-user-line me-2"></i>Head</span><span class="text-dark fw-medium">Aman Sharma</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-group-line me-2"></i>Members</span><span class="text-dark fw-medium">6</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-folder-line me-2"></i>Projects</span><span class="text-dark fw-medium">4</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-calendar-line me-2"></i>Created On</span><span class="text-dark fw-medium">1 Aug 2026</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-file-text-line me-2"></i>Description</span><span class="text-dark fw-medium text-end" style="max-width: 180px;">Handles software development, backend, frontend and technical implementation.</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-mail-line me-2"></i>Email</span><span class="text-dark fw-medium">development@taskwave.com</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-map-pin-line me-2"></i>Location</span><span class="text-dark fw-medium">Main Office, 2nd Floor</span></div>
+        </div>
+
+        <button class="btn-import-tw w-100 mb-3" type="button">Edit Department</button>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="small fw-bold text-dark mb-0">Department Members (6)</h4>
+          <a href="#" class="small text-orange text-decoration-none fw-semibold">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <!-- Member 1 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Aman Sharma</div><div class="text-muted" style="font-size: 10px;">Department Head</div></div>
+            </div>
+            <span class="priority-pill badge-low" style="background-color: #dcfce7; color: #16a34a;">Admin</span>
+          </div>
+          <!-- Member 2 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Rahul Kumar</div><div class="text-muted" style="font-size: 10px;">Senior Developer</div></div>
+            </div>
+            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
+          </div>
+          <!-- Member 3 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/anjali_verma.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Anjali Verma</div><div class="text-muted" style="font-size: 10px;">Frontend Developer</div></div>
+            </div>
+            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
+          </div>
+          <!-- Member 4 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/sahil_khan.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Sahil Khan</div><div class="text-muted" style="font-size: 10px;">Backend Developer</div></div>
+            </div>
+            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
+          </div>
+          <!-- Member 5 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Arjun Patel</div><div class="text-muted" style="font-size: 10px;">DevOps Engineer</div></div>
+            </div>
+            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
+          </div>
+          <!-- Member 6 -->
+          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Priya Singh</div><div class="text-muted" style="font-size: 10px;">Junior Developer</div></div>
+            </div>
+            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Charts Row -->
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="dash-card">
+        <h3 class="dash-card-title mb-3">Department Project Distribution</h3>
+        <div class="donut-chart-container">
+          <div class="donut-canvas-box" style="width: 150px; height: 150px;">
+            <canvas id="deptProjectChart"></canvas>
+            <div class="donut-center-text">
+              <div class="donut-number">12</div>
+              <div class="donut-label">Projects</div>
+            </div>
+          </div>
+          <div class="donut-legend-list">
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #3b82f6;"></span><div class="donut-legend-info"><span>Development</span><span>33% (4)</span></div></div>
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #ec4899;"></span><div class="donut-legend-info"><span>Design</span><span>17% (2)</span></div></div>
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #a855f7;"></span><div class="donut-legend-info"><span>Quality Assurance</span><span>17% (2)</span></div></div>
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #f59e0b;"></span><div class="donut-legend-info"><span>Marketing</span><span>17% (2)</span></div></div>
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #ef4444;"></span><div class="donut-legend-info"><span>Human Resources</span><span>8% (1)</span></div></div>
+            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #06b6d4;"></span><div class="donut-legend-info"><span>Customer Support</span><span>8% (1)</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="dash-card">
+        <h3 class="dash-card-title mb-3">Department Member Distribution</h3>
+        <div style="height: 180px; width: 100%;">
+          <canvas id="deptMemberChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const pCtx = document.getElementById("deptProjectChart");
+  if (pCtx) {
+    new Chart(pCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["Development", "Design", "Quality Assurance", "Marketing", "Human Resources", "Customer Support"],
+        datasets: [{
+          data: [4, 2, 2, 2, 1, 1],
+          backgroundColor: ["#3b82f6", "#ec4899", "#a855f7", "#f59e0b", "#ef4444", "#06b6d4"],
+          borderWidth: 2,
+          borderColor: "#ffffff"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "68%",
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  const mCtx = document.getElementById("deptMemberChart");
+  if (mCtx) {
+    new Chart(mCtx, {
+      type: "bar",
+      data: {
+        labels: ["Development", "Design", "Quality Assurance", "Marketing", "Human Resources", "Customer Support"],
+        datasets: [{
+          data: [6, 4, 3, 4, 3, 4],
+          backgroundColor: ["#3b82f6", "#f87171", "#a855f7", "#fbbf24", "#34d399", "#38bdf8"],
+          borderRadius: 4,
+          barThickness: 28
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 8, ticks: { stepSize: 2 } }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

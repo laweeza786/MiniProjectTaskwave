@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Password Updated! - TaskWave{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page-wrapper" style="min-height: 100vh; background: #faf8f5; display: flex; flex-direction: column;">
+  <div class="container-fluid px-4 px-md-5 my-auto py-5">
+    <div class="row align-items-center justify-content-center g-5">
+      <!-- Left Column -->
+      <div class="col-lg-5 pe-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+            <path d="M4 14C7 8 11 8 14 14C17 20 21 20 24 14" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 20C11 14 15 14 18 20C21 26 25 26 28 20" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 24px; color: #1e293b;">TaskWave</span>
+        </div>
+
+        <h1 style="font-size: 38px; font-weight: 800; color: #0f172a; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px;">
+          Password <br><span style="color: #b45309;">Reset Successful</span>
+        </h1>
+        <p style="color: #64748b; font-size: 15px; line-height: 1.5; margin-bottom: 36px;">
+          Your password has been updated successfully. You can now login with your new password.
+        </p>
+
+        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 220px; width: 100%; max-width: 440px;">
+          <img src="{% static 'img/login_desk_photo.jpg' %}" alt="TaskWave Workspace" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      </div>
+
+      <!-- Right Card -->
+      <div class="col-lg-5 col-xl-4 offset-xl-1">
+        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border text-center" style="border-color: #f1f5f9;">
+          <!-- Green Checkmark Icon -->
+          <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border-radius: 50%; background: #ecfdf5; color: #10b981; font-size: 26px;">
+            <i class="ri-check-line fw-bold"></i>
+          </div>
+
+          <h2 class="fw-bold text-dark mb-2" style="font-size: 20px;">Password Updated!</h2>
+          <p class="text-muted small mb-4" style="line-height: 1.5;">Your password has been reset successfully. You can now login to your account.</p>
+
+          <a href="{% url 'accounts:login' %}" class="btn text-white w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-1" style="background-color: #b45309; border-radius: 8px; font-size: 14.5px;">
+            <span>Go to Login</span>
+            <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

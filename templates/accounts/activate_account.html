@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Your Registration - TaskWave{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page-wrapper" style="min-height: 100vh; background: #faf8f5; display: flex; flex-direction: column;">
+  <!-- Top Utility Bar -->
+  <div class="d-flex justify-content-end align-items-center p-3 px-4">
+    <span class="text-secondary small me-2">Already have an account?</span>
+    <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-outline-secondary px-3 py-1 bg-white" style="border-radius: 8px; font-weight: 500; font-size: 13px;">
+      Go to Login
+    </a>
+  </div>
+
+  <div class="container-fluid px-4 px-md-5 my-auto py-3">
+    <div class="row align-items-center justify-content-center g-4">
+      <!-- Left Hero Column -->
+      <div class="col-lg-5 pe-lg-4">
+        <!-- Logo -->
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+            <path d="M4 14C7 8 11 8 14 14C17 20 21 20 24 14" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 20C11 14 15 14 18 20C21 26 25 26 28 20" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 24px; color: #1e293b; letter-spacing: -0.5px;">TaskWave</span>
+        </div>
+
+        <h1 style="font-size: 38px; font-weight: 800; color: #0f172a; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px;">
+          Join Your Team on <br><span style="color: #b45309;">TaskWave</span>
+        </h1>
+        <p style="color: #64748b; font-size: 15px; line-height: 1.5; margin-bottom: 28px;">
+          Your account is created and provided by your administrator. Complete your registration to get started.
+        </p>
+
+        <!-- Feature List -->
+        <div class="d-flex flex-column gap-3 mb-4">
+          <div class="d-flex align-items-start gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+              <i class="ri-team-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 14.5px;">Work with Your Team</div>
+              <div class="text-muted" style="font-size: 13px;">Collaborate, communicate, and get things done.</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+              <i class="ri-checkbox-circle-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 14.5px;">Access Assigned Tasks</div>
+              <div class="text-muted" style="font-size: 13px;">View and manage your tasks easily.</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #fffbeb; color: #b45309; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+              <i class="ri-notification-3-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 14.5px;">Stay Updated</div>
+              <div class="text-muted" style="font-size: 13px;">Get real-time notifications and updates.</div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-start gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #faf5ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+              <i class="ri-bar-chart-box-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark" style="font-size: 14.5px;">Track Your Progress</div>
+              <div class="text-muted" style="font-size: 13px;">See your work and achievements.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desk Image -->
+        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 180px; width: 100%; max-width: 440px;">
+          <img src="{% static 'img/login_desk_photo.jpg' %}" alt="TaskWave Workspace" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      </div>
+
+      <!-- Right Form Card -->
+      <div class="col-lg-5 col-xl-4 offset-xl-1">
+        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border" style="border-color: #f1f5f9;">
+          <!-- Top Card Logo -->
+          <div class="text-center mb-3">
+            <div class="d-inline-flex align-items-center gap-2 mb-2">
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+                <path d="M4 14C7 8 11 8 14 14C17 20 21 20 24 14" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 20C11 14 15 14 18 20C21 26 25 26 28 20" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 20px; color: #1e293b;">TaskWave</span>
+            </div>
+            <h2 class="fw-bold text-dark mb-1" style="font-size: 20px;">Complete Your Registration</h2>
+            <p class="text-muted small mb-0">Your account has been created by the administrator. Set your password and complete your profile.</p>
+          </div>
+
+          <form method="POST">
+            {% csrf_token %}
+            <!-- Email / User ID -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-dark mb-1">Email / User ID</label>
+              <div class="position-relative">
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border-color: #e2e8f0;"><i class="ri-mail-line"></i></span>
+                  <input type="text" class="form-control border-start-0" value="rahul.kumar@company.com" readonly style="border-radius: 0 8px 8px 0; border-color: #e2e8f0; font-size: 13.5px; background: #fff; padding-right: 120px;">
+                </div>
+                <span class="badge text-success position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%); background: #ecfdf5; font-size: 11px; font-weight: 500;">
+                  Provided by Admin
+                </span>
+              </div>
+            </div>
+
+            <!-- Full Name -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-dark mb-1">Full Name <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border-color: #e2e8f0;"><i class="ri-user-line"></i></span>
+                <input type="text" name="full_name" class="form-control border-start-0" value="Rahul Kumar" required style="border-radius: 0 8px 8px 0; border-color: #e2e8f0; font-size: 13.5px;">
+              </div>
+            </div>
+
+            <!-- New Password -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-dark mb-1">New Password <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border-color: #e2e8f0;"><i class="ri-lock-line"></i></span>
+                <input type="password" id="regNewPassword" name="password" class="form-control border-start-0 border-end-0" placeholder="Enter your new password" required style="border-color: #e2e8f0; font-size: 13.5px;">
+                <span class="input-group-text bg-white border-start-0 text-muted cursor-pointer" onclick="toggleRegPassword('regNewPassword', this)" style="border-radius: 0 8px 8px 0; border-color: #e2e8f0;"><i class="ri-eye-line"></i></span>
+              </div>
+            </div>
+
+            <!-- Password Requirements Card -->
+            <div class="p-3 rounded-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+              <div class="d-flex align-items-center gap-1.5 text-primary fw-semibold small mb-2" style="font-size: 12px;">
+                <i class="ri-information-line"></i>
+                <span>Password Requirements</span>
+              </div>
+              <ul class="list-unstyled mb-0 d-flex flex-column gap-1 text-muted" style="font-size: 12px;">
+                <li>• At least 8 characters long</li>
+                <li>• Include uppercase and lowercase letters</li>
+                <li>• Include at least one number</li>
+                <li>• Include at least one special character (e.g. @, #, $, %)</li>
+              </ul>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-dark mb-1">Confirm Password <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border-color: #e2e8f0;"><i class="ri-lock-line"></i></span>
+                <input type="password" id="regConfirmPassword" name="confirm_password" class="form-control border-start-0 border-end-0" placeholder="Confirm your new password" required style="border-color: #e2e8f0; font-size: 13.5px;">
+                <span class="input-group-text bg-white border-start-0 text-muted cursor-pointer" onclick="toggleRegPassword('regConfirmPassword', this)" style="border-radius: 0 8px 8px 0; border-color: #e2e8f0;"><i class="ri-eye-line"></i></span>
+              </div>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" checked id="agreeTerms" style="border-color: #cbd5e1;">
+              <label class="form-check-label text-secondary small" for="agreeTerms" style="font-size: 12.5px;">
+                I agree to the company's <a href="#" class="text-primary text-decoration-none">Terms of Use</a> and <a href="#" class="text-primary text-decoration-none">Privacy Policy</a>.
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn text-white w-100 py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-1" style="background-color: #b45309; border-radius: 8px; font-size: 14.5px;">
+              <span>Complete Registration</span>
+              <i class="ri-arrow-right-line"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleRegPassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    const icon = el.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.className = 'ri-eye-off-line';
+    } else {
+      input.type = 'password';
+      icon.className = 'ri-eye-line';
+    }
+  }
+</script>
+{% endblock %}

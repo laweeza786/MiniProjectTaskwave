@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Management - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Breadcrumb & Top Header Row -->
+  <div class="d-flex align-items-center gap-2 mb-2 text-muted" style="font-size: 0.8rem;">
+    <a href="{% url 'core:dashboard' %}" class="text-decoration-none text-muted">Dashboard</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span class="text-dark fw-medium">User Management</span>
+  </div>
+
+  <div class="dash-header-row mb-4">
+    <div>
+      <h1 class="dash-title">User Management</h1>
+      <div class="dash-subtitle">Manage team members, roles, departments, and account status.</div>
+    </div>
+  </div>
+
+  <!-- 4 Stat KPI Cards Grid -->
+  <div class="dash-kpi-grid mb-4">
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+          <i class="ri-user-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Members</span>
+          <span class="dash-kpi-value">32</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">from last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+          <i class="ri-team-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Active Members</span>
+          <span class="dash-kpi-value">28</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
+            <span class="trend-vs">from last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-orange">
+          <i class="ri-user-unfollow-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Inactive Members</span>
+          <span class="dash-kpi-value">4</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 20%</span>
+            <span class="trend-vs">from last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
+          <i class="ri-building-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Departments</span>
+          <span class="dash-kpi-value">5</span>
+          <div class="text-muted" style="font-size: 0.72rem;">Development, Design, QA...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (Table Left + Add User Drawer Right) -->
+  <div class="row g-4">
+    <!-- Left Section: Team Members Table -->
+    <div class="col-xl-8 col-lg-7">
+      <div class="bg-white border rounded-3 shadow-sm overflow-hidden" style="border-color: #edf2f7 !important;">
+        <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Team Members</h6>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-white border px-3 py-1 text-secondary" style="border-radius: 6px; font-size: 0.8rem;">
+              <i class="ri-download-2-line me-1"></i> Export
+            </button>
+            <button class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">
+              <i class="ri-add-line"></i> Add New User
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar inside card -->
+        <div class="p-3 border-bottom d-flex flex-wrap align-items-center gap-2" style="background-color: #f8fafc; border-color: #edf2f7 !important;">
+          <div class="flex-grow-1" style="min-width: 200px; position: relative;">
+            <i class="ri-search-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
+            <input type="text" placeholder="Search by name, email, role, department..." class="form-control form-control-sm" style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
+          </div>
+          <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;">
+            <option selected>All Departments</option>
+            <option>Development</option>
+            <option>Design</option>
+            <option>QA</option>
+            <option>HR</option>
+          </select>
+          <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;">
+            <option selected>All Roles</option>
+            <option>Developer</option>
+            <option>Designer</option>
+            <option>QA Engineer</option>
+          </select>
+          <select class="form-select form-select-sm" style="width: auto; font-size: 0.78rem;">
+            <option selected>All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+          <button class="btn btn-sm btn-light border" style="font-size: 0.78rem; border-radius: 6px;">Reset</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" style="font-size: 0.82rem;">
+            <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.72rem; text-transform: uppercase;">
+              <tr>
+                <th style="width: 32px; padding-left: 16px;"><input type="checkbox" class="form-check-input"></th>
+                <th style="width: 28px;">#</th>
+                <th>Name</th>
+                <th>Email / User ID</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th style="width: 28px; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">1</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Rahul Kumar</span>
+                  </div>
+                </td>
+                <td class="text-muted">rahul.kumar@company.com</td>
+                <td class="text-secondary">Development</td>
+                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Developer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Today, 10:24 AM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">2</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Priya Singh</span>
+                  </div>
+                </td>
+                <td class="text-muted">priya.singh@company.com</td>
+                <td class="text-secondary">Design</td>
+                <td><span class="badge" style="background-color: #f3e8ff; color: #9333ea; font-weight: 500;">UI/UX Designer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Today, 09:15 AM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">3</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Aman Sharma</span>
+                  </div>
+                </td>
+                <td class="text-muted">aman.sharma@company.com</td>
+                <td class="text-secondary">Development</td>
+                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Backend Developer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Yesterday, 06:30 PM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">4</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Neha Tiwari</span>
+                  </div>
+                </td>
+                <td class="text-muted">neha.tiwari@company.com</td>
+                <td class="text-secondary">QA</td>
+                <td><span class="badge" style="background-color: #ffedd5; color: #ea580c; font-weight: 500;">QA Engineer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Today, 11:02 AM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">5</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Vikram Singh</span>
+                  </div>
+                </td>
+                <td class="text-muted">vikram.singh@company.com</td>
+                <td class="text-secondary">DevOps</td>
+                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">DevOps Engineer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Yesterday, 09:20 PM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">6</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/anjali_verma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Anjali Verma</span>
+                  </div>
+                </td>
+                <td class="text-muted">anjali.verma@company.com</td>
+                <td class="text-secondary">HR</td>
+                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">HR Manager</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Today, 08:45 AM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 7 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">7</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">SP</div>
+                    <span class="fw-semibold text-dark">Saurabh Patel</span>
+                  </div>
+                </td>
+                <td class="text-muted">saurabh.patel@company.com</td>
+                <td class="text-secondary">Development</td>
+                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Frontend Developer</span></td>
+                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">• Inactive</span></td>
+                <td class="text-muted">15 Oct 2026</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 8 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">8</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">KM</div>
+                    <span class="fw-semibold text-dark">Kiran Mehta</span>
+                  </div>
+                </td>
+                <td class="text-muted">kiran.mehta@company.com</td>
+                <td class="text-secondary">Design</td>
+                <td><span class="badge" style="background-color: #f3e8ff; color: #9333ea; font-weight: 500;">Graphic Designer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Today, 01:12 PM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 9 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">9</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Arjun Das</span>
+                  </div>
+                </td>
+                <td class="text-muted">arjun.das@company.com</td>
+                <td class="text-secondary">Development</td>
+                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Mobile Developer</span></td>
+                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">• Active</span></td>
+                <td class="text-muted">Yesterday, 03:40 PM</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+
+              <!-- Row 10 -->
+              <tr>
+                <td style="padding-left: 16px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">10</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    <span class="fw-semibold text-dark">Pooja Reddy</span>
+                  </div>
+                </td>
+                <td class="text-muted">pooja.reddy@company.com</td>
+                <td class="text-secondary">QA</td>
+                <td><span class="badge" style="background-color: #ffedd5; color: #ea580c; font-weight: 500;">QA Engineer</span></td>
+                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">• Inactive</span></td>
+                <td class="text-muted">12 Oct 2026</td>
+                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div class="d-flex align-items-center justify-content-between p-3 border-top" style="border-color: #edf2f7 !important; font-size: 0.82rem; color: #64748b;">
+          <div class="d-flex align-items-center gap-2">
+            <span>Show</span>
+            <select class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; border-color: #e2e8f0;">
+              <option selected>10</option>
+              <option>25</option>
+              <option>50</option>
+            </select>
+            <span>entries</span>
+          </div>
+          <div>Showing 1 to 10 of 32 entries</div>
+          <div class="d-flex align-items-center gap-1">
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-left-s-line"></i></button>
+            <button class="btn btn-sm px-2 py-1 text-white" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">1</button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">2</button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">3</button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">4</button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-right-s-line"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Drawer: Add New User Form -->
+    <div class="col-xl-4 col-lg-5">
+      <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 1rem;">Add New User</h6>
+          <a href="{% url 'users:member_list' %}" class="btn btn-sm btn-link text-muted p-0"><i class="ri-close-line" style="font-size: 1.2rem;"></i></a>
+        </div>
+        <div class="text-muted mb-4" style="font-size: 0.78rem;">Create a new team member account.</div>
+
+        <form method="POST" action="{% url 'users:member_create' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Full Name *</label>
+            <div style="position: relative;">
+              <i class="ri-user-line" style="position: absolute; left: 12px; top: 9px; color: #94a3b8; font-size: 0.95rem;"></i>
+              <input type="text" name="first_name" class="form-control form-control-sm" placeholder="Enter full name" required style="padding-left: 36px; height: 38px; border-radius: 8px;">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Email / User ID *</label>
+            <div style="position: relative;">
+              <i class="ri-mail-line" style="position: absolute; left: 12px; top: 9px; color: #94a3b8; font-size: 0.95rem;"></i>
+              <input type="email" name="email" class="form-control form-control-sm" placeholder="Enter email or user ID" required style="padding-left: 36px; height: 38px; border-radius: 8px;">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Department *</label>
+            <div style="position: relative;">
+              <i class="ri-building-line" style="position: absolute; left: 12px; top: 9px; color: #94a3b8; font-size: 0.95rem;"></i>
+              <select name="department" class="form-select form-select-sm" style="padding-left: 36px; height: 38px; border-radius: 8px;" required>
+                <option value="" disabled selected>Select department</option>
+                <option value="1">Development</option>
+                <option value="2">Design</option>
+                <option value="3">QA</option>
+                <option value="4">HR</option>
+                <option value="5">DevOps</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Role *</label>
+            <div style="position: relative;">
+              <i class="ri-shield-line" style="position: absolute; left: 12px; top: 9px; color: #94a3b8; font-size: 0.95rem;"></i>
+              <select name="role" class="form-select form-select-sm" style="padding-left: 36px; height: 38px; border-radius: 8px;" required>
+                <option value="" disabled selected>Select role</option>
+                <option value="1">Developer</option>
+                <option value="2">UI/UX Designer</option>
+                <option value="3">Backend Developer</option>
+                <option value="4">QA Engineer</option>
+                <option value="5">DevOps Engineer</option>
+                <option value="6">HR Manager</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Temporary Password *</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white" style="border-top-left-radius: 8px; border-bottom-left-radius: 8px;"><i class="ri-lock-line text-muted"></i></span>
+              <input type="text" name="initial_password" class="form-control" placeholder="Generate a secure password" value="TempPass@2026" style="height: 38px;">
+              <button class="btn btn-outline-secondary" type="button" style="border-top-right-radius: 8px; border-bottom-right-radius: 8px;"><i class="ri-refresh-line"></i></button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Status *</label>
+            <div class="d-flex flex-column gap-2">
+              <label class="d-flex align-items-start gap-2 mb-0" style="cursor: pointer;">
+                <input type="radio" name="account_status" value="active" checked class="form-check-input mt-1">
+                <div>
+                  <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Active</span>
+                  <div class="text-muted" style="font-size: 0.72rem;">User can login and access the system</div>
+                </div>
+              </label>
+              <label class="d-flex align-items-start gap-2 mb-0" style="cursor: pointer;">
+                <input type="radio" name="account_status" value="inactive" class="form-check-input mt-1">
+                <div>
+                  <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Inactive</span>
+                  <div class="text-muted" style="font-size: 0.72rem;">User cannot login to the system</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="d-flex align-items-start gap-2 mb-0" style="cursor: pointer;">
+              <input type="checkbox" checked class="form-check-input mt-1">
+              <div>
+                <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Send credentials to user</span>
+                <div class="text-muted" style="font-size: 0.72rem;">Email user their login details and temporary password</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-end gap-2 pt-2 border-top" style="border-color: #edf2f7 !important;">
+            <a href="{% url 'users:member_list' %}" class="btn btn-sm btn-light border px-3" style="border-radius: 8px; font-size: 0.82rem; height: 36px; display: inline-flex; align-items: center;">Cancel</a>
+            <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.82rem; height: 36px; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="ri-user-add-line"></i> Create User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

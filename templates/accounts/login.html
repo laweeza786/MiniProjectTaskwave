@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign In - TaskWave{% endblock %}
+
+{% block auth_content %}
+<div class="auth-viewport">
+  <div class="auth-split-wrapper">
+    <!-- Left Hero Column -->
+    <div class="auth-hero-section">
+      <!-- Top Brand & Navigation -->
+      <div class="auth-hero-top">
+        <div class="d-flex align-items-center">
+          <img src="{% static 'img/taskwave-logo-transparent.png' %}" alt="TaskWave Logo" style="height: 34px; width: auto; object-fit: contain;">
+        </div>
+        <nav class="auth-hero-nav">
+          <a href="#features">Features</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+
+      <!-- Main Headline & Feature Points -->
+      <div class="auth-hero-body">
+        <h1 class="auth-hero-title">
+          Organize Tasks<br>
+          Empower Teams<br>
+          <span class="highlight-amber">Get More Done</span>
+        </h1>
+
+        <p class="auth-hero-desc">
+          A simple and powerful task management system for modern companies.
+        </p>
+
+        <!-- 4 Key Feature Items -->
+        <div class="auth-features-list">
+          <div class="auth-feature-row">
+            <div class="auth-feature-icon-box">
+              <i class="ri-group-line"></i>
+            </div>
+            <div>
+              <div class="auth-feature-heading">Task Management</div>
+              <div class="auth-feature-subtext">Assign, track and complete tasks easily.</div>
+            </div>
+          </div>
+
+          <div class="auth-feature-row">
+            <div class="auth-feature-icon-box">
+              <i class="ri-bar-chart-2-line"></i>
+            </div>
+            <div>
+              <div class="auth-feature-heading">Team Collaboration</div>
+              <div class="auth-feature-subtext">Work together with your team in one place.</div>
+            </div>
+          </div>
+
+          <div class="auth-feature-row">
+            <div class="auth-feature-icon-box">
+              <i class="ri-calendar-line"></i>
+            </div>
+            <div>
+              <div class="auth-feature-heading">Stay Organized</div>
+              <div class="auth-feature-subtext">Calendar, deadlines and real-time updates.</div>
+            </div>
+          </div>
+
+          <div class="auth-feature-row">
+            <div class="auth-feature-icon-box">
+              <i class="ri-pie-chart-line"></i>
+            </div>
+            <div>
+              <div class="auth-feature-heading">Detailed Analytics</div>
+              <div class="auth-feature-subtext">Understand progress and improve productivity.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Login Form Column -->
+    <div class="auth-form-section">
+      <div class="auth-form-card">
+        <h2 class="auth-form-title">Welcome Back</h2>
+        <p class="auth-form-subtitle">Sign in to your TaskWave account</p>
+
+        {% if messages %}
+        <div class="mb-3">
+          {% for msg in messages %}
+          <div class="alert alert-{% if msg.tags == 'error' %}danger{% else %}{{ msg.tags }}{% endif %} small py-2 px-3 rounded-2" role="alert">
+            {{ msg }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'accounts:login' %}">
+          {% csrf_token %}
+
+          <!-- Email Input -->
+          <label class="auth-input-label" for="email">Email</label>
+          <div class="auth-input-container">
+            <i class="ri-mail-line input-left-icon"></i>
+            <input type="email" name="email" id="email" class="auth-input-field" placeholder="Enter your email address" value="{{ form.email.value|default:'' }}" required>
+          </div>
+
+          <!-- Password Input -->
+          <label class="auth-input-label" for="password">Password</label>
+          <div class="auth-input-container">
+            <i class="ri-lock-line input-left-icon"></i>
+            <input type="password" name="password" id="password" class="auth-input-field" placeholder="Enter your password" required>
+            <i class="ri-eye-line password-toggle-icon" id="togglePassword"></i>
+          </div>
+
+          <!-- Remember me & Forgot password -->
+          <div class="auth-options-row">
+            <label class="auth-remember-check">
+              <input type="checkbox" name="remember_me" checked>
+              <span>Remember me</span>
+            </label>
+            <a href="{% url 'accounts:forgot_password' %}" class="auth-forgot-link">Forgot password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="auth-submit-button">
+            Sign In &nbsp;&rarr;
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="auth-divider-line">
+          <span>OR</span>
+        </div>
+
+        <!-- Social Login Buttons -->
+        <div class="auth-social-row">
+          <button type="button" class="auth-social-button">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            Continue with Google
+          </button>
+          <button type="button" class="auth-social-button">
+            <svg width="18" height="18" viewBox="0 0 21 21">
+              <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+              <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+              <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+            </svg>
+            Continue with Microsoft
+          </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="auth-card-footer">
+          Don't have an account? <a href="mailto:admin@taskwave.com">Contact your administrator</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('togglePassword');
+  const pwdInput = document.getElementById('password');
+  if (toggleBtn && pwdInput) {
+    toggleBtn.addEventListener('click', function() {
+      const isPwd = pwdInput.type === 'password';
+      pwdInput.type = isPwd ? 'text' : 'password';
+      toggleBtn.className = isPwd ? 'ri-eye-off-line password-toggle-icon' : 'ri-eye-line password-toggle-icon';
+    });
+  }
+});
+</script>
+{% endblock %}

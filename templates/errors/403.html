@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Access Denied - TaskWave{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+  <div class="col-md-6 text-center">
+    <div class="display-1 fw-bold text-danger mb-3">403</div>
+    <h3 class="fw-bold mb-2">Access Denied</h3>
+    <p class="text-muted mb-4">You do not possess the required RBAC role permissions to access this administrative endpoint.</p>
+    <a href="{% url 'core:dashboard' %}" class="btn-primary-tw">
+      <i class="bi bi-shield-lock me-1"></i>Return to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

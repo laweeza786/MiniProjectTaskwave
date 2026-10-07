@@ -1,0 +1,837 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}API documentation and testing - TaskWave{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <!-- Top Navigation Link -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <a href="{% url 'tasks:task_list' %}" class="text-decoration-none text-secondary small fw-medium">
+      <i class="ri-arrow-left-line me-1"></i>Back to Tasks
+    </a>
+  </div>
+
+  <!-- Header Section -->
+  <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+    <div class="d-flex align-items-start gap-3">
+      <div style="width: 44px; height: 44px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; flex-shrink: 0;">
+        &lt;/&gt;
+      </div>
+      <div>
+        <div class="text-muted small fw-semibold mb-1">#TW-1024</div>
+        <h1 class="page-title mb-1" style="font-size: 22px;">API documentation and testing</h1>
+        <div class="page-subtitle mb-2" style="max-width: 720px; font-size: 13px; color: #64748b;">
+          Create complete API documentation for the backend services and perform testing for all endpoints. Ensure proper request/response examples and error handling documentation.
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <span class="badge px-2.5 py-1 text-purple fw-medium" style="background: #faf5ff; color: #7c3aed; border: 1px solid #e9d5ff; border-radius: 6px; font-size: 11.5px;">
+            <i class="ri-star-line me-1"></i>High Priority
+          </span>
+          <span class="badge px-2.5 py-1 text-primary fw-medium" style="background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; border-radius: 6px; font-size: 11.5px;">
+            <i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 6px;"></i>In Progress
+          </span>
+          <span class="badge px-2.5 py-1 text-secondary fw-medium" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11.5px;">
+            <i class="ri-folder-line me-1"></i>TaskWave (Main System)
+          </span>
+          <span class="badge px-2.5 py-1 text-secondary fw-medium" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11.5px;">
+            <i class="ri-building-line me-1"></i>Development
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Header Elements -->
+    <div class="d-flex align-items-center gap-3">
+      <!-- Due Date Card -->
+      <div class="d-flex align-items-center gap-2.5 p-2 px-3 border rounded-3 bg-white" style="border-color: #fee2e2 !important; background: #fffdfd;">
+        <div style="width: 34px; height: 34px; border-radius: 8px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+          <i class="ri-calendar-event-line"></i>
+        </div>
+        <div>
+          <div class="text-muted" style="font-size: 10px; text-transform: uppercase; font-weight: 600;">Due Date</div>
+          <div class="fw-bold text-dark" style="font-size: 13px;">14 Oct 2026</div>
+          <div class="text-danger fw-semibold" style="font-size: 10.5px;">2 days remaining</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <a href="{% url 'tasks:task_edit' 1 %}" class="btn bg-white border text-dark fw-medium px-3 py-2" style="border-radius: 8px; font-size: 13px;">
+        <i class="ri-pencil-line me-1"></i>Edit Task
+      </a>
+      <button class="btn text-white fw-medium px-3 py-2" style="background-color: #10b981; border-radius: 8px; font-size: 13px;">
+        <i class="ri-check-line me-1"></i>Mark Complete
+      </button>
+      <button class="btn bg-white border text-secondary px-2.5 py-2" style="border-radius: 8px;">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <ul class="nav nav-tabs border-bottom mb-4" id="taskDetailTabs" role="tablist" style="border-color: #edf2f7 !important;">
+    <li class="nav-item">
+      <button class="nav-link active fw-semibold px-4 py-2.5 text-dark" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" style="border-top: none; border-left: none; border-right: none; border-bottom: 2px solid #b45309; font-size: 13.5px;">
+        <i class="ri-layout-grid-line me-1 text-warning"></i>Overview
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2.5 text-secondary" id="submissions-tab" data-bs-toggle="tab" data-bs-target="#submissions" type="button" style="border: none; font-size: 13.5px;">
+        <i class="ri-file-upload-line me-1"></i>Submissions
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2.5 text-secondary" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" style="border: none; font-size: 13.5px;">
+        <i class="ri-chat-3-line me-1"></i>Comments
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2.5 text-secondary" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" style="border: none; font-size: 13.5px;">
+        <i class="ri-folder-line me-1"></i>Files
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2.5 text-secondary" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" style="border: none; font-size: 13.5px;">
+        <i class="ri-history-line me-1"></i>Activity
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2.5 text-secondary" id="timelog-tab" data-bs-toggle="tab" data-bs-target="#timelog" type="button" style="border: none; font-size: 13.5px;">
+        <i class="ri-time-line me-1"></i>Time Log
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="taskDetailTabContent">
+    <!-- 1. OVERVIEW TAB (Matches API_documentation_and_testing.jpeg) -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+      <div class="row g-4">
+        <!-- Left Main Column (65%) -->
+        <div class="col-lg-8">
+          <!-- Task Description Card -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-edit-line" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Task Description</h5>
+            </div>
+            <div class="text-secondary small" style="line-height: 1.7; font-size: 13.5px;">
+              Write detailed API documentation for all backend endpoints including:
+              <ul class="mt-2 mb-0 ps-3">
+                <li>Endpoint URL and method</li>
+                <li>Request parameters</li>
+                <li>Response examples</li>
+                <li>Error handling</li>
+                <li>Authentication details</li>
+                <li>Test all endpoints using Postman and document the test results.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Attachments Card -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center gap-2">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                  <i class="ri-attachment-2" style="font-size: 15px;"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-0 fs-6">Attachments</h5>
+              </div>
+              <button class="btn btn-sm bg-white border text-dark fw-medium px-2.5 py-1" style="border-radius: 6px; font-size: 12px;">
+                <i class="ri-upload-2-line me-1"></i>Upload File
+              </button>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="p-2.5 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/files/file_docx.svg' %}" width="32" height="32" alt="DOCX">
+                    <div>
+                      <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">api_structure.docx</div>
+                      <div class="text-muted" style="font-size: 11px;">245 KB • 12 Oct 2026</div>
+                    </div>
+                  </div>
+                  <i class="ri-download-line text-muted cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-2.5 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; background: #ea580c; font-size: 11px;">&lt;/&gt;</div>
+                    <div>
+                      <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">sample_response.json</div>
+                      <div class="text-muted" style="font-size: 11px;">12 KB • 12 Oct 2026</div>
+                    </div>
+                  </div>
+                  <i class="ri-download-line text-muted cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="p-2.5 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/files/file_pdf.svg' %}" width="32" height="32" alt="PDF">
+                    <div>
+                      <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">api_reference.pdf</div>
+                      <div class="text-muted" style="font-size: 11px;">1.2 MB • 11 Oct 2026</div>
+                    </div>
+                  </div>
+                  <i class="ri-download-line text-muted cursor-pointer"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subtasks Card -->
+          <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                  <i class="ri-list-check" style="font-size: 15px;"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-0 fs-6">Subtasks (3/5 completed)</h5>
+              </div>
+              <button class="btn btn-sm bg-white border text-dark fw-medium px-2.5 py-1" style="border-radius: 6px; font-size: 12px;">
+                <i class="ri-add-line me-1"></i>Add Subtask
+              </button>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 999px;">
+                <div class="progress-bar bg-success" style="width: 60%; border-radius: 999px; background-color: #10b981 !important;"></div>
+              </div>
+              <span class="small fw-bold text-secondary">60%</span>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Create API endpoint list</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>12 Oct 2026</span>
+                  <i class="ri-more-2-fill cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Write request/response examples</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>13 Oct 2026</span>
+                  <i class="ri-more-2-fill cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Test all endpoints</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>13 Oct 2026</span>
+                  <i class="ri-more-2-fill cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Add error handling documentation</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>14 Oct 2026</span>
+                  <i class="ri-more-2-fill cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Review and finalize documentation</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>14 Oct 2026</span>
+                  <i class="ri-more-2-fill cursor-pointer"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column (35%) -->
+        <div class="col-lg-4">
+          <!-- 1. Task Information Card -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-file-list-3-line" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Task Information</h5>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <!-- Assignee -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-user-line text-muted"></i>
+                  <span class="small text-muted">Assignee</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                  <span class="small fw-semibold text-dark">Rahul Kumar</span>
+                  <a href="#" class="small text-decoration-none text-primary ms-1">Change</a>
+                </div>
+              </div>
+
+              <!-- Created By -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-user-follow-line text-muted"></i>
+                  <span class="small text-muted">Created By</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+                  <div class="text-end">
+                    <div class="small fw-semibold text-dark">Aman Sharma</div>
+                    <div class="text-muted" style="font-size: 10px;">12 Oct 2026, 10:30 AM</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-folder-line text-muted"></i>
+                  <span class="small text-muted">Project</span>
+                </div>
+                <span class="small fw-semibold text-dark">TaskWave (Main System)</span>
+              </div>
+
+              <!-- Department -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-building-line text-muted"></i>
+                  <span class="small text-muted">Department</span>
+                </div>
+                <span class="small fw-semibold text-dark">Development</span>
+              </div>
+
+              <!-- Start Date -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-calendar-line text-muted"></i>
+                  <span class="small text-muted">Start Date</span>
+                </div>
+                <span class="small fw-semibold text-dark">12 Oct 2026</span>
+              </div>
+
+              <!-- Due Date -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-calendar-event-line text-muted"></i>
+                  <span class="small text-muted">Due Date</span>
+                </div>
+                <span class="small fw-semibold text-dark">14 Oct 2026</span>
+              </div>
+
+              <!-- Estimated Hours -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-time-line text-muted"></i>
+                  <span class="small text-muted">Estimated Hours</span>
+                </div>
+                <span class="small fw-semibold text-dark">8 hours</span>
+              </div>
+
+              <!-- Priority -->
+              <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-flag-line text-muted"></i>
+                  <span class="small text-muted">Priority</span>
+                </div>
+                <span class="small fw-semibold text-danger">⚑ High</span>
+              </div>
+
+              <!-- Status -->
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-checkbox-circle-line text-muted"></i>
+                  <span class="small text-muted">Status</span>
+                </div>
+                <span class="small fw-semibold text-primary"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px;"></i>In Progress</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Progress Donut Card -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-pie-chart-line" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Progress</h5>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <!-- Donut Chart with center text -->
+              <div style="position: relative; width: 120px; height: 120px;">
+                <canvas id="taskDetailProgressChart"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                  <div class="fw-bold text-dark" style="font-size: 18px; line-height: 1;">60%</div>
+                  <div class="text-muted" style="font-size: 9.5px;">Completed</div>
+                </div>
+              </div>
+
+              <!-- Legend -->
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center justify-content-between gap-4">
+                  <span class="small text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Completed</span>
+                  <span class="small fw-bold text-dark">3</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-4">
+                  <span class="small text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #3b82f6;"></i>In Progress</span>
+                  <span class="small fw-bold text-dark">1</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-4">
+                  <span class="small text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #94a3b8;"></i>Not Started</span>
+                  <span class="small fw-bold text-dark">1</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between gap-4">
+                  <span class="small text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #ef4444;"></i>Overdue</span>
+                  <span class="small fw-bold text-dark">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Related Tasks Card -->
+          <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center gap-2">
+                <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                  <i class="ri-links-line" style="font-size: 15px;"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-0 fs-6">Related Tasks</h5>
+              </div>
+              <a href="{% url 'tasks:task_list' %}" class="small text-decoration-none text-muted">View All</a>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-checkbox-circle-fill text-success" style="font-size: 16px;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark small">Database optimization</div>
+                    <div class="text-muted" style="font-size: 11px;">#TW-1025</div>
+                  </div>
+                </div>
+                <span class="badge px-2 py-1 text-success fw-medium" style="background: #ecfdf5; border-radius: 6px; font-size: 11px;">Completed</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-circle-line text-primary" style="font-size: 16px;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark small">UI design revisions</div>
+                    <div class="text-muted" style="font-size: 11px;">#TW-1026</div>
+                  </div>
+                </div>
+                <span class="badge px-2 py-1 text-primary fw-medium" style="background: #eff6ff; border-radius: 6px; font-size: 11px;">In Progress</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-circle-line text-warning" style="font-size: 16px;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark small">Testing & bug fixes</div>
+                    <div class="text-muted" style="font-size: 11px;">#TW-1027</div>
+                  </div>
+                </div>
+                <span class="badge px-2 py-1 text-warning fw-medium" style="background: #fffbeb; color: #b45309 !important; border-radius: 6px; font-size: 11px;">Pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SUBMISSIONS TAB (Matches task_submission_and_review.jpeg) -->
+    <div class="tab-pane fade" id="submissions" role="tabpanel">
+      <div class="row g-4">
+        <!-- Left Column: Submit Task -->
+        <div class="col-lg-8">
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-upload-2-line" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Submit Task</h5>
+            </div>
+            <div class="text-muted small mb-3">Upload your work, add comments, and submit for review.</div>
+
+            <!-- Submission Comments -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-dark mb-1">Submission Comments <span class="text-danger">*</span></label>
+              <!-- Rich Toolbar -->
+              <div class="d-flex align-items-center gap-2 p-2 border border-bottom-0 bg-light" style="border-top-left-radius: 8px; border-top-right-radius: 8px; border-color: #e2e8f0 !important;">
+                <select class="form-select form-select-sm border-0 bg-transparent text-secondary fw-medium" style="width: auto; font-size: 12px;">
+                  <option>Normal</option>
+                  <option>Heading</option>
+                </select>
+                <div class="vr" style="height: 16px;"></div>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 fw-bold">B</button>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 fst-italic">I</button>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 text-decoration-underline">U</button>
+                <div class="vr" style="height: 16px;"></div>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-list-unordered"></i></button>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-list-ordered"></i></button>
+                <div class="vr" style="height: 16px;"></div>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-link"></i></button>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-image-line"></i></button>
+                <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-code-line"></i></button>
+              </div>
+              <textarea class="form-control border-top-0" rows="4" style="border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-color: #e2e8f0; font-size: 13.5px; line-height: 1.6;">I have completed the API documentation as per the requirements. All endpoints are documented with request/response examples, authentication details, and error handling. I have also tested all endpoints using Postman.</textarea>
+            </div>
+
+            <!-- Upload Files -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-dark mb-1">Upload Files <span class="text-danger">*</span></label>
+              <div class="border border-dashed rounded-3 p-3 text-center mb-3" style="border-color: #cbd5e1 !important; background-color: #fafbfc;">
+                <i class="ri-upload-cloud-line text-secondary" style="font-size: 24px;"></i>
+                <div class="fw-medium text-dark small mt-1">Drag & drop files here or click to upload</div>
+                <div class="text-muted" style="font-size: 11px;">Supported formats: PDF, DOC, DOCX, PNG, JPG, ZIP (Max 10MB each)</div>
+              </div>
+
+              <!-- Attached file rows -->
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/files/file_pdf.svg' %}" width="28" height="28" alt="PDF">
+                    <span class="small text-dark fw-medium">api_documentation.pdf</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-3 text-muted small">
+                    <span>1.2 MB • 13 Oct 2026</span>
+                    <i class="ri-close-line cursor-pointer"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded d-flex align-items-center justify-content-center text-white fw-bold" style="width: 28px; height: 28px; background: #ea580c; font-size: 10px;">&lt;/&gt;</div>
+                    <span class="small text-dark fw-medium">postman_collection.json</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-3 text-muted small">
+                    <span>245 KB • 13 Oct 2026</span>
+                    <i class="ri-close-line cursor-pointer"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/files/file_png.svg' %}" width="28" height="28" alt="PNG">
+                    <span class="small text-dark fw-medium">test_results.png</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-3 text-muted small">
+                    <span>522 KB • 13 Oct 2026</span>
+                    <i class="ri-close-line cursor-pointer"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mark Subtasks as Completed -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold text-dark mb-2">Mark Subtasks as Completed</label>
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                    <span class="small text-dark fw-medium">Create API endpoint list</span>
+                  </div>
+                  <span class="small text-muted">12 Oct 2026</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                    <span class="small text-dark fw-medium">Write request/response examples</span>
+                  </div>
+                  <span class="small text-muted">13 Oct 2026</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                    <span class="small text-dark fw-medium">Test all endpoints</span>
+                  </div>
+                  <span class="small text-muted">13 Oct 2026</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                    <span class="small text-dark fw-medium">Add error handling documentation</span>
+                  </div>
+                  <span class="small text-muted">14 Oct 2026</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                  <div class="d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                    <span class="small text-dark fw-medium">Review and finalize documentation</span>
+                  </div>
+                  <span class="small text-muted">14 Oct 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn bg-white border text-dark fw-medium px-3 py-2" style="border-radius: 8px; font-size: 13px;">
+                <i class="ri-save-line me-1"></i>Save as Draft
+              </button>
+              <button type="button" class="btn text-white fw-medium px-4 py-2" style="background-color: #2563eb; border-radius: 8px; font-size: 13px;">
+                <i class="ri-send-plane-fill me-1"></i>Submit for Review
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Submission Status, Review Actions & History -->
+        <div class="col-lg-4">
+          <!-- Submission Status Card -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-3">
+              <div style="width: 44px; height: 44px; border-radius: 10px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                <i class="ri-time-line"></i>
+              </div>
+              <div>
+                <div class="text-muted" style="font-size: 11px;">Submission Status</div>
+                <h5 class="fw-bold text-warning mb-0" style="color: #ea580c !important;">Pending Review</h5>
+                <div class="text-muted" style="font-size: 11px;">Submitted on 13 Oct 2026, 04:30 PM</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Actions (Admin) -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-shield-check-line" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Review Actions (Admin)</h5>
+            </div>
+            <div class="text-muted small mb-3">Review the submitted work and provide feedback.</div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-success flex-grow-1 py-2 fw-medium text-white" style="border-radius: 8px; font-size: 12.5px; background-color: #10b981; border-color: #10b981;">
+                <i class="ri-check-line me-1"></i>Approve
+                <div style="font-size: 9.5px; opacity: 0.9;">Mark as Completed</div>
+              </button>
+              <button class="btn flex-grow-1 py-2 fw-medium" style="border-radius: 8px; font-size: 12.5px; background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
+                <i class="ri-refresh-line me-1"></i>Request Changes
+                <div style="font-size: 9.5px; opacity: 0.9;">Send back for revision</div>
+              </button>
+              <button class="btn flex-grow-1 py-2 fw-medium" style="border-radius: 8px; font-size: 12.5px; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca;">
+                <i class="ri-close-line me-1"></i>Reject
+                <div style="font-size: 9.5px; opacity: 0.9;">Mark as Rejected</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Reviewer Comments -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="fw-bold text-dark mb-0 fs-6">Reviewer Comments</h5>
+              <span class="text-muted" style="font-size: 11px;">13 Oct 2026, 05:15 PM</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+              <div>
+                <div class="fw-semibold text-dark small">Aman Sharma</div>
+                <div class="text-muted" style="font-size: 10.5px;">Project Manager</div>
+              </div>
+            </div>
+            <div class="p-2.5 bg-light rounded-3 text-secondary small" style="font-size: 12.5px; line-height: 1.5; border: 1px solid #f1f5f9;">
+              Good work! The documentation is clear and well structured. Please add authentication error examples for 401 and 403 responses. Also include one more test case for invalid input.
+            </div>
+          </div>
+
+          <!-- Your Response -->
+          <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="fw-bold text-dark mb-0 fs-6">Your Response</h5>
+              <span class="text-muted" style="font-size: 11px;">13 Oct 2026, 06:20 PM</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+              <div>
+                <div class="fw-semibold text-dark small">Rahul Kumar</div>
+                <div class="text-muted" style="font-size: 10.5px;">Software Developer</div>
+              </div>
+            </div>
+            <div class="p-2.5 bg-light rounded-3 text-secondary small" style="font-size: 12.5px; line-height: 1.5; border: 1px solid #f1f5f9;">
+              I have added the authentication error examples and included an additional test case for invalid input. Please review again.
+            </div>
+          </div>
+
+          <!-- Submission History -->
+          <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="fw-bold text-dark mb-0 fs-6">Submission History</h5>
+              <a href="#" class="small text-decoration-none text-muted">View All</a>
+            </div>
+
+            <div class="position-relative ps-3" style="border-left: 2px solid #e2e8f0; margin-left: 6px;">
+              <!-- History item 1 -->
+              <div class="mb-3 position-relative">
+                <div style="position: absolute; left: -21px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: #2563eb; border: 2px solid #fff;"></div>
+                <div class="fw-semibold text-dark small">Submission v2</div>
+                <div class="text-muted" style="font-size: 11px;">Resubmitted after changes</div>
+                <div class="text-muted" style="font-size: 10.5px;">13 Oct 2026, 06:20 PM</div>
+              </div>
+              <!-- History item 2 -->
+              <div class="mb-3 position-relative">
+                <div style="position: absolute; left: -21px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: #94a3b8; border: 2px solid #fff;"></div>
+                <div class="fw-semibold text-dark small">Submission v1</div>
+                <div class="text-muted" style="font-size: 11px;">Initial submission</div>
+                <div class="text-muted" style="font-size: 10.5px;">13 Oct 2026, 04:30 PM</div>
+              </div>
+              <!-- History item 3 -->
+              <div class="position-relative">
+                <div style="position: absolute; left: -21px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: #94a3b8; border: 2px solid #fff;"></div>
+                <div class="fw-semibold text-dark small">Task Assigned</div>
+                <div class="text-muted" style="font-size: 11px;">Assigned to Rahul Kumar</div>
+                <div class="text-muted" style="font-size: 10.5px;">12 Oct 2026, 10:30 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. COMMENTS TAB -->
+    <div class="tab-pane fade" id="comments" role="tabpanel">
+      <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+        <h5 class="fw-bold mb-3 fs-6">Discussion & Activity</h5>
+        <div class="d-flex flex-column gap-3 mb-4">
+          <div class="d-flex gap-3">
+            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover;">
+            <div class="flex-grow-1 p-3 bg-light rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Aman Sharma</span>
+                <span class="small text-muted">2 hours ago</span>
+              </div>
+              <div class="small text-secondary">Please check the auth token format against the specs in section 3.</div>
+            </div>
+          </div>
+        </div>
+        <form method="POST" action="{% url 'tasks:add_comment' 1 %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <textarea name="content" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn text-white" style="background-color: #b45309; border-radius: 8px;">Post Comment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 4. FILES TAB -->
+    <div class="tab-pane fade" id="files" role="tabpanel">
+      <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 fs-6">Task Files</h5>
+          <a href="{% url 'files:list' %}" class="btn btn-sm btn-outline-secondary">Go to File Manager</a>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/files/file_docx.svg' %}" width="32" height="32" alt="DOCX">
+                <div>
+                  <div class="fw-semibold text-dark small">api_structure.docx</div>
+                  <div class="text-muted" style="font-size: 11px;">245 KB • 12 Oct 2026</div>
+                </div>
+              </div>
+              <i class="ri-download-line text-muted cursor-pointer"></i>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; background: #ea580c; font-size: 11px;">&lt;/&gt;</div>
+                <div>
+                  <div class="fw-semibold text-dark small">sample_response.json</div>
+                  <div class="text-muted" style="font-size: 11px;">12 KB • 12 Oct 2026</div>
+                </div>
+              </div>
+              <i class="ri-download-line text-muted cursor-pointer"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. ACTIVITY TAB -->
+    <div class="tab-pane fade" id="activity" role="tabpanel">
+      <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+        <h5 class="fw-bold mb-3 fs-6">Task Activity Log</h5>
+        <div class="d-flex flex-column gap-2">
+          <div class="small p-2.5 border-start border-3 border-primary bg-light rounded-end">
+            <div class="fw-semibold text-dark">Submission v2 uploaded</div>
+            <div class="text-muted" style="font-size: 11px;">by Rahul Kumar • 13 Oct, 18:20</div>
+          </div>
+          <div class="small p-2.5 border-start border-3 border-warning bg-light rounded-end">
+            <div class="fw-semibold text-dark">Feedback added by Project Manager</div>
+            <div class="text-muted" style="font-size: 11px;">by Aman Sharma • 13 Oct, 17:15</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. TIME LOG TAB -->
+    <div class="tab-pane fade" id="timelog" role="tabpanel">
+      <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+        <h5 class="fw-bold mb-3 fs-6">Time Logged</h5>
+        <div class="d-flex align-items-center gap-3">
+          <div class="display-6 fw-bold text-dark">6.5 <span class="fs-6 text-muted">/ 8 hrs</span></div>
+          <button class="btn btn-sm btn-outline-primary">+ Log Hours</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('taskDetailProgressChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'In Progress', 'Not Started', 'Overdue'],
+          datasets: [{
+            data: [3, 1, 1, 0],
+            backgroundColor: ['#10b981', '#3b82f6', '#94a3b8', '#ef4444'],
+            borderWidth: 0,
+            hoverOffset: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '76%',
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          }
+        }
+      });
+    }
+
+    // Check if URL has #submissions or ?tab=submissions
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'submissions' || window.location.hash === '#submissions') {
+      const subTab = document.getElementById('submissions-tab');
+      if (subTab) {
+        bootstrap.Tab.getOrCreateInstance(subTab).show();
+      }
+    }
+  });
+</script>
+{% endblock %}

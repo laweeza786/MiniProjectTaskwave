@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Projects</h1>
+      <p class="dash-subtitle">Manage all projects, view progress, and track team performance.</p>
+    </div>
+    <div>
+      <a href="{% url 'projects:project_create' %}" class="btn-new-entity">
+        <i class="ri-add-line"></i> New Project
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stat Cards Row (4 cards) -->
+  <div class="dash-kpi-grid">
+    <!-- Total Projects -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-folder-2-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Projects</span>
+          <span class="dash-kpi-value">{{ total_projects }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Active Projects -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-play-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Active Projects</span>
+          <span class="dash-kpi-value">{{ active_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 33%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Completed Projects -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-check-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed Projects</span>
+          <span class="dash-kpi-value">{{ completed_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 50%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- On Hold -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">On Hold</span>
+          <span class="dash-kpi-value">{{ on_hold_count }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 50%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="dash-filter-bar">
+    <div class="filter-search-box">
+      <i class="ri-search-line"></i>
+      <input type="text" placeholder="Search projects..." value="{{ query }}">
+    </div>
+    <div class="dash-select-pill">
+      <span>All Status</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <span>All Departments</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <i class="ri-calendar-line me-1 text-muted"></i>
+      <span>Start Date</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <i class="ri-calendar-line me-1 text-muted"></i>
+      <span>End Date</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <button class="dash-clear-btn" type="button">Clear</button>
+  </div>
+
+  <!-- 8 Project Cards Grid -->
+  <div class="projects-grid-8 mb-4">
+    {% for p in sample_projects %}
+    <div class="project-box-card">
+      <!-- Card Header -->
+      <div class="project-box-top">
+        <div class="project-box-identity">
+          <div class="project-box-icon" style="background-color: {{ p.icon_bg }}; color: {{ p.icon_color }};">
+            <i class="{{ p.icon }}"></i>
+          </div>
+          <div>
+            <div class="project-box-title">
+              {{ p.name }}
+              {% if p.is_starred %}<i class="ri-star-fill text-warning ms-1" style="font-size: 0.85rem;"></i>{% endif %}
+            </div>
+            <div class="project-box-sub">{{ p.subtitle }}</div>
+          </div>
+        </div>
+        <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+      </div>
+
+      <!-- Percentage & Progress Bar -->
+      <div class="project-box-progress-section">
+        <div class="project-box-percent-text">{{ p.progress }}%</div>
+        <div class="project-box-progress-bar">
+          <div class="project-box-progress-fill" style="width: {{ p.progress }}%; background-color: {{ p.bar_color }};"></div>
+        </div>
+      </div>
+
+      <!-- Status & Team Avatars -->
+      <div class="project-box-meta-row">
+        <span class="priority-pill {{ p.status_class }}">{{ p.status }}</span>
+        <div class="project-box-team" style="display: flex; align-items: center;">
+          {% for av in p.avatars %}
+          <img src="{% static av %}" class="rounded-circle border border-white" width="22" height="22" style="object-fit: cover; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+          {% endfor %}
+          <span class="team-avatar-extra" style="margin-left: -6px; width: 22px; height: 22px; font-size: 0.65rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #f1f5f9; color: #64748b; border: 1px solid #ffffff;">+{{ p.extra_count }}</span>
+        </div>
+      </div>
+
+      <!-- Date Range Footer -->
+      <div class="project-box-footer">
+        <i class="ri-calendar-line me-1"></i>
+        <span>{{ p.date_range }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- All Projects Table -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <h2 class="dash-card-title">All Projects</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="dash-custom-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Project Name</th>
+            <th>Department</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Members</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in sample_projects|slice:":6" %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td class="fw-semibold text-dark">{{ p.name }}</td>
+            <td class="text-muted">{{ p.department }}</td>
+            <td class="text-muted">{{ p.start_date }}</td>
+            <td class="text-muted">{{ p.end_date }}</td>
+            <td>
+              <span class="priority-pill {{ p.status_class }}">{{ p.status }}</span>
+            </td>
+            <td style="width: 140px;">
+              <div class="d-flex align-items-center gap-2">
+                <div class="project-box-progress-bar flex-grow-1" style="margin: 0;">
+                  <div class="project-box-progress-fill" style="width: {{ p.progress }}%; background-color: {{ p.bar_color }};"></div>
+                </div>
+                <span class="small text-muted fw-semibold" style="width: 35px;">{{ p.progress }}%</span>
+              </div>
+            </td>
+            <td>
+              <div class="project-box-team" style="display: flex; align-items: center;">
+                {% for av in p.avatars %}
+                <img src="{% static av %}" class="rounded-circle border border-white" width="22" height="22" style="object-fit: cover; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+                {% endfor %}
+                <span class="team-avatar-extra" style="margin-left: -6px; width: 22px; height: 22px; font-size: 0.65rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #f1f5f9; color: #64748b; border: 1px solid #ffffff;">+{{ p.extra_count }}</span>
+              </div>
+            </td>
+            <td>
+              <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

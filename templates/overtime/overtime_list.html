@@ -1,0 +1,699 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Overtime - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Header Row -->
+  <div class="dash-header-row mb-4">
+    <div>
+      <h1 class="dash-title">Overtime</h1>
+      <div class="dash-subtitle">Manage extra work requests and track overtime tasks.</div>
+    </div>
+    <div>
+      <button class="btn-primary-tw" data-bs-toggle="modal" data-bs-target="#requestOvertimeModal" style="background-color: #ea580c; border: none; padding: 10px 20px; border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+        <i class="ri-add-line" style="font-size: 1.1rem;"></i> Request Overtime
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 Stat Cards Grid -->
+  <div class="dash-kpi-grid mb-4">
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Requests</span>
+          <span class="dash-kpi-value">18</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+          <i class="ri-checkbox-circle-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Approved Requests</span>
+          <span class="dash-kpi-value">12</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Pending Requests</span>
+          <span class="dash-kpi-value">4</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 33%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-close-circle-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Rejected Requests</span>
+          <span class="dash-kpi-value">2</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 50%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 320px; position: relative;">
+      <i class="ri-search-line" style="position: absolute; left: 14px; color: #94a3b8; font-size: 0.95rem;"></i>
+      <input type="text" placeholder="Search overtime requests..." class="form-control" style="border-radius: 8px; border: 1px solid #e2e8f0; padding-left: 38px; font-size: 0.85rem; height: 38px; background-color: #fff;">
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
+        <option>All Status</option>
+        <option>Approved</option>
+        <option>Pending</option>
+        <option>Rejected</option>
+      </select>
+      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
+        <option>All Departments</option>
+        <option>Development</option>
+        <option>Design</option>
+        <option>QA</option>
+        <option>Infrastructure</option>
+        <option>Marketing</option>
+        <option>Support</option>
+        <option>HR</option>
+      </select>
+      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
+        <option>All Projects</option>
+        <option>TaskWave</option>
+        <option>Mobile App</option>
+        <option>College Portal</option>
+        <option>Internal Tools</option>
+        <option>Website Redesign</option>
+      </select>
+      <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white border rounded-3" style="border-color: #e2e8f0 !important; font-size: 0.82rem; color: #475569; height: 38px;">
+        <i class="ri-calendar-line text-muted"></i>
+        <span>1 Oct 2026 - 31 Oct 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (Table Left + Sidebar Right) -->
+  <div class="row g-4">
+    <!-- Left Table Section -->
+    <div class="col-xl-9 col-lg-8">
+      <div class="bg-white border rounded-3 shadow-sm overflow-hidden" style="border-color: #edf2f7 !important;">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" style="font-size: 0.84rem;">
+            <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.5px;">
+              <tr>
+                <th style="width: 38px; padding-left: 18px;"><input type="checkbox" class="form-check-input" style="cursor: pointer;"></th>
+                <th style="width: 36px;">#</th>
+                <th>Member</th>
+                <th>Project</th>
+                <th>Task / Work Description</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Hours</th>
+                <th>Status</th>
+                <th style="width: 40px; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">1</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Rahul Kumar</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Development</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">TaskWave</td>
+                <td class="text-secondary">API documentation and testing</td>
+                <td class="text-muted" style="white-space: nowrap;">14 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">14 Oct 2026<br><span style="font-size: 0.72rem;">09:00 PM</span></td>
+                <td class="fw-semibold text-dark">3h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">2</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Priya Singh</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Design</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">Mobile App</td>
+                <td class="text-secondary">UI design revisions</td>
+                <td class="text-muted" style="white-space: nowrap;">13 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">13 Oct 2026<br><span style="font-size: 0.72rem;">09:30 PM</span></td>
+                <td class="fw-semibold text-dark">3.5h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">3</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Aman Sharma</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Development</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">College Portal</td>
+                <td class="text-secondary">Database optimization</td>
+                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026<br><span style="font-size: 0.72rem;">07:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026<br><span style="font-size: 0.72rem;">10:00 PM</span></td>
+                <td class="fw-semibold text-dark">3h</td>
+                <td>
+                  <span class="badge" style="background-color: #fef3c7; color: #d97706; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Pending</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">4</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Neha Tiwari</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">QA</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">TaskWave</td>
+                <td class="text-secondary">Testing & bug fixes</td>
+                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026<br><span style="font-size: 0.72rem;">06:30 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026<br><span style="font-size: 0.72rem;">09:00 PM</span></td>
+                <td class="fw-semibold text-dark">2.5h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">5</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Vikram Singh</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Infrastructure</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">Internal Tools</td>
+                <td class="text-secondary">Server maintenance</td>
+                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026<br><span style="font-size: 0.72rem;">07:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026<br><span style="font-size: 0.72rem;">11:00 PM</span></td>
+                <td class="fw-semibold text-dark">4h</td>
+                <td>
+                  <span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Rejected</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">6</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Arjun Patel</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Development</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">Mobile App</td>
+                <td class="text-secondary">Feature implementation</td>
+                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026<br><span style="font-size: 0.72rem;">09:00 PM</span></td>
+                <td class="fw-semibold text-dark">3h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 7 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">7</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/sneha_gupta.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Sneha Gupta</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Marketing</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">Website Redesign</td>
+                <td class="text-secondary">Content updates and SEO work</td>
+                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026<br><span style="font-size: 0.72rem;">08:00 PM</span></td>
+                <td class="fw-semibold text-dark">2h</td>
+                <td>
+                  <span class="badge" style="background-color: #fef3c7; color: #d97706; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Pending</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 8 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">8</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/karan_mehta.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Karan Mehta</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Support</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">College Portal</td>
+                <td class="text-secondary">Client issue resolution</td>
+                <td class="text-muted" style="white-space: nowrap;">9 Oct 2026<br><span style="font-size: 0.72rem;">07:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">9 Oct 2026<br><span style="font-size: 0.72rem;">10:00 PM</span></td>
+                <td class="fw-semibold text-dark">3h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 9 -->
+              <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">9</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Pooja Sharma</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">HR</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">Internal Tools</td>
+                <td class="text-secondary">Employee data update</td>
+                <td class="text-muted" style="white-space: nowrap;">8 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">8 Oct 2026<br><span style="font-size: 0.72rem;">08:30 PM</span></td>
+                <td class="fw-semibold text-dark">2.5h</td>
+                <td>
+                  <span class="badge" style="background-color: #fef3c7; color: #d97706; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Pending</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 10 -->
+              <tr>
+                <td style="padding-left: 18px;"><input type="checkbox" class="form-check-input"></td>
+                <td class="text-muted">10</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/avatars/rohan_das.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                    <div>
+                      <div class="fw-semibold text-dark">Rohan Das</div>
+                      <div class="text-muted" style="font-size: 0.72rem;">Support</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="fw-medium text-secondary">TaskWave</td>
+                <td class="text-secondary">System monitoring</td>
+                <td class="text-muted" style="white-space: nowrap;">7 Oct 2026<br><span style="font-size: 0.72rem;">06:00 PM</span></td>
+                <td class="text-muted" style="white-space: nowrap;">7 Oct 2026<br><span style="font-size: 0.72rem;">09:00 PM</span></td>
+                <td class="fw-semibold text-dark">3h</td>
+                <td>
+                  <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.74rem; padding: 4px 10px; border-radius: 9999px;">Approved</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Pagination Footer -->
+        <div class="d-flex align-items-center justify-content-between p-3 border-top" style="border-color: #edf2f7 !important; font-size: 0.82rem; color: #64748b;">
+          <div>Showing 1 to 10 of 18 requests</div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span>Rows per page</span>
+              <select class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; border-color: #e2e8f0;">
+                <option selected>10</option>
+                <option>25</option>
+                <option>50</option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-left-s-line"></i></button>
+              <button class="btn btn-sm px-2 py-1 text-white" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">1</button>
+              <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">2</button>
+              <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Section -->
+    <div class="col-xl-3 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Overtime Summary Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Overtime Summary</h6>
+            <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
+              <option selected>This Month</option>
+              <option>Last Month</option>
+              <option>This Year</option>
+            </select>
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7;">
+                  <i class="ri-time-line" style="font-size: 0.88rem;"></i>
+                </div>
+                <span class="text-secondary" style="font-size: 0.82rem;">Total Hours</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark" style="font-size: 0.92rem;">31.5h</span>
+                <span class="trend-up ms-1" style="font-size: 0.72rem;"><i class="ri-arrow-up-line"></i> 18%</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #dcfce7; color: #16a34a;">
+                  <i class="ri-checkbox-circle-line" style="font-size: 0.88rem;"></i>
+                </div>
+                <span class="text-secondary" style="font-size: 0.82rem;">Approved Hours</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark" style="font-size: 0.92rem;">21.5h</span>
+                <span class="trend-up ms-1" style="font-size: 0.72rem;"><i class="ri-arrow-up-line"></i> 25%</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #fef3c7; color: #d97706;">
+                  <i class="ri-time-line" style="font-size: 0.88rem;"></i>
+                </div>
+                <span class="text-secondary" style="font-size: 0.82rem;">Pending Hours</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark" style="font-size: 0.92rem;">8h</span>
+                <span class="trend-down ms-1" style="font-size: 0.72rem;"><i class="ri-arrow-down-line"></i> 20%</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #fee2e2; color: #ef4444;">
+                  <i class="ri-close-circle-line" style="font-size: 0.88rem;"></i>
+                </div>
+                <span class="text-secondary" style="font-size: 0.82rem;">Rejected Hours</span>
+              </div>
+              <div class="text-end">
+                <span class="fw-bold text-dark" style="font-size: 0.92rem;">2h</span>
+                <span class="trend-down ms-1" style="font-size: 0.72rem;"><i class="ri-arrow-down-line"></i> 50%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Requests Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Requests</h6>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                <span class="fw-semibold text-dark" style="font-size: 0.82rem;">Aman Sharma</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" style="background-color: #fef3c7; color: #d97706; font-size: 0.68rem; font-weight: 500;">Pending</span>
+                <span class="text-muted" style="font-size: 0.72rem;">12 Oct</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                <span class="fw-semibold text-dark" style="font-size: 0.82rem;">Neha Tiwari</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">Approved</span>
+                <span class="text-muted" style="font-size: 0.72rem;">12 Oct</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                <span class="fw-semibold text-dark" style="font-size: 0.82rem;">Vikram Singh</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" style="background-color: #fee2e2; color: #ef4444; font-size: 0.68rem; font-weight: 500;">Rejected</span>
+                <span class="text-muted" style="font-size: 0.72rem;">11 Oct</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                <span class="fw-semibold text-dark" style="font-size: 0.82rem;">Priya Singh</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">Approved</span>
+                <span class="text-muted" style="font-size: 0.72rem;">13 Oct</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+                <span class="fw-semibold text-dark" style="font-size: 0.82rem;">Pooja Sharma</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" style="background-color: #fef3c7; color: #d97706; font-size: 0.68rem; font-weight: 500;">Pending</span>
+                <span class="text-muted" style="font-size: 0.72rem;">8 Oct</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overtime Settings Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="ri-settings-3-line text-dark" style="font-size: 1.1rem;"></i>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Overtime Settings</h6>
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-calendar-event-line text-muted mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Allow Overtime Requests</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">Let members request extra work</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-shield-check-line text-muted mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Require Approval</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">Admin/Manager approval required</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-file-list-3-line text-muted mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Track Overtime Separately</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">Keep overtime tasks separate</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-notification-3-line text-muted mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Notify on New Requests</div>
+                  <div class="text-muted" style="font-size: 0.72rem;">Get notified for new requests</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Request Overtime Modal -->
+<div class="modal fade" id="requestOvertimeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 12px; border: 1px solid #edf2f7;">
+      <form method="POST" action="{% url 'overtime:request' %}">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0 pt-4 px-4">
+          <h5 class="modal-title fw-bold text-dark">Request Overtime</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-4 pt-3 pb-2">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">PROJECT</label>
+            <select name="project" class="form-select form-select-sm" style="border-radius: 8px;">
+              <option value="">TaskWave</option>
+              <option value="">Mobile App</option>
+              <option value="">College Portal</option>
+              <option value="">Website Redesign</option>
+              <option value="">Internal Tools</option>
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">START DATE & TIME</label>
+              <input type="datetime-local" name="start_date" class="form-control form-control-sm" style="border-radius: 8px;" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">END DATE & TIME</label>
+              <input type="datetime-local" name="end_date" class="form-control form-control-sm" style="border-radius: 8px;" required>
+            </div>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">ESTIMATED HOURS</label>
+              <input type="number" step="0.5" name="requested_hours" class="form-control form-control-sm" style="border-radius: 8px;" placeholder="e.g. 3.0" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-secondary">DEPARTMENT</label>
+              <select name="department" class="form-select form-select-sm" style="border-radius: 8px;">
+                <option>Development</option>
+                <option>Design</option>
+                <option>QA</option>
+                <option>Marketing</option>
+                <option>Infrastructure</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">TASK / WORK DESCRIPTION</label>
+            <textarea name="description" rows="3" class="form-control form-control-sm" style="border-radius: 8px;" placeholder="Describe the extra work requiring overtime..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0 px-4 pb-4">
+          <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; padding: 6px 16px;">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

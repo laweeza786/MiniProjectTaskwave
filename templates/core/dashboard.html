@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Greeting & Date Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Dashboard</h1>
+      <p class="dash-subtitle">Welcome back, Admin! Here's what's happening today.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div class="dash-date-pill">
+        <i class="ri-calendar-line"></i>
+        <span>Tuesday, 30 September 2026</span>
+      </div>
+      <a href="{% url 'core:admin_dashboard' %}" class="btn btn-sm btn-outline-secondary px-2.5 py-1.5" style="border-radius: 8px; font-size: 12px; background: #fff;" title="Switch to Admin View">
+        Admin View
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stat Cards Row (4 cards) -->
+  <div class="dash-kpi-grid">
+    <!-- Total Tasks -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-file-text-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Tasks</span>
+          <span class="dash-kpi-value">{{ total_tasks }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- In Progress -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-orange">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">In Progress</span>
+          <span class="dash-kpi-value">{{ in_progress_tasks }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Completed -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-green">
+          <i class="ri-checkbox-circle-fill"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed</span>
+          <span class="dash-kpi-value">{{ completed_tasks }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+
+    <!-- Overdue -->
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-error-warning-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Overdue</span>
+          <span class="dash-kpi-value">{{ overdue_tasks }}</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 5%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+        <i class="ri-more-2-line"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Row 2: Middle 3 Cards Grid -->
+  <div class="dash-middle-grid">
+    <!-- Card 1: Task Overview -->
+    <div class="dash-card overview-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Task Overview</h2>
+        <div class="dash-select-pill">
+          <span>Last 7 Days</span>
+          <i class="ri-arrow-down-s-line"></i>
+        </div>
+      </div>
+      
+      <!-- Chart Legend -->
+      <div class="dash-chart-legend">
+        <div class="legend-item"><span class="legend-dot dot-green"></span> Completed</div>
+        <div class="legend-item"><span class="legend-dot dot-amber"></span> In Progress</div>
+        <div class="legend-item"><span class="legend-dot dot-red"></span> Overdue</div>
+        <div class="legend-item"><span class="legend-dot dot-gray"></span> Assigned</div>
+      </div>
+
+      <div class="dash-chart-wrapper">
+        <canvas id="taskOverviewChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Card 2: Task Status Distribution -->
+    <div class="dash-card distribution-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Task Status Distribution</h2>
+        <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+          <i class="ri-more-2-line"></i>
+        </button>
+      </div>
+
+      <div class="donut-chart-container">
+        <div class="donut-canvas-box">
+          <canvas id="statusDonutChart"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-number">{{ total_tasks }}</div>
+            <div class="donut-label">Total Tasks</div>
+          </div>
+        </div>
+
+        <div class="donut-legend-list">
+          <div class="donut-legend-item">
+            <span class="legend-dot dot-green"></span>
+            <div class="donut-legend-info">
+              <span class="donut-legend-name">Completed</span>
+              <span class="donut-legend-stat">64 (50%)</span>
+            </div>
+          </div>
+          <div class="donut-legend-item">
+            <span class="legend-dot dot-amber"></span>
+            <div class="donut-legend-info">
+              <span class="donut-legend-name">In Progress</span>
+              <span class="donut-legend-stat">42 (33%)</span>
+            </div>
+          </div>
+          <div class="donut-legend-item">
+            <span class="legend-dot dot-gray"></span>
+            <div class="donut-legend-info">
+              <span class="donut-legend-name">Assigned</span>
+              <span class="donut-legend-stat">10 (8%)</span>
+            </div>
+          </div>
+          <div class="donut-legend-item">
+            <span class="legend-dot dot-red"></span>
+            <div class="donut-legend-info">
+              <span class="donut-legend-name">Overdue</span>
+              <span class="donut-legend-stat">12 (9%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Upcoming Deadlines -->
+    <div class="dash-card deadlines-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Upcoming Deadlines</h2>
+        <a href="{% url 'tasks:task_list' %}" class="dash-view-all">View All</a>
+      </div>
+
+      <div class="deadlines-list">
+        {% for item in deadlines %}
+        <div class="deadline-item">
+          <div class="deadline-indicator" style="background-color: {{ item.bar_color }};"></div>
+          <div class="deadline-content">
+            <div class="deadline-title">{{ item.title }}</div>
+            <div class="deadline-project">{{ item.project }}</div>
+          </div>
+          <div class="deadline-meta">
+            <span class="deadline-time {{ item.time_class }}">{{ item.time_label }}</span>
+            <span class="priority-pill {{ item.priority_class }}">{{ item.priority }}</span>
+          </div>
+          <button class="dash-item-menu" type="button">
+            <i class="ri-more-2-line"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Bottom 3 Cards Grid -->
+  <div class="dash-bottom-grid">
+    <!-- Card 1: Recent Activity -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Recent Activity</h2>
+        <a href="{% url 'audit:logs' %}" class="dash-view-all">View All</a>
+      </div>
+
+      <div class="activity-list">
+        {% for act in activities %}
+        <div class="activity-item">
+          <div class="activity-icon-circle" style="background-color: {{ act.icon_bg }};">
+            <i class="{{ act.icon }}"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">{{ act.title }}</div>
+            <div class="activity-subtitle">{{ act.subtitle }}</div>
+          </div>
+          <div class="activity-time">{{ act.time }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Card 2: Team Workload -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Team Workload</h2>
+        <div class="dash-select-pill">
+          <span>This Week</span>
+          <i class="ri-arrow-down-s-line"></i>
+        </div>
+      </div>
+
+      <div class="workload-list">
+        {% for member in team_workload %}
+        <div class="workload-item">
+          {% if member.avatar %}
+          <img src="{% static member.avatar %}" alt="{{ member.name }}" class="rounded-circle workload-avatar-img" width="30" height="30" style="object-fit: cover; flex-shrink: 0;">
+          {% else %}
+          <div class="workload-avatar" style="background-color: {{ member.avatar_bg }};">
+            {{ member.initials }}
+          </div>
+          {% endif %}
+          <div class="workload-details">
+            <div class="workload-name">{{ member.name }}</div>
+            <div class="workload-role">{{ member.role }}</div>
+          </div>
+          <div class="workload-progress-wrap">
+            <div class="workload-progress-bar">
+              <div class="workload-progress-fill" style="width: {{ member.percent }}%; background-color: {{ member.bar_color }};"></div>
+            </div>
+          </div>
+          <div class="workload-ratio">{{ member.completed }}/{{ member.total }}</div>
+          <button class="dash-item-menu" type="button">
+            <i class="ri-more-2-line"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Card 3: Tasks by Project -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Tasks by Project</h2>
+        <a href="{% url 'projects:project_list' %}" class="dash-view-all">View All</a>
+      </div>
+
+      <div class="projects-tasks-list">
+        {% for proj in tasks_by_project %}
+        <div class="project-task-item">
+          <div class="project-task-icon" style="background-color: {{ proj.icon_bg }};">
+            <i class="{{ proj.icon }}"></i>
+          </div>
+          <div class="project-task-details">
+            <div class="project-task-name">{{ proj.name }}</div>
+            <div class="project-task-sub">{{ proj.subtitle }}</div>
+          </div>
+          <div class="project-task-progress-box">
+            <div class="project-task-stat">
+              {% if proj.has_dot %}<span class="stat-green-dot"></span>{% endif %}
+              <span>{{ proj.completed }}/{{ proj.total }}</span>
+            </div>
+            <div class="project-task-bar">
+              <div class="project-task-bar-fill" style="width: {{ proj.percent }}%; background-color: {{ proj.bar_color }};"></div>
+            </div>
+          </div>
+          <button class="dash-item-menu" type="button">
+            <i class="ri-more-2-line"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // 1. Task Overview Multi-line Bezier Chart
+  const ctxOverview = document.getElementById("taskOverviewChart");
+  if (ctxOverview) {
+    new Chart(ctxOverview, {
+      type: "line",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [
+          {
+            label: "Completed",
+            data: [13, 17, 24, 21, 28, 30, 36],
+            borderColor: "#22c55e",
+            backgroundColor: "transparent",
+            borderWidth: 2.2,
+            tension: 0.38,
+            pointBackgroundColor: "#22c55e",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "In Progress",
+            data: [7, 11, 14, 12, 17, 18, 22],
+            borderColor: "#f59e0b",
+            backgroundColor: "transparent",
+            borderWidth: 2.2,
+            tension: 0.38,
+            pointBackgroundColor: "#f59e0b",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Overdue",
+            data: [3, 4, 4, 7, 6, 8, 9],
+            borderColor: "#ef4444",
+            backgroundColor: "transparent",
+            borderWidth: 2.2,
+            tension: 0.38,
+            pointBackgroundColor: "#ef4444",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Assigned",
+            data: [0, 1, 1, 2, 2, 3, 3],
+            borderColor: "#94a3b8",
+            backgroundColor: "transparent",
+            borderWidth: 2.2,
+            tension: 0.38,
+            pointBackgroundColor: "#94a3b8",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: "#1e293b",
+            titleFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+            bodyFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              color: "#94a3b8",
+              font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" }
+            }
+          },
+          y: {
+            min: 0,
+            max: 40,
+            ticks: {
+              stepSize: 10,
+              color: "#94a3b8",
+              font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" }
+            },
+            grid: {
+              color: "#f1f5f9",
+              drawBorder: false
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // 2. Task Status Distribution Donut Chart
+  const ctxDonut = document.getElementById("statusDonutChart");
+  if (ctxDonut) {
+    new Chart(ctxDonut, {
+      type: "doughnut",
+      data: {
+        labels: ["Completed", "In Progress", "Assigned", "Overdue"],
+        datasets: [
+          {
+            data: [64, 42, 10, 12],
+            backgroundColor: ["#22c55e", "#f59e0b", "#94a3b8", "#ef4444"],
+            borderWidth: 2,
+            borderColor: "#ffffff",
+            hoverOffset: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "68%",
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: "#1e293b",
+            titleFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+            bodyFont: { size: 12, family: "'Plus Jakarta Sans', sans-serif" },
+            padding: 8,
+            cornerRadius: 8
+          }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

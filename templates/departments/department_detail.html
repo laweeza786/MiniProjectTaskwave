@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}{{ department.name }} - TaskWave{% endblock %}
+
+{% block content %}
+<div class="page-header-row mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="rounded-3 bg-light border p-3 text-warning fs-3">
+      <i class="bi {{ department.icon|default:'bi-building' }}"></i>
+    </div>
+    <div>
+      <h1 class="page-title">{{ department.name }}</h1>
+      <div class="text-muted">{{ department.description }}</div>
+    </div>
+  </div>
+  {% if request.user.is_superuser or request.user.role.name == 'Administrator' %}
+  <div>
+    <a href="{% url 'departments:department_edit' department.id %}" class="btn-outline-tw">
+      <i class="bi bi-pencil me-1"></i>Edit Department
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="tw-card mb-4">
+      <h5 class="fw-bold mb-3 fs-6 text-uppercase text-secondary">Department Info</h5>
+      <div class="mb-2"><strong>Department Head:</strong> <span class="text-muted">{{ department.head.get_full_name|default:'Unassigned' }}</span></div>
+      <div class="mb-2"><strong>Contact Email:</strong> <span class="text-muted">{{ department.email|default:'N/A' }}</span></div>
+      <div class="mb-2"><strong>Phone Extension:</strong> <span class="text-muted">{{ department.phone|default:'N/A' }}</span></div>
+      <div class="mb-2"><strong>Office Location:</strong> <span class="text-muted">{{ department.location|default:'Main Headquarters' }}</span></div>
+      <div class="mb-2"><strong>Status:</strong> <span class="badge bg-success-subtle text-success">{{ department.get_status_display }}</span></div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <!-- Department Members -->
+    <div class="tw-card mb-4">
+      <h5 class="tw-card-title mb-3"><i class="bi bi-people me-2 text-warning"></i>Department Team Members ({{ members.count }})</h5>
+      <div class="row g-3">
+        {% for m in members %}
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3 bg-white d-flex align-items-center gap-3">
+            <div class="user-avatar-circle" style="width: 38px; height: 38px;">
+              {{ m.get_initials }}
+            </div>
+            <div>
+              <div class="fw-bold text-dark fs-6">{{ m.get_full_name }}</div>
+              <div class="text-muted small">{{ m.role.name|default:'Member' }}</div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-3 text-muted">No members assigned to this department.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Department Projects -->
+    <div class="tw-card">
+      <h5 class="tw-card-title mb-3"><i class="bi bi-folder me-2 text-primary"></i>Department Projects ({{ projects.count }})</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for p in projects %}
+        <div class="p-3 border rounded-3 bg-white d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-bold text-dark">{{ p.name }}</div>
+            <div class="text-muted small">{{ p.project_key }} • Due {{ p.end_date|default:'TBD' }}</div>
+          </div>
+          <a href="{% url 'projects:project_detail' p.id %}" class="btn btn-sm btn-outline-secondary">View Project</a>
+        </div>
+        {% empty %}
+        <div class="text-center py-3 text-muted">No projects managed under this department.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

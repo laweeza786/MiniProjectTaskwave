@@ -1,0 +1,621 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Greeting & Date Header -->
+  <div class="dash-header-row mb-4">
+    <div>
+      <h1 class="dash-title" style="font-size: 24px; font-weight: 800;">Welcome Back, Admin 👋</h1>
+      <p class="dash-subtitle" style="font-size: 13.5px; color: #64748b;">Here's what's happening across your organization today.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div class="dash-date-pill bg-white border px-3 py-2 rounded-3 text-secondary small fw-medium" style="border-color: #e2e8f0 !important;">
+        <i class="ri-calendar-line me-1 text-muted"></i>
+        <span>Thursday, 12 October 2026</span>
+      </div>
+      <a href="{% url 'core:dashboard' %}" class="btn btn-sm btn-outline-secondary px-2.5 py-1.5" style="border-radius: 8px; font-size: 12px;" title="Switch to User View">
+        Standard View
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stat Cards Row (4 cards) -->
+  <div class="row g-3 mb-4">
+    <!-- 1. Total Projects -->
+    <div class="col-md-3">
+      <div class="tw-card p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            <i class="ri-folder-3-line"></i>
+          </div>
+          <div>
+            <div class="text-muted small" style="font-size: 12px;">Total Projects</div>
+            <div class="fw-bold text-dark fs-4">24</div>
+            <div class="text-success small" style="font-size: 11px;">
+              <i class="ri-arrow-up-line"></i> 12% <span class="text-muted">from last month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Total Tasks -->
+    <div class="col-md-3">
+      <div class="tw-card p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            <i class="ri-checkbox-line"></i>
+          </div>
+          <div>
+            <div class="text-muted small" style="font-size: 12px;">Total Tasks</div>
+            <div class="fw-bold text-dark fs-4">156</div>
+            <div class="text-success small" style="font-size: 11px;">
+              <i class="ri-arrow-up-line"></i> 8% <span class="text-muted">from last month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Active Members -->
+    <div class="col-md-3">
+      <div class="tw-card p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            <i class="ri-group-line"></i>
+          </div>
+          <div>
+            <div class="text-muted small" style="font-size: 12px;">Active Members</div>
+            <div class="fw-bold text-dark fs-4">32</div>
+            <div class="text-success small" style="font-size: 11px;">
+              <i class="ri-arrow-up-line"></i> 3% <span class="text-muted">from last month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Overdue Tasks -->
+    <div class="col-md-3">
+      <div class="tw-card p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width: 44px; height: 44px; border-radius: 10px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            <i class="ri-time-line"></i>
+          </div>
+          <div>
+            <div class="text-muted small" style="font-size: 12px;">Overdue Tasks</div>
+            <div class="fw-bold text-dark fs-4">18</div>
+            <div class="text-danger small" style="font-size: 11px;">
+              <i class="ri-arrow-up-line"></i> 5% <span class="text-muted">from last month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Task Overview, Project Progress, Recent Activity -->
+  <div class="row g-3 mb-4">
+    <!-- Task Overview -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Task Overview</h6>
+          <select class="form-select form-select-sm border-0 bg-light text-secondary" style="width: auto; font-size: 11px;">
+            <option>This Month</option>
+            <option>This Week</option>
+          </select>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div style="position: relative; width: 130px; height: 130px;">
+            <canvas id="adminTaskOverviewChart"></canvas>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+              <div class="fw-bold text-dark fs-5 line-height-1">156</div>
+              <div class="text-muted" style="font-size: 9px;">Total Tasks</div>
+            </div>
+          </div>
+          <div class="d-flex flex-column gap-2 small">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Completed</span>
+              <span class="fw-bold text-dark">62 <span class="text-muted fw-normal" style="font-size: 10px;">39%</span></span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #3b82f6;"></i>In Progress</span>
+              <span class="fw-bold text-dark">48 <span class="text-muted fw-normal" style="font-size: 10px;">31%</span></span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #f59e0b;"></i>Not Started</span>
+              <span class="fw-bold text-dark">28 <span class="text-muted fw-normal" style="font-size: 10px;">18%</span></span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #ef4444;"></i>Overdue</span>
+              <span class="fw-bold text-dark">18 <span class="text-muted fw-normal" style="font-size: 10px;">12%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Progress -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Project Progress</h6>
+          <select class="form-select form-select-sm border-0 bg-light text-secondary" style="width: auto; font-size: 11px;">
+            <option>This Month</option>
+          </select>
+        </div>
+        <div style="height: 150px;">
+          <canvas id="adminProjectProgressChart"></canvas>
+        </div>
+        <div class="d-flex justify-content-center gap-3 mt-2" style="font-size: 11px;">
+          <span><i class="ri-checkbox-blank-circle-fill me-1" style="color: #10b981; font-size: 8px;"></i>Completed</span>
+          <span><i class="ri-checkbox-blank-circle-fill me-1" style="color: #93c5fd; font-size: 8px;"></i>In Progress</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Recent Activity</h6>
+          <a href="{% url 'audit:audit_logs' %}" class="small text-decoration-none text-muted" style="font-size: 11px;">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-2.5">
+          <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+            <div class="flex-grow-1" style="font-size: 11.5px;">
+              <div class="text-dark"><strong>Rahul Kumar</strong> submitted a task</div>
+              <div class="text-muted" style="font-size: 10px;">UI design for dashboard</div>
+            </div>
+            <span class="text-muted" style="font-size: 10px;">2 hours ago</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+            <div class="flex-grow-1" style="font-size: 11.5px;">
+              <div class="text-dark"><strong>Priya Singh</strong> completed a task</div>
+              <div class="text-muted" style="font-size: 10px;">Database optimization</div>
+            </div>
+            <span class="text-muted" style="font-size: 10px;">4 hours ago</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+            <div class="flex-grow-1" style="font-size: 11.5px;">
+              <div class="text-dark"><strong>Aman Sharma</strong> created a new project</div>
+              <div class="text-muted" style="font-size: 10px;">Mobile App Development</div>
+            </div>
+            <span class="text-muted" style="font-size: 10px;">6 hours ago</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+            <div class="flex-grow-1" style="font-size: 11.5px;">
+              <div class="text-dark"><strong>Neha Tiwari</strong> requested overtime</div>
+              <div class="text-muted" style="font-size: 10px;">Extra testing for release</div>
+            </div>
+            <span class="text-muted" style="font-size: 10px;">8 hours ago</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">
+            <div class="flex-grow-1" style="font-size: 11.5px;">
+              <div class="text-dark"><strong>Vikram Singh</strong> commented on a task</div>
+              <div class="text-muted" style="font-size: 10px;">API integration issue</div>
+            </div>
+            <span class="text-muted" style="font-size: 10px;">10 hours ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Recent Tasks & Ongoing Projects -->
+  <div class="row g-3 mb-4">
+    <!-- Recent Tasks -->
+    <div class="col-lg-6">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Recent Tasks</h6>
+          <a href="{% url 'tasks:task_list' %}" class="small text-decoration-none text-muted" style="font-size: 11px;">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size: 12px;">
+            <thead style="color: #64748b; font-size: 10.5px; text-transform: uppercase;">
+              <tr>
+                <th class="border-0">Task Name</th>
+                <th class="border-0">Project</th>
+                <th class="border-0">Assigned To</th>
+                <th class="border-0">Status</th>
+                <th class="border-0 text-end">Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-medium text-dark">API documentation</td>
+                <td class="text-muted">TaskWave API</td>
+                <td>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                    <span>Rahul Kumar</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-primary" style="background: #eff6ff;">In Progress</span></td>
+                <td class="text-end text-muted">14 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">UI design for dashboard</td>
+                <td class="text-muted">Mobile App</td>
+                <td>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                    <span>Priya Singh</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-success" style="background: #ecfdf5;">Completed</span></td>
+                <td class="text-end text-muted">12 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Database optimization</td>
+                <td class="text-muted">Web Platform</td>
+                <td>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                    <span>Aman Sharma</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-primary" style="background: #eff6ff;">In Progress</span></td>
+                <td class="text-end text-muted">16 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Testing and bug fixes</td>
+                <td class="text-muted">Mobile App</td>
+                <td>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                    <span>Neha Tiwari</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-danger" style="background: #fef2f2;">Overdue</span></td>
+                <td class="text-end text-muted">10 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">User management module</td>
+                <td class="text-muted">Web Platform</td>
+                <td>
+                  <div class="d-flex align-items-center gap-1.5">
+                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" style="width: 20px; height: 20px; object-fit: cover;">
+                    <span>Vikram Singh</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-secondary" style="background: #f1f5f9;">Not Started</span></td>
+                <td class="text-end text-muted">18 Oct 2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ongoing Projects -->
+    <div class="col-lg-6">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Ongoing Projects</h6>
+          <a href="{% url 'projects:project_list' %}" class="small text-decoration-none text-muted" style="font-size: 11px;">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size: 12px;">
+            <thead style="color: #64748b; font-size: 10.5px; text-transform: uppercase;">
+              <tr>
+                <th class="border-0">Project Name</th>
+                <th class="border-0" style="width: 120px;">Progress</th>
+                <th class="border-0">Status</th>
+                <th class="border-0 text-end">Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-medium text-dark">TaskWave Web Platform</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 75%;"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 11px;">75%</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-success" style="background: #ecfdf5;">On Track</span></td>
+                <td class="text-end text-muted">30 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Mobile App Development</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height: 5px;">
+                      <div class="progress-bar bg-primary" style="width: 45%;"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 11px;">45%</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-primary" style="background: #eff6ff;">In Progress</span></td>
+                <td class="text-end text-muted">15 Nov 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Internal Tools</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height: 5px;">
+                      <div class="progress-bar bg-danger" style="width: 20%;"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 11px;">20%</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-danger" style="background: #fef2f2;">Delayed</span></td>
+                <td class="text-end text-muted">25 Oct 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Client Portal</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height: 5px;">
+                      <div class="progress-bar bg-success" style="width: 60%;"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 11px;">60%</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-success" style="background: #ecfdf5;">On Track</span></td>
+                <td class="text-end text-muted">10 Nov 2026</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">HR Management System</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height: 5px;">
+                      <div class="progress-bar bg-primary" style="width: 30%;"></div>
+                    </div>
+                    <span class="text-muted" style="font-size: 11px;">30%</span>
+                  </div>
+                </td>
+                <td><span class="badge px-2 py-0.5 text-primary" style="background: #eff6ff;">In Progress</span></td>
+                <td class="text-end text-muted">20 Nov 2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Upcoming Deadlines, Task Priority Distribution, Department Task Load -->
+  <div class="row g-3">
+    <!-- Upcoming Deadlines -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Upcoming Deadlines</h6>
+          <a href="#" class="small text-decoration-none text-muted" style="font-size: 11px;">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size: 11.5px;">
+            <thead style="color: #64748b; font-size: 10px; text-transform: uppercase;">
+              <tr>
+                <th class="border-0">Task Name</th>
+                <th class="border-0">Project</th>
+                <th class="border-0">Due Date</th>
+                <th class="border-0 text-end">Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-medium text-dark">Finalize UI components</td>
+                <td class="text-muted">Mobile App</td>
+                <td class="text-muted">12 Oct 2026</td>
+                <td class="text-end text-danger fw-semibold">⚑ High</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">API integration</td>
+                <td class="text-muted">Web Platform</td>
+                <td class="text-muted">14 Oct 2026</td>
+                <td class="text-end text-danger fw-semibold">⚑ High</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Testing and QA</td>
+                <td class="text-muted">Mobile App</td>
+                <td class="text-muted">16 Oct 2026</td>
+                <td class="text-end text-warning fw-semibold" style="color: #f59e0b !important;">⚑ Medium</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">User acceptance testing</td>
+                <td class="text-muted">Client Portal</td>
+                <td class="text-muted">18 Oct 2026</td>
+                <td class="text-end text-warning fw-semibold" style="color: #f59e0b !important;">⚑ Medium</td>
+              </tr>
+              <tr>
+                <td class="fw-medium text-dark">Deployment preparation</td>
+                <td class="text-muted">Web Platform</td>
+                <td class="text-muted">20 Oct 2026</td>
+                <td class="text-end text-success fw-semibold">⚑ Low</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Priority Distribution -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Task Priority Distribution</h6>
+          <select class="form-select form-select-sm border-0 bg-light text-secondary" style="width: auto; font-size: 11px;">
+            <option>This Month</option>
+          </select>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div style="width: 130px; height: 130px;">
+            <canvas id="adminPriorityChart"></canvas>
+          </div>
+          <div class="d-flex flex-column gap-2 small">
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #ef4444;"></i>High</span>
+              <span class="fw-bold text-dark">52 <span class="text-muted fw-normal" style="font-size: 10px;">33%</span></span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #f59e0b;"></i>Medium</span>
+              <span class="fw-bold text-dark">64 <span class="text-muted fw-normal" style="font-size: 10px;">41%</span></span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <span class="text-muted"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Low</span>
+              <span class="fw-bold text-dark">40 <span class="text-muted fw-normal" style="font-size: 10px;">26%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Department Task Load -->
+    <div class="col-lg-4">
+      <div class="tw-card h-100 p-3" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold text-dark mb-0 fs-6">Department Task Load</h6>
+          <select class="form-select form-select-sm border-0 bg-light text-secondary" style="width: auto; font-size: 11px;">
+            <option>This Month</option>
+          </select>
+        </div>
+        <div class="d-flex flex-column gap-2.5 mt-2" style="font-size: 11px;">
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-dark">Development</span>
+              <span class="fw-bold text-dark">48</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar" style="width: 100%; background-color: #3b82f6;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-dark">Design</span>
+              <span class="fw-bold text-dark">32</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar" style="width: 66%; background-color: #a855f7;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-dark">Testing</span>
+              <span class="fw-bold text-dark">28</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar" style="width: 58%; background-color: #f59e0b;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-dark">Administration</span>
+              <span class="fw-bold text-dark">18</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar" style="width: 37%; background-color: #10b981;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="d-flex justify-content-between mb-1">
+              <span class="text-dark">HR</span>
+              <span class="fw-bold text-dark">12</span>
+            </div>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar" style="width: 25%; background-color: #38bdf8;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. Task Overview Chart
+    const ctxOverview = document.getElementById('adminTaskOverviewChart');
+    if (ctxOverview) {
+      new Chart(ctxOverview, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'In Progress', 'Not Started', 'Overdue'],
+          datasets: [{
+            data: [62, 48, 28, 18],
+            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // 2. Project Progress Stacked Bar Chart
+    const ctxProgress = document.getElementById('adminProjectProgressChart');
+    if (ctxProgress) {
+      new Chart(ctxProgress, {
+        type: 'bar',
+        data: {
+          labels: ['Planning', 'Development', 'Testing', 'Deployment'],
+          datasets: [
+            {
+              label: 'Completed',
+              data: [5, 7, 6, 3],
+              backgroundColor: '#10b981'
+            },
+            {
+              label: 'In Progress',
+              data: [3, 9, 3, 4],
+              backgroundColor: '#93c5fd'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+            y: { stacked: true, grid: { color: '#f1f5f9' }, max: 20, ticks: { font: { size: 10 }, stepSize: 5 } }
+          }
+        }
+      });
+    }
+
+    // 3. Task Priority Distribution Pie Chart
+    const ctxPriority = document.getElementById('adminPriorityChart');
+    if (ctxPriority) {
+      new Chart(ctxPriority, {
+        type: 'pie',
+        data: {
+          labels: ['High', 'Medium', 'Low'],
+          datasets: [{
+            data: [52, 64, 40],
+            backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

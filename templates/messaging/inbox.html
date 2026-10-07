@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Messages - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Messages</h1>
+      <p class="dash-subtitle">Communicate with your team members and collaborate effectively.</p>
+    </div>
+    <div>
+      <button class="btn-new-entity" type="button">
+        <i class="ri-add-line"></i> New Chat
+      </button>
+    </div>
+  </div>
+
+  <!-- 3-Column Chat View Card -->
+  <div class="dash-card p-0 overflow-hidden chat-main-container">
+    <div class="row g-0 h-100">
+      
+      <!-- 1. Left Conversations List -->
+      <div class="col-xl-3 border-end d-flex flex-column" style="background-color: #ffffff;">
+        <!-- Search bar -->
+        <div class="p-3 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <div class="filter-search-box flex-grow-1" style="min-width: 0;">
+              <i class="ri-search-line"></i>
+              <input type="text" placeholder="Search conversations...">
+            </div>
+            <button class="dash-item-menu" type="button"><i class="ri-equalizer-line"></i></button>
+          </div>
+        </div>
+
+        <!-- Chat Filter Tabs -->
+        <div class="d-flex border-bottom px-3 pt-2 gap-3 small fw-semibold">
+          <span class="chat-tab-pill active">All</span>
+          <span class="chat-tab-pill text-muted">Unread <span class="badge bg-dark rounded-pill ms-1" style="font-size: 10px;">3</span></span>
+          <span class="chat-tab-pill text-muted">Groups</span>
+          <span class="chat-tab-pill text-muted">Starred</span>
+        </div>
+
+        <!-- Conversations Scroll List -->
+        <div class="conversations-scroll-list flex-grow-1 overflow-auto">
+          
+          <!-- 1. Development Team (Active) -->
+          <div class="convo-item active">
+            <div class="chat-circle-icon bg-blue-tint text-primary">
+              <i class="ri-group-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Development Team</span>
+                <span class="text-muted" style="font-size: 11px;">10:24 AM</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small text-truncate" style="font-size: 11px;">Neha: I've updated the UI design files.</span>
+                <span class="chat-unread-badge">2</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Project TaskWave -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-cyan-tint text-info">
+              <i class="ri-macbook-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Project TaskWave</span>
+                <span class="text-muted" style="font-size: 11px;">09:15 AM</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small text-truncate" style="font-size: 11px;">Rahul: Deployment is completed ✔</span>
+                <span class="chat-unread-badge">1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Priya Singh -->
+          <div class="convo-item">
+            <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="38" height="38" style="object-fit: cover;">
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Priya Singh</span>
+                <span class="text-muted" style="font-size: 11px;">Yesterday</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Let me know when the review starts.</span>
+            </div>
+          </div>
+
+          <!-- 4. Aman Sharma -->
+          <div class="convo-item">
+            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="38" height="38" style="object-fit: cover;">
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Aman Sharma</span>
+                <span class="text-muted" style="font-size: 11px;">Yesterday</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Can you share the API documentation?</span>
+            </div>
+          </div>
+
+          <!-- 5. Design Team -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-pink-tint text-danger">
+              <i class="ri-palette-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Design Team</span>
+                <span class="text-muted" style="font-size: 11px;">22 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Sneha: New mockups are ready.</span>
+            </div>
+          </div>
+
+          <!-- 6. Quality Assurance -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-green-tint text-success">
+              <i class="ri-shield-check-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Quality Assurance</span>
+                <span class="text-muted" style="font-size: 11px;">21 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Vikram: Testing completed for module 3.</span>
+            </div>
+          </div>
+
+          <!-- 7. Marketing -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-amber-tint text-warning">
+              <i class="ri-megaphone-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Marketing</span>
+                <span class="text-muted" style="font-size: 11px;">20 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Rohan: Here are the content updates.</span>
+            </div>
+          </div>
+
+          <!-- 8. HR Team -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-purple-tint text-purple" style="color: #8b5cf6;">
+              <i class="ri-team-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">HR Team</span>
+                <span class="text-muted" style="font-size: 11px;">19 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Pooja: Meeting at 11 AM tomorrow.</span>
+            </div>
+          </div>
+
+          <!-- 9. Client Discussion -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-rose-tint text-danger" style="background-color: #ffe4e6; color: #e11d48;">
+              <i class="ri-chat-1-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">Client Discussion</span>
+                <span class="text-muted" style="font-size: 11px;">18 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Anjali: Feedback received from client.</span>
+            </div>
+          </div>
+
+          <!-- 10. General -->
+          <div class="convo-item">
+            <div class="chat-circle-icon bg-gray-tint text-muted" style="background-color: #f1f5f9; color: #64748b;">
+              <i class="ri-group-line"></i>
+            </div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small text-dark">General</span>
+                <span class="text-muted" style="font-size: 11px;">15 Sep</span>
+              </div>
+              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Admin: Welcome to TaskWave!</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. Middle Active Chat Area -->
+      <div class="col-xl-6 border-end d-flex flex-column" style="background-color: #ffffff;">
+        <!-- Chat Header -->
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <div class="chat-circle-icon bg-blue-tint text-primary" style="width: 42px; height: 42px; font-size: 1.15rem;">
+              <i class="ri-group-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark fs-6" style="line-height: 1.2;">Development Team</div>
+              <div class="text-muted small" style="font-size: 11px;">6 members • Project discussions and development updates</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="dash-item-menu" type="button"><i class="ri-search-line"></i></button>
+            <button class="dash-item-menu" type="button"><i class="ri-phone-line"></i></button>
+            <button class="dash-item-menu" type="button"><i class="ri-video-line"></i></button>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+        </div>
+
+        <!-- Chat Messages Stack -->
+        <div class="p-4 flex-grow-1 overflow-auto d-flex flex-column gap-3 chat-messages-area" style="max-height: 600px;">
+          <!-- Date divider -->
+          <div class="text-center my-1">
+            <span class="badge bg-light text-muted border px-3 py-1 fw-normal" style="font-size: 11px; border-radius: 20px;">Today, 15 Oct 2026</span>
+          </div>
+
+          <!-- Message 1: Rahul Kumar -->
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold small text-dark">Rahul Kumar</span>
+                <span class="text-muted" style="font-size: 10px;">10:02 AM</span>
+              </div>
+              <div class="chat-text-incoming">
+                Good morning team! 👋<br>Let's discuss the progress on the current sprint.
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 2: Priya Singh -->
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold small text-dark">Priya Singh</span>
+                <span class="text-muted" style="font-size: 10px;">10:05 AM</span>
+              </div>
+              <div class="chat-text-incoming mb-2">
+                The backend APIs are almost ready. I'm working on the authentication module.
+              </div>
+              <!-- File Attachment -->
+              <div class="chat-file-card d-flex align-items-center justify-content-between p-2 px-3 border rounded-3 bg-white" style="max-width: 290px;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="chat-file-icon-box text-primary bg-blue-tint">
+                    <i class="ri-file-code-line fs-5"></i>
+                  </div>
+                  <div>
+                    <div class="small fw-semibold text-dark" style="font-size: 12px;">auth_module.py</div>
+                    <div class="text-muted" style="font-size: 10px;">12.4 KB • Python File</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm text-muted p-0" type="button"><i class="ri-download-2-line fs-5"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 3: Outgoing (Mine) -->
+          <div class="d-flex justify-content-end align-items-end gap-2 my-1">
+            <div class="d-flex flex-column align-items-end">
+              <span class="text-muted mb-1" style="font-size: 10px;">10:08 AM</span>
+              <div class="chat-bubble-outgoing">
+                Great work! Please complete it by today EOD.<br>Also, update the task status in the Kanban board.
+                <span class="chat-check-marks ms-2">✓✓</span>
+              </div>
+            </div>
+            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="32" height="32" style="object-fit: cover;">
+          </div>
+
+          <!-- Message 4: Neha Tiwari -->
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold small text-dark">Neha Tiwari</span>
+                <span class="text-muted" style="font-size: 10px;">10:12 AM</span>
+              </div>
+              <div class="chat-text-incoming mb-2">
+                I've updated the UI design files. Please review and share feedback.
+              </div>
+              <!-- Figma File Attachment -->
+              <div class="chat-file-card d-flex align-items-center justify-content-between p-2 px-3 border rounded-3 bg-white" style="max-width: 290px;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="chat-file-icon-box text-danger bg-pink-tint">
+                    <i class="ri-pantone-line fs-5"></i>
+                  </div>
+                  <div>
+                    <div class="small fw-semibold text-dark" style="font-size: 12px;">dashboard_design.fig</div>
+                    <div class="text-muted" style="font-size: 10px;">3.2 MB • Figma File</div>
+                  </div>
+                </div>
+                <button class="btn btn-sm text-muted p-0" type="button"><i class="ri-download-2-line fs-5"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 5: Aman Sharma -->
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold small text-dark">Aman Sharma</span>
+                <span class="text-muted" style="font-size: 10px;">10:18 AM</span>
+              </div>
+              <div class="chat-text-incoming">
+                I'm working on the database optimization. Will update by evening.
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 6: Vikram Singh -->
+          <div class="d-flex gap-3 align-items-start">
+            <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fw-bold small text-dark">Vikram Singh</span>
+                <span class="text-muted" style="font-size: 10px;">10:20 AM</span>
+              </div>
+              <div class="chat-text-incoming">
+                Testing for module 3 is completed <span class="text-success">✅</span><br>Found 2 minor issues, creating bug reports now.
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 7: Outgoing 2 (Mine) -->
+          <div class="d-flex justify-content-end align-items-end gap-2 my-1">
+            <div class="d-flex flex-column align-items-end">
+              <span class="text-muted mb-1" style="font-size: 10px;">10:24 AM</span>
+              <div class="chat-bubble-outgoing">
+                Thanks everyone! Keep up the good work! 🚀
+                <span class="chat-check-marks ms-2">✓✓</span>
+              </div>
+            </div>
+            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="32" height="32" style="object-fit: cover;">
+          </div>
+
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="p-3 border-top d-flex align-items-center gap-2" style="background-color: #ffffff;">
+          <button class="dash-item-menu" type="button"><i class="ri-attachment-2 fs-5"></i></button>
+          <input type="text" class="form-control rounded-pill border px-3" style="font-size: 0.85rem;" placeholder="Type a message...">
+          <button class="dash-item-menu" type="button"><i class="ri-emotion-happy-line fs-5"></i></button>
+          <button class="btn btn-warning rounded-circle d-flex align-items-center justify-content-center text-white" style="background-color: #ea580c; border: none; width: 40px; height: 40px; min-width: 40px;">
+            <i class="ri-send-plane-2-fill fs-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Right Conversation Details -->
+      <div class="col-xl-3 p-3 d-flex flex-column" style="background-color: #ffffff;">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Conversation Details</h4>
+          <button class="dash-item-menu" type="button"><i class="ri-pencil-line"></i></button>
+        </div>
+
+        <!-- Group card -->
+        <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3">
+          <div class="chat-circle-icon bg-blue-tint text-primary" style="width: 44px; height: 44px; font-size: 1.25rem;">
+            <i class="ri-group-line"></i>
+          </div>
+          <div>
+            <div class="fw-bold small text-dark" style="font-size: 0.85rem;">Development Team</div>
+            <div class="text-muted" style="font-size: 10px;">Project discussions and development updates.</div>
+          </div>
+        </div>
+
+        <!-- Metadata items -->
+        <div class="d-flex flex-column gap-2 mb-4 small" style="font-size: 0.8rem;">
+          <div class="d-flex align-items-center text-muted"><i class="ri-group-line me-2 text-dark"></i>6 Members</div>
+          <div class="d-flex align-items-center text-muted"><i class="ri-folder-line me-2 text-dark"></i>Project: TaskWave</div>
+          <div class="d-flex align-items-center text-muted"><i class="ri-calendar-line me-2 text-dark"></i>Created on 1 Aug 2026</div>
+          <div class="d-flex align-items-center text-muted"><i class="ri-time-line me-2 text-dark"></i>Last activity: 10:24 AM</div>
+        </div>
+
+        <!-- Members section -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Members (6)</h4>
+          <a href="#" class="small text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">+ Add</a>
+        </div>
+        
+        <div class="d-flex flex-column gap-2 mb-4">
+          <!-- Member 1: Rahul Kumar -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Rahul Kumar</div>
+                <div class="text-danger fw-semibold" style="font-size: 10px;">Admin</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-success fw-semibold" style="font-size: 11px;">Online 👑</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+
+          <!-- Member 2: Priya Singh -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Priya Singh</div>
+                <div class="text-muted" style="font-size: 10px;">Member</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-success fw-semibold" style="font-size: 11px;">Online</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+
+          <!-- Member 3: Aman Sharma -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Aman Sharma</div>
+                <div class="text-muted" style="font-size: 10px;">Member</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-success fw-semibold" style="font-size: 11px;">Online</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+
+          <!-- Member 4: Neha Tiwari -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Neha Tiwari</div>
+                <div class="text-muted" style="font-size: 10px;">Member</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small fw-semibold" style="font-size: 11px; color: #f59e0b;">Away</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+
+          <!-- Member 5: Vikram Singh -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Vikram Singh</div>
+                <div class="text-muted" style="font-size: 10px;">Member</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted fw-semibold" style="font-size: 11px;">Offline</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+
+          <!-- Member 6: Arjun Patel -->
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              <div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">Arjun Patel</div>
+                <div class="text-muted" style="font-size: 10px;">Member</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted fw-semibold" style="font-size: 11px;">Offline</span>
+              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared Files section -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Shared Files</h4>
+          <a href="#" class="small text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">View All</a>
+        </div>
+        
+        <div class="d-flex flex-column gap-2">
+          <!-- File 1: Python -->
+          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
+            <div class="chat-file-icon-box text-primary bg-blue-tint">
+              <i class="ri-file-code-line fs-5"></i>
+            </div>
+            <div>
+              <div class="small fw-semibold text-dark" style="font-size: 12px;">auth_module.py</div>
+              <div class="text-muted" style="font-size: 10px;">12.4 KB • 10:05 AM</div>
+            </div>
+          </div>
+
+          <!-- File 2: Figma -->
+          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
+            <div class="chat-file-icon-box text-danger bg-pink-tint">
+              <i class="ri-pantone-line fs-5"></i>
+            </div>
+            <div>
+              <div class="small fw-semibold text-dark" style="font-size: 12px;">dashboard_design.fig</div>
+              <div class="text-muted" style="font-size: 10px;">3.2 MB • 10:12 AM</div>
+            </div>
+          </div>
+
+          <!-- File 3: PDF -->
+          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
+            <div class="chat-file-icon-box text-danger" style="background-color: #fee2e2; color: #dc2626;">
+              <i class="ri-file-pdf-line fs-5"></i>
+            </div>
+            <div>
+              <div class="small fw-semibold text-dark" style="font-size: 12px;">api_documentation.pdf</div>
+              <div class="text-muted" style="font-size: 10px;">856 KB • Yesterday</div>
+            </div>
+          </div>
+
+          <!-- File 4: SQL -->
+          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
+            <div class="chat-file-icon-box text-info" style="background-color: #e0f2fe; color: #0284c7;">
+              <i class="ri-database-2-line fs-5"></i>
+            </div>
+            <div>
+              <div class="small fw-semibold text-dark" style="font-size: 12px;">database_schema.sql</div>
+              <div class="text-muted" style="font-size: 10px;">4.1 KB • 12 Oct 2026</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}{{ member.get_full_name }} - TaskWave{% endblock %}
+
+{% block content %}
+<div class="page-header-row mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="user-avatar-circle" style="width: 64px; height: 64px; font-size: 1.4rem;">
+      {{ member.get_initials }}
+    </div>
+    <div>
+      <h1 class="page-title">{{ member.get_full_name }}</h1>
+      <div class="text-muted">{{ member.role.name|default:'Team Member' }} • {{ member.department.name|default:'General' }}</div>
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'messaging:start_direct' member.id %}" class="btn-primary-tw">
+      <i class="bi bi-chat-dots me-1"></i>Send Message
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="tw-card mb-4">
+      <h5 class="fw-bold mb-3 fs-6 text-uppercase text-secondary">Contact & Profile</h5>
+      <div class="mb-2"><strong>Email:</strong> <span class="text-muted">{{ member.email }}</span></div>
+      <div class="mb-2"><strong>Phone:</strong> <span class="text-muted">{{ member.phone|default:'N/A' }}</span></div>
+      <div class="mb-2"><strong>Employee ID:</strong> <span class="text-muted">{{ member.employee_id|default:'N/A' }}</span></div>
+      <div class="mb-2"><strong>Account Status:</strong> <span class="badge bg-success-subtle text-success">{{ member.get_account_status_display }}</span></div>
+      <div class="mb-2"><strong>Joined:</strong> <span class="text-muted">{{ member.joined_date|default:'N/A' }}</span></div>
+      {% if member.bio %}
+      <div class="mt-3 pt-3 border-top small text-secondary">
+        <strong>Bio:</strong>
+        <p class="mt-1 mb-0">{{ member.bio }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="tw-card">
+      <h5 class="fw-bold mb-3 fs-6 text-uppercase text-secondary">Skills & Expertise</h5>
+      <div class="d-flex flex-wrap gap-1">
+        {% for s in member.skills.split %}
+        <span class="badge bg-light text-dark border p-2">{{ s|cut:"," }}</span>
+        {% empty %}
+        <span class="text-muted small">No skills listed.</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="tw-card mb-4">
+      <h5 class="tw-card-title mb-3"><i class="bi bi-check2-square me-2 text-warning"></i>Assigned Workload ({{ task_stats.total }} Tasks)</h5>
+      <div class="row g-2 mb-3 text-center">
+        <div class="col-4">
+          <div class="p-2 border rounded bg-light">
+            <div class="stat-label">In Progress</div>
+            <div class="fw-bold text-primary fs-5">{{ task_stats.in_progress }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="p-2 border rounded bg-light">
+            <div class="stat-label">Completed</div>
+            <div class="fw-bold text-success fs-5">{{ task_stats.completed }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="p-2 border rounded bg-light">
+            <div class="stat-label">Pending</div>
+            <div class="fw-bold text-secondary fs-5">{{ task_stats.pending }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tw-table-container">
+        <table class="tw-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Due Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in assigned_tasks %}
+            <tr>
+              <td>
+                <a href="{% url 'tasks:task_detail' t.id %}" class="text-dark fw-semibold text-decoration-none">
+                  {{ t.title }}
+                </a>
+              </td>
+              <td><span class="badge-status badge-{{ t.status }}">{{ t.get_status_display }}</span></td>
+              <td class="small text-muted">{{ t.due_date|default:'None' }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center py-3 text-muted">No active assigned tasks.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

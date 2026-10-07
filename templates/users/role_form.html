@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - TaskWave{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h1 class="page-title">{{ title }}</h1>
+        <div class="page-subtitle">Define role scope and assign backend security privileges.</div>
+      </div>
+      <a href="{% url 'users:roles_list' %}" class="btn-outline-tw">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </a>
+    </div>
+
+    <div class="tw-card">
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">ROLE NAME</label>
+          {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">DESCRIPTION</label>
+          {{ form.description }}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold text-secondary d-block">PERMISSIONS</label>
+          <div class="p-3 border rounded-3 bg-light" style="max-height: 320px; overflow-y: auto;">
+            {{ form.permissions }}
+          </div>
+        </div>
+
+        <div class="form-check mb-4">
+          {{ form.is_active }}
+          <label class="form-check-label small fw-semibold text-secondary" for="{{ form.is_active.id_for_label }}">
+            Role is Active
+          </label>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'users:roles_list' %}" class="btn btn-outline-secondary">Cancel</a>
+          <button type="submit" class="btn-primary-tw">Save Role</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

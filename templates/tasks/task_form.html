@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit or task.id %}Edit Task{% else %}Create Task{% endif %} - TaskWave{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  {% if is_edit or task.id %}
+  <div class="mb-2">
+    <a href="{% if task.id %}{% url 'tasks:task_detail' task.id %}{% else %}{% url 'tasks:task_list' %}{% endif %}" class="text-decoration-none text-secondary small fw-medium">
+      <i class="ri-arrow-left-line me-1"></i>Back to Task Details
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="page-title mb-1">{% if is_edit or task.id %}Edit Task{% else %}Create Task{% endif %}</h1>
+      <div class="page-subtitle">{% if is_edit or task.id %}Update task information, assignees, and settings.{% else %}Create a new task and assign it to team members.{% endif %}</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      {% if is_edit or task.id %}
+        <a href="{% if task.id %}{% url 'tasks:task_detail' task.id %}{% else %}#{% endif %}" class="btn bg-white border text-dark fw-medium px-3 py-2" style="border-radius: 8px;">
+          <i class="ri-eye-line me-1"></i>View Task
+        </a>
+        <a href="{% if task.id %}{% url 'tasks:task_delete' task.id %}{% else %}#{% endif %}" class="btn btn-outline-danger fw-medium px-3 py-2" style="border-radius: 8px;">
+          <i class="ri-delete-bin-line me-1"></i>Delete Task
+        </a>
+        <button type="submit" form="taskForm" class="btn text-white fw-medium px-3 py-2" style="background-color: #b45309; border-radius: 8px;">
+          <i class="ri-check-line me-1"></i>Save Changes
+        </button>
+      {% else %}
+        <a href="{% url 'tasks:task_list' %}" class="btn bg-white border text-dark fw-medium px-3 py-2" style="border-radius: 8px;">
+          Cancel
+        </a>
+        <button type="submit" form="taskForm" class="btn text-white fw-medium px-3 py-2" style="background-color: #b45309; border-radius: 8px;">
+          <i class="ri-check-line me-1"></i>Create Task
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <form method="POST" id="taskForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-4">
+      <!-- Left Column (65%) -->
+      <div class="col-lg-8">
+        <!-- 1. Basic Information -->
+        <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <i class="ri-file-text-line" style="font-size: 15px;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-0 fs-6">Basic Information</h5>
+          </div>
+          <div class="text-muted small mb-3">{% if is_edit or task.id %}Update the main details of the task.{% else %}Provide the main details about the task.{% endif %}</div>
+
+          <!-- Task Title -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">Task Title <span class="text-danger">*</span></label>
+            <input type="text" name="title" class="form-control" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" value="{% if task.title %}{{ task.title }}{% elif is_edit %}API documentation and testing{% else %}Design and implement user authentication module{% endif %}" required>
+          </div>
+
+          <!-- Task Description -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">Task Description <span class="text-danger">*</span></label>
+            <!-- Rich toolbar mock -->
+            <div class="d-flex align-items-center gap-2 p-2 border border-bottom-0 bg-light" style="border-top-left-radius: 8px; border-top-right-radius: 8px; border-color: #e2e8f0 !important;">
+              <select class="form-select form-select-sm border-0 bg-transparent text-secondary fw-medium" style="width: auto; font-size: 12px;">
+                <option>Normal</option>
+                <option>Heading 1</option>
+                <option>Heading 2</option>
+              </select>
+              <div class="vr" style="height: 16px;"></div>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 fw-bold">B</button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 fst-italic">I</button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0 text-decoration-underline">U</button>
+              <div class="vr" style="height: 16px;"></div>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-list-unordered"></i></button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-list-ordered"></i></button>
+              <div class="vr" style="height: 16px;"></div>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-link"></i></button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-image-line"></i></button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-code-line"></i></button>
+              <button type="button" class="btn btn-sm text-secondary p-0 px-1 border-0"><i class="ri-expand-diagonal-line"></i></button>
+            </div>
+            <textarea name="description" class="form-control border-top-0" rows="6" style="border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; border-color: #e2e8f0; font-size: 13.5px; line-height: 1.6;">{% if task.description %}{{ task.description }}{% elif is_edit %}Create complete API documentation for the backend services and perform testing for all endpoints.
+• Endpoint URL and method
+• Request parameters
+• Response examples
+• Error handling
+• Authentication details
+• Test all endpoints using Postman and document the test results.{% else %}Design and implement a secure user authentication module with the following features:
+• User login and logout
+• Password encryption
+• Role-based access control
+• Session management
+• Proper error handling and validation
+• Write reusable and clean code with comments{% endif %}</textarea>
+          </div>
+
+          <!-- Project / Department / Task Category Row -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-dark mb-1">Project <span class="text-danger">*</span></label>
+              <select name="project" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+                <option selected>TaskWave (Main System)</option>
+                <option>College Portal</option>
+                <option>Mobile App Development</option>
+                <option>Internal Tools</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-dark mb-1">Department <span class="text-danger">*</span></label>
+              <select name="department" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+                <option selected>Development</option>
+                <option>Design</option>
+                <option>Quality Assurance</option>
+                <option>DevOps</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-dark mb-1">Task Category</label>
+              <select name="category" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+                <option selected>Backend Development</option>
+                <option>Frontend Development</option>
+                <option>UI/UX Design</option>
+                <option>Testing & QA</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Priority / Status / Dates Row -->
+          <div class="row g-3">
+            <div class="{% if is_edit or task.id %}col-md-2{% else %}col-md-3{% endif %}">
+              <label class="form-label small fw-semibold text-dark mb-1">Priority <span class="text-danger">*</span></label>
+              <select name="priority" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+                <option selected value="high">⚑ High</option>
+                <option value="medium">⚑ Medium</option>
+                <option value="low">⚑ Low</option>
+              </select>
+            </div>
+            {% if is_edit or task.id %}
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold text-dark mb-1">Status <span class="text-danger">*</span></label>
+              <select name="status" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+                <option selected value="in_progress">● In Progress</option>
+                <option value="todo">● To Do</option>
+                <option value="review">● Under Review</option>
+                <option value="completed">● Completed</option>
+              </select>
+            </div>
+            {% endif %}
+            <div class="{% if is_edit or task.id %}col-md-2{% else %}col-md-3{% endif %}">
+              <label class="form-label small fw-semibold text-dark mb-1">Start Date <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0;"><i class="ri-calendar-line"></i></span>
+                <input type="text" name="start_date" class="form-control border-start-0" value="12 Oct 2026" style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13.5px;">
+              </div>
+            </div>
+            <div class="{% if is_edit or task.id %}col-md-2{% else %}col-md-3{% endif %}">
+              <label class="form-label small fw-semibold text-dark mb-1">Due Date <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0;"><i class="ri-calendar-line"></i></span>
+                <input type="text" name="due_date" class="form-control border-start-0" value="{% if is_edit or task.id %}14 Oct 2026{% else %}18 Oct 2026{% endif %}" style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13.5px;">
+              </div>
+            </div>
+            <div class="{% if is_edit or task.id %}col-md-3{% else %}col-md-3{% endif %}">
+              <label class="form-label small fw-semibold text-dark mb-1">Estimated Hours</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0;"><i class="ri-time-line"></i></span>
+                <input type="number" name="estimated_hours" class="form-control border-start-0" value="{% if is_edit or task.id %}8{% else %}16{% endif %}" style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13.5px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Subtasks -->
+        <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-list-check" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">
+                {% if is_edit or task.id %}Subtasks (3/5 completed){% else %}Subtasks{% endif %}
+              </h5>
+            </div>
+            <button type="button" class="btn btn-sm bg-white border text-dark fw-medium px-2 py-1" style="border-radius: 6px; font-size: 12px;">
+              <i class="ri-add-line me-1"></i>Add Subtask
+            </button>
+          </div>
+          {% if not is_edit and not task.id %}
+          <div class="text-muted small mb-3">Break down the task into smaller subtasks.</div>
+          {% endif %}
+
+          {% if is_edit or task.id %}
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 999px;">
+              <div class="progress-bar bg-success" style="width: 60%; border-radius: 999px;"></div>
+            </div>
+            <span class="small fw-bold text-secondary">60%</span>
+          </div>
+          {% endif %}
+
+          <div class="d-flex flex-column gap-2">
+            {% if is_edit or task.id %}
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Create API endpoint list</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>12 Oct 2026</span>
+                  <i class="ri-pencil-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Write request/response examples</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>13 Oct 2026</span>
+                  <i class="ri-pencil-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" checked style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Test all endpoints</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>13 Oct 2026</span>
+                  <i class="ri-pencil-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Add error handling documentation</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>14 Oct 2026</span>
+                  <i class="ri-pencil-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Review and finalize documentation</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>14 Oct 2026</span>
+                  <i class="ri-pencil-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+            {% else %}
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Design database schema for users</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>12 Oct 2026</span>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Implement login functionality</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>14 Oct 2026</span>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Add role-based access control</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>15 Oct 2026</span>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded-3 bg-white">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-draggable text-muted"></i>
+                  <input class="form-check-input mt-0" type="checkbox" style="border-color: #cbd5e1;">
+                  <span class="small text-dark fw-medium">Test authentication flow</span>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-muted small">
+                  <span><i class="ri-calendar-line me-1"></i>17 Oct 2026</span>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- 3. Attachments -->
+        <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <i class="ri-attachment-2" style="font-size: 15px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-0 fs-6">Attachments</h5>
+            </div>
+            {% if is_edit or task.id %}
+            <button type="button" class="btn btn-sm bg-white border text-dark fw-medium px-2 py-1" style="border-radius: 6px; font-size: 12px;">
+              <i class="ri-upload-2-line me-1"></i>Upload File
+            </button>
+            {% endif %}
+          </div>
+          <div class="text-muted small mb-3">
+            {% if is_edit or task.id %}Manage task files and attachments.{% else %}Upload relevant files, documents, or references.{% endif %}
+          </div>
+
+          {% if is_edit or task.id %}
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="{% static 'img/files/file_docx.svg' %}" width="32" height="32" alt="DOCX">
+                  <div>
+                    <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">api_structure.docx</div>
+                    <div class="text-muted" style="font-size: 11px;">245 KB • 12 Oct 2026</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                  <i class="ri-download-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; background: #ea580c; font-size: 11px;">&lt;/&gt;</div>
+                  <div>
+                    <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">sample_response.json</div>
+                    <div class="text-muted" style="font-size: 11px;">12 KB • 12 Oct 2026</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                  <i class="ri-download-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-2 border rounded-3 bg-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <img src="{% static 'img/files/file_pdf.svg' %}" width="32" height="32" alt="PDF">
+                  <div>
+                    <div class="fw-semibold text-dark small text-truncate" style="max-width: 110px;">api_reference.pdf</div>
+                    <div class="text-muted" style="font-size: 11px;">1.2 MB • 11 Oct 2026</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                  <i class="ri-download-line cursor-pointer"></i>
+                  <i class="ri-close-line cursor-pointer"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="border border-dashed rounded-3 p-4 text-center" style="border-color: #cbd5e1 !important; background-color: #fafbfc;">
+            <i class="ri-upload-cloud-line text-secondary" style="font-size: 28px;"></i>
+            <div class="fw-medium text-dark small mt-2">Drag & drop files here or click to upload</div>
+            <div class="text-muted" style="font-size: 11px; margin-top: 4px;">Supported formats: PDF, DOC, DOCX, PNG, JPG, ZIP (Max 10MB each)</div>
+            <input type="file" name="attachments" multiple class="d-none" id="fileUploadInput">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right Column (35%) -->
+      <div class="col-lg-4">
+        <!-- 1. Assign Members -->
+        <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <i class="ri-group-line" style="font-size: 15px;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-0 fs-6">Assign Members</h5>
+          </div>
+          <div class="text-muted small mb-3">{% if is_edit or task.id %}Update team members assigned to this task.{% else %}Select team members to assign this task.{% endif %}</div>
+
+          <!-- Search members -->
+          <div class="input-group mb-3">
+            <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0; font-size: 13px;"><i class="ri-search-line"></i></span>
+            <input type="text" class="form-control border-start-0" placeholder="Search members..." style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13px;">
+          </div>
+
+          <!-- Member List -->
+          <div class="d-flex flex-column gap-3">
+            <!-- Member 1: Rahul Kumar -->
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0" type="checkbox" name="assignees" value="1" checked style="border-color: #cbd5e1;">
+                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark small">Rahul Kumar</div>
+                  <div class="text-muted" style="font-size: 11px;">Software Developer</div>
+                </div>
+              </div>
+              <span class="badge text-success bg-transparent p-0 small fw-normal"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Available</span>
+            </div>
+
+            <!-- Member 2: Priya Singh -->
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0" type="checkbox" name="assignees" value="2" checked style="border-color: #cbd5e1;">
+                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark small">Priya Singh</div>
+                  <div class="text-muted" style="font-size: 11px;">UI/UX Designer</div>
+                </div>
+              </div>
+              <span class="badge text-success bg-transparent p-0 small fw-normal"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Available</span>
+            </div>
+
+            <!-- Member 3: Aman Sharma -->
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0" type="checkbox" name="assignees" value="3" style="border-color: #cbd5e1;">
+                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark small">Aman Sharma</div>
+                  <div class="text-muted" style="font-size: 11px;">Software Developer</div>
+                </div>
+              </div>
+              <span class="badge text-success bg-transparent p-0 small fw-normal"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Available</span>
+            </div>
+
+            <!-- Member 4: Neha Tiwari -->
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0" type="checkbox" name="assignees" value="4" style="border-color: #cbd5e1;">
+                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark small">Neha Tiwari</div>
+                  <div class="text-muted" style="font-size: 11px;">QA Engineer</div>
+                </div>
+              </div>
+              <span class="badge text-warning bg-transparent p-0 small fw-normal" style="color: #f59e0b !important;"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #f59e0b;"></i>Busy</span>
+            </div>
+
+            <!-- Member 5: Vikram Singh -->
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <input class="form-check-input mt-0" type="checkbox" name="assignees" value="5" style="border-color: #cbd5e1;">
+                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark small">Vikram Singh</div>
+                  <div class="text-muted" style="font-size: 11px;">DevOps Engineer</div>
+                </div>
+              </div>
+              <span class="badge text-success bg-transparent p-0 small fw-normal"><i class="ri-checkbox-blank-circle-fill me-1" style="font-size: 7px; color: #10b981;"></i>Available</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Additional Settings -->
+        <div class="tw-card mb-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <i class="ri-settings-3-line" style="font-size: 15px;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-0 fs-6">Additional Settings</h5>
+          </div>
+          <div class="text-muted small mb-3">
+            {% if is_edit or task.id %}Update task configuration.{% else %}Configure additional task settings.{% endif %}
+          </div>
+
+          {% if not is_edit and not task.id %}
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-dark mb-1">Task Status</label>
+              <select name="status" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+                <option selected>● To Do</option>
+                <option>● In Progress</option>
+                <option>● Under Review</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-dark mb-1">Visibility</label>
+              <select name="visibility" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+                <option selected>🔒 Project Members</option>
+                <option>🌍 Public</option>
+                <option>🔒 Private</option>
+              </select>
+            </div>
+          </div>
+          {% else %}
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">Visibility</label>
+            <select name="visibility" class="form-select" style="border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+              <option selected>🔒 Project Members</option>
+              <option>🌍 Public</option>
+              <option>🔒 Private</option>
+            </select>
+          </div>
+          {% endif %}
+
+          <!-- Labels / Tags -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">{% if is_edit or task.id %}Task Tags{% else %}Labels / Tags{% endif %}</label>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              {% if is_edit or task.id %}
+                <span class="badge px-2 py-1 text-primary fw-medium" style="background: #eef2ff; font-size: 12px; border-radius: 6px;">api <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+                <span class="badge px-2 py-1 text-warning fw-medium" style="background: #fffbeb; color: #b45309 !important; font-size: 12px; border-radius: 6px;">backend <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+                <span class="badge px-2 py-1 text-danger fw-medium" style="background: #fef2f2; font-size: 12px; border-radius: 6px;">testing <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+              {% else %}
+                <span class="badge px-2 py-1 text-primary fw-medium" style="background: #eef2ff; font-size: 12px; border-radius: 6px;">authentication <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+                <span class="badge px-2 py-1 text-warning fw-medium" style="background: #fffbeb; color: #b45309 !important; font-size: 12px; border-radius: 6px;">backend <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+                <span class="badge px-2 py-1 text-danger fw-medium" style="background: #fef2f2; font-size: 12px; border-radius: 6px;">security <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+              {% endif %}
+              <button type="button" class="btn btn-sm bg-white border text-secondary px-2 py-1" style="border-radius: 6px; font-size: 11px;">+ Add Tag</button>
+            </div>
+          </div>
+
+          <!-- Related Tasks -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark mb-1">Related Tasks</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0; font-size: 13px;"><i class="ri-search-line"></i></span>
+              <input type="text" class="form-control border-start-0" placeholder="Search and select related tasks..." style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13px;">
+            </div>
+            {% if is_edit or task.id %}
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <span class="badge px-2 py-1 text-primary fw-medium" style="background: #eff6ff; font-size: 12px; border-radius: 6px;">#TW-1025 Database optimization <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Dependencies -->
+          <div class="mb-2">
+            <label class="form-label small fw-semibold text-dark mb-1">Dependencies</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; border: 1px solid #e2e8f0; font-size: 13px;"><i class="ri-search-line"></i></span>
+              <input type="text" class="form-control border-start-0" placeholder="Select dependent tasks..." style="border-radius: 0 8px 8px 0; border: 1px solid #e2e8f0; font-size: 13px;">
+            </div>
+            {% if is_edit or task.id %}
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <span class="badge px-2 py-1 text-purple fw-medium" style="background: #faf5ff; color: #7c3aed; font-size: 12px; border-radius: 6px;">#TW-1026 UI design revisions <i class="ri-close-line ms-1 cursor-pointer"></i></span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- 3. Notification Settings -->
+        <div class="tw-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 24px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div style="width: 24px; height: 24px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <i class="ri-notification-3-line" style="font-size: 15px;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-0 fs-6">Notification Settings</h5>
+          </div>
+          <div class="text-muted small mb-3">
+            {% if is_edit or task.id %}Update notification preferences.{% else %}Choose who should be notified.{% endif %}
+          </div>
+
+          <div class="d-flex flex-column gap-2 mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" checked id="notifyAssignees" style="border-color: #cbd5e1;">
+              <label class="form-check-label small text-dark" for="notifyAssignees">Notify assignees</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" checked id="notifyProject" style="border-color: #cbd5e1;">
+              <label class="form-check-label small text-dark" for="notifyProject">Notify project members</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="notifyDept" style="border-color: #cbd5e1;">
+              <label class="form-check-label small text-dark" for="notifyDept">Notify department head</label>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" {% if is_edit or task.id %}checked{% endif %} id="setReminder" style="border-color: #cbd5e1;">
+                <label class="form-check-label small text-dark" for="setReminder">Set reminder before due date</label>
+              </div>
+              <select class="form-select form-select-sm" style="width: 120px; font-size: 12px; border-radius: 6px; border-color: #e2e8f0;">
+                <option selected>1 day before</option>
+                <option>2 days before</option>
+                <option>1 hour before</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

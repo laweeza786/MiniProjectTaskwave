@@ -1,0 +1,49 @@
+{% load static %}
+<header class="app-header">
+  <div class="header-left">
+    <button class="header-menu-btn" id="sidebarToggle" type="button" aria-label="Toggle navigation">
+      <i class="ri-menu-line"></i>
+    </button>
+    <form class="header-search-form" action="{% url 'core:search' %}" method="GET">
+      <i class="ri-search-line"></i>
+      <input type="text" name="q" placeholder="Search tasks, projects, members..." value="{{ request.GET.q|default:'' }}">
+    </form>
+  </div>
+
+  <div class="header-right">
+    <!-- Theme Toggle (Moon Icon) -->
+    <button class="header-action-icon" type="button" title="Toggle Dark Mode" id="themeToggleBtn">
+      <i class="ri-moon-line"></i>
+    </button>
+
+    <!-- Notification Bell Icon with Red Dot -->
+    <a href="{% url 'notifications:list' %}" class="header-action-icon" title="Notifications">
+      <i class="ri-notification-3-line"></i>
+      <span class="header-notification-dot"></span>
+    </a>
+
+    <!-- User Profile Dropdown -->
+    <div class="dropdown">
+      <div class="header-user-profile" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+        {% if request.user.profile_picture %}
+        <img src="{{ request.user.profile_picture.url }}" alt="avatar" class="header-avatar-img">
+        {% else %}
+        <div class="header-avatar-circle">
+          <i class="ri-user-fill"></i>
+        </div>
+        {% endif %}
+        <div class="header-user-details">
+          <div class="header-user-name">{% if request.user.is_superuser %}Admin{% else %}{{ request.user.first_name|default:'Admin' }}{% endif %}</div>
+          <div class="header-user-role">{% if request.user.is_superuser or request.user.role.name == 'Administrator' %}System Administrator{% else %}{{ request.user.role.name|default:'System Administrator' }}{% endif %}</div>
+        </div>
+      </div>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userMenuDropdown">
+        <li><a class="dropdown-item py-2" href="{% url 'users:profile' %}"><i class="ri-user-line me-2"></i>My Profile</a></li>
+        <li><a class="dropdown-item py-2" href="{% url 'notifications:preferences' %}"><i class="ri-settings-4-line me-2"></i>Preferences</a></li>
+        <li><a class="dropdown-item py-2" href="{% url 'core:help_support' %}"><i class="ri-question-line me-2"></i>Help & Support</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item py-2 text-danger" href="{% url 'accounts:logout' %}"><i class="ri-logout-box-r-line me-2"></i>Sign out</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

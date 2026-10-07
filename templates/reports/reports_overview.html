@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reports - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Header Row -->
+  <div class="dash-header-row mb-3">
+    <div>
+      <h1 class="dash-title">Reports</h1>
+      <div class="dash-subtitle">Generate detailed reports to analyze productivity, tasks, and team performance.</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-white border px-3 py-2 bg-white text-secondary" style="border-radius: 8px; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border-color: #e2e8f0 !important;">
+        <i class="ri-calendar-line text-muted"></i> Schedule Report
+      </button>
+      <button class="btn-primary-tw" style="background-color: #ea580c; border: none; padding: 8px 18px; border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+        <i class="ri-add-line" style="font-size: 1.05rem;"></i> Generate Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="d-flex align-items-center gap-4 border-bottom mb-4" style="border-color: #edf2f7 !important;">
+    <a href="#" class="pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2" style="color: #0f172a; font-size: 0.86rem; border-bottom: 2px solid #ea580c;">
+      <i class="ri-bar-chart-2-line" style="color: #ea580c;"></i> Overview
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2" style="font-size: 0.86rem;">
+      <i class="ri-file-list-3-line"></i> Task Reports
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2" style="font-size: 0.86rem;">
+      <i class="ri-group-line"></i> Member Reports
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2" style="font-size: 0.86rem;">
+      <i class="ri-folder-line"></i> Project Reports
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2" style="font-size: 0.86rem;">
+      <i class="ri-node-tree"></i> Department Reports
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2" style="font-size: 0.86rem;">
+      <i class="ri-time-line"></i> Overtime Reports
+    </a>
+  </div>
+
+  <!-- 4 Stat KPI Cards Grid -->
+  <div class="dash-kpi-grid mb-4">
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+          <i class="ri-checkbox-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Tasks</span>
+          <span class="dash-kpi-value">128</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+          <i class="ri-checkbox-circle-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed Tasks</span>
+          <span class="dash-kpi-value">96</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 18%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Pending Tasks</span>
+          <span class="dash-kpi-value">24</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 8%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
+          <i class="ri-group-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Active Members</span>
+          <span class="dash-kpi-value">22</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 10%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (Reports Grids Left + Filters/Recent Sidebar Right) -->
+  <div class="row g-4">
+    <!-- Left Section -->
+    <div class="col-xl-9 col-lg-8">
+      <div class="d-flex flex-column gap-4">
+        <!-- Row 1: Line Chart + Donut Chart -->
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Task Completion Report</h6>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="d-flex align-items-center gap-3" style="font-size: 0.75rem; color: #64748b;">
+                    <span class="d-flex align-items-center gap-1"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3b82f6;"></span> Assigned</span>
+                    <span class="d-flex align-items-center gap-1"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e;"></span> Completed</span>
+                  </div>
+                  <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
+                    <option selected>Last 30 Days</option>
+                    <option>Last 7 Days</option>
+                    <option>This Year</option>
+                  </select>
+                </div>
+              </div>
+              <div style="height: 200px; position: relative;">
+                <canvas id="taskCompletionChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Task Status Report</h6>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div style="width: 140px; height: 140px; position: relative; flex-shrink: 0;">
+                  <canvas id="taskStatusDonutChart"></canvas>
+                  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div class="fw-bold text-dark" style="font-size: 1.3rem; line-height: 1;">128</div>
+                    <div class="text-muted" style="font-size: 0.68rem;">Total Tasks</div>
+                  </div>
+                </div>
+                <div class="d-flex flex-column gap-2 flex-grow-1" style="font-size: 0.78rem;">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981;"></span> Completed</span>
+                    <span class="text-muted">96 <span class="ms-1" style="font-size: 0.72rem;">75%</span></span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3b82f6;"></span> In Progress</span>
+                    <span class="text-muted">14 <span class="ms-1" style="font-size: 0.72rem;">11%</span></span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8;"></span> To Do</span>
+                    <span class="text-muted">10 <span class="ms-1" style="font-size: 0.72rem;">8%</span></span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #f59e0b;"></span> Review</span>
+                    <span class="text-muted">6 <span class="ms-1" style="font-size: 0.72rem;">5%</span></span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></span> Overdue</span>
+                    <span class="text-muted">2 <span class="ms-1" style="font-size: 0.72rem;">1%</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Project Progress Report + Tasks by Department -->
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Project Progress Report</h6>
+              <div class="table-responsive">
+                <table class="table align-middle mb-0" style="font-size: 0.8rem;">
+                  <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.72rem;">
+                    <tr>
+                      <th>Project</th>
+                      <th class="text-center">Total Tasks</th>
+                      <th class="text-center">Completed</th>
+                      <th class="text-center">Pending</th>
+                      <th class="text-center">Overdue</th>
+                      <th style="width: 120px;">Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-computer-line text-muted"></i>
+                          <span class="fw-semibold text-dark">TaskWave (Main System)</span>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">40</td>
+                      <td class="text-center text-muted">32</td>
+                      <td class="text-center text-muted">6</td>
+                      <td class="text-center text-muted">2</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 80%; background-color: #10b981; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">80%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-bank-line text-muted"></i>
+                          <span class="fw-semibold text-dark">College Portal</span>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">40</td>
+                      <td class="text-center text-muted">26</td>
+                      <td class="text-center text-muted">10</td>
+                      <td class="text-center text-muted">4</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 65%; background-color: #3b82f6; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">65%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-smartphone-line text-muted"></i>
+                          <span class="fw-semibold text-dark">Mobile App</span>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">30</td>
+                      <td class="text-center text-muted">12</td>
+                      <td class="text-center text-muted">15</td>
+                      <td class="text-center text-muted">3</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 40%; background-color: #ea580c; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">40%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-tools-line text-muted"></i>
+                          <span class="fw-semibold text-dark">Internal Tools</span>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">20</td>
+                      <td class="text-center text-muted">18</td>
+                      <td class="text-center text-muted">2</td>
+                      <td class="text-center text-muted">0</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 90%; background-color: #8b5cf6; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">90%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-global-line text-muted"></i>
+                          <span class="fw-semibold text-dark">Website Redesign</span>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">20</td>
+                      <td class="text-center text-muted">5</td>
+                      <td class="text-center text-muted">12</td>
+                      <td class="text-center text-muted">3</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 25%; background-color: #ef4444; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">25%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Tasks by Department</h6>
+                <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
+                  <option selected>Last 30 Days</option>
+                  <option>Last 7 Days</option>
+                </select>
+              </div>
+              <div style="height: 220px; position: relative;">
+                <canvas id="tasksByDeptChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Member Performance Report + Overtime Report -->
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Member Performance Report</h6>
+              <div class="table-responsive">
+                <table class="table align-middle mb-0" style="font-size: 0.8rem;">
+                  <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.72rem;">
+                    <tr>
+                      <th style="width: 24px;">#</th>
+                      <th>Member</th>
+                      <th class="text-center">Total Tasks</th>
+                      <th class="text-center">Completed</th>
+                      <th class="text-center">Pending</th>
+                      <th class="text-center">Overdue</th>
+                      <th style="width: 110px;">Completion Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td class="text-muted">1</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                          <div>
+                            <div class="fw-semibold text-dark">Rahul Kumar</div>
+                            <div class="text-muted" style="font-size: 0.68rem;">Development</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">28</td>
+                      <td class="text-center text-muted">26</td>
+                      <td class="text-center text-muted">2</td>
+                      <td class="text-center text-muted">0</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 93%; background-color: #06b6d4; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">93%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td class="text-muted">2</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                          <div>
+                            <div class="fw-semibold text-dark">Priya Singh</div>
+                            <div class="text-muted" style="font-size: 0.68rem;">Design</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">24</td>
+                      <td class="text-center text-muted">22</td>
+                      <td class="text-center text-muted">2</td>
+                      <td class="text-center text-muted">0</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 63%; background-color: #3b82f6; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">63%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td class="text-muted">3</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                          <div>
+                            <div class="fw-semibold text-dark">Aman Sharma</div>
+                            <div class="text-muted" style="font-size: 0.68rem;">Development</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">20</td>
+                      <td class="text-center text-muted">16</td>
+                      <td class="text-center text-muted">3</td>
+                      <td class="text-center text-muted">1</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 80%; background-color: #ea580c; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">80%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td class="text-muted">4</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                          <div>
+                            <div class="fw-semibold text-dark">Neha Tiwari</div>
+                            <div class="text-muted" style="font-size: 0.68rem;">QA</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">18</td>
+                      <td class="text-center text-muted">12</td>
+                      <td class="text-center text-muted">4</td>
+                      <td class="text-center text-muted">2</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 67%; background-color: #8b5cf6; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">67%</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted">5</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                          <div>
+                            <div class="fw-semibold text-dark">Vikram Singh</div>
+                            <div class="text-muted" style="font-size: 0.68rem;">Infrastructure</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="text-center text-muted">16</td>
+                      <td class="text-center text-muted">10</td>
+                      <td class="text-center text-muted">4</td>
+                      <td class="text-center text-muted">2</td>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                            <div class="progress-bar" style="width: 62%; background-color: #ef4444; border-radius: 9999px;"></div>
+                          </div>
+                          <span class="text-muted" style="font-size: 0.72rem;">62%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Overtime Report</h6>
+                <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
+                  <option selected>Last 30 Days</option>
+                  <option>Last 7 Days</option>
+                </select>
+              </div>
+
+              <!-- Mini summary row -->
+              <div class="d-flex align-items-center justify-content-between p-2 rounded mb-2" style="background-color: #f8fafc; font-size: 0.76rem;">
+                <div class="d-flex align-items-center gap-1">
+                  <i class="ri-time-line text-primary"></i>
+                  <span>Total: <strong>31.5h</strong></span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <i class="ri-checkbox-circle-line text-success"></i>
+                  <span>Approved: <strong>21.5h</strong></span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <i class="ri-hourglass-line text-warning"></i>
+                  <span>Pending: <strong>8h</strong></span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <i class="ri-close-circle-line text-danger"></i>
+                  <span>Rejected: <strong>2h</strong></span>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-center gap-3 mb-2" style="font-size: 0.72rem; color: #64748b;">
+                <span class="d-flex align-items-center gap-1"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981;"></span> Approved</span>
+                <span class="d-flex align-items-center gap-1"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #f59e0b;"></span> Pending</span>
+                <span class="d-flex align-items-center gap-1"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></span> Rejected</span>
+              </div>
+
+              <div style="height: 155px; position: relative;">
+                <canvas id="overtimeStackedChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Section -->
+    <div class="col-xl-3 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Report Filters Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Report Filters</h6>
+            <a href="#" class="text-decoration-none text-muted" style="font-size: 0.78rem;">Reset</a>
+          </div>
+          <div class="d-flex flex-column gap-2 mb-3">
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Date Range</label>
+              <div class="d-flex align-items-center gap-2 px-3 py-2 bg-light border rounded" style="font-size: 0.8rem; color: #334155;">
+                <i class="ri-calendar-line text-muted"></i>
+                <span class="flex-grow-1">1 Oct 2026 - 31 Oct 2026</span>
+                <i class="ri-arrow-down-s-line text-muted"></i>
+              </div>
+            </div>
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Project</label>
+              <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+                <option selected>All Projects</option>
+                <option>TaskWave</option>
+                <option>Mobile App</option>
+                <option>College Portal</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Department</label>
+              <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+                <option selected>All Departments</option>
+                <option>Development</option>
+                <option>Design</option>
+                <option>QA</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Member</label>
+              <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+                <option selected>All Members</option>
+                <option>Rahul Kumar</option>
+                <option>Priya Singh</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Task Status</label>
+              <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+                <option selected>All Status</option>
+                <option>Completed</option>
+                <option>In Progress</option>
+                <option>Pending</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label text-muted mb-1" style="font-size: 0.72rem;">Report Type</label>
+              <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+                <option selected>All Reports</option>
+                <option>Productivity</option>
+                <option>Milestones</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn w-100 text-white" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.84rem; padding: 8px;">
+            <i class="ri-filter-3-line me-1"></i> Apply Filters
+          </button>
+        </div>
+
+        <!-- Recent Reports Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Reports</h6>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+          </div>
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; background-color: #e0f2fe; color: #0284c7;">
+                  <i class="ri-bar-chart-2-line" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Monthly Task Report</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">1 Oct 2026 - 31 Oct 2026</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted" style="font-size: 0.7rem;">2 hours ago</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-1"><i class="ri-more-2-fill"></i></button>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; background-color: #dcfce7; color: #16a34a;">
+                  <i class="ri-group-line" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Member Performance Report</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">October 2026</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted" style="font-size: 0.7rem;">1 day ago</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-1"><i class="ri-more-2-fill"></i></button>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; background-color: #ffedd5; color: #ea580c;">
+                  <i class="ri-folder-line" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Project Progress Report</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">October 2026</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted" style="font-size: 0.7rem;">2 days ago</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-1"><i class="ri-more-2-fill"></i></button>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; background-color: #fee2e2; color: #ef4444;">
+                  <i class="ri-time-line" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Overtime Report</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">October 2026</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted" style="font-size: 0.7rem;">3 days ago</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-1"><i class="ri-more-2-fill"></i></button>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; background-color: #f3e8ff; color: #9333ea;">
+                  <i class="ri-node-tree" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Department Report</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">October 2026</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="text-muted" style="font-size: 0.7rem;">5 days ago</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-1"><i class="ri-more-2-fill"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Report Card -->
+        <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Export Report</h6>
+          <div class="d-flex align-items-center justify-content-between gap-2">
+            <a href="{% url 'reports:export_tasks' %}" class="btn flex-fill text-center border p-2 text-decoration-none" style="border-radius: 8px; background-color: #fff;">
+              <div class="badge rounded mb-1 px-2 py-1 text-white" style="background-color: #ef4444; font-size: 0.65rem;">PDF</div>
+              <div class="text-dark fw-semibold" style="font-size: 0.74rem;">PDF</div>
+            </a>
+            <a href="{% url 'reports:export_tasks' %}" class="btn flex-fill text-center border p-2 text-decoration-none" style="border-radius: 8px; background-color: #fff;">
+              <div class="badge rounded mb-1 px-2 py-1 text-white" style="background-color: #10b981; font-size: 0.65rem;">XLS</div>
+              <div class="text-dark fw-semibold" style="font-size: 0.74rem;">Excel</div>
+            </a>
+            <a href="{% url 'reports:export_tasks' %}" class="btn flex-fill text-center border p-2 text-decoration-none" style="border-radius: 8px; background-color: #fff;">
+              <div class="badge rounded mb-1 px-2 py-1 text-white" style="background-color: #3b82f6; font-size: 0.65rem;">CSV</div>
+              <div class="text-dark fw-semibold" style="font-size: 0.74rem;">CSV</div>
+            </a>
+            <button onclick="window.print()" class="btn flex-fill text-center border p-2 text-decoration-none" style="border-radius: 8px; background-color: #fff;">
+              <div class="mb-1 text-secondary" style="font-size: 1rem;"><i class="ri-printer-line"></i></div>
+              <div class="text-dark fw-semibold" style="font-size: 0.74rem;">Print</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 1. Task Completion Line Chart
+  const ctxCompletion = document.getElementById('taskCompletionChart');
+  if (ctxCompletion) {
+    new Chart(ctxCompletion, {
+      type: 'line',
+      data: {
+        labels: ['1 Oct', '5 Oct', '10 Oct', '15 Oct', '20 Oct', '25 Oct', '31 Oct'],
+        datasets: [
+          {
+            label: 'Assigned',
+            data: [10, 12, 22, 36, 26, 38, 48],
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+            borderWidth: 2,
+            tension: 0.35,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#3b82f6'
+          },
+          {
+            label: 'Completed',
+            data: [5, 6, 12, 24, 15, 26, 34],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+            borderWidth: 2,
+            tension: 0.35,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#10b981'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, max: 50, grid: { color: '#f1f5f9' }, ticks: { stepSize: 10, font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  // 2. Task Status Donut Chart
+  const ctxDonut = document.getElementById('taskStatusDonutChart');
+  if (ctxDonut) {
+    new Chart(ctxDonut, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'In Progress', 'To Do', 'Review', 'Overdue'],
+        datasets: [{
+          data: [96, 14, 10, 6, 2],
+          backgroundColor: ['#10b981', '#3b82f6', '#94a3b8', '#f59e0b', '#ef4444'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          cutout: '72%'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  // 3. Tasks by Department Bar Chart
+  const ctxDept = document.getElementById('tasksByDeptChart');
+  if (ctxDept) {
+    new Chart(ctxDept, {
+      type: 'bar',
+      data: {
+        labels: ['Development', 'Design', 'QA', 'Marketing', 'HR', 'Support'],
+        datasets: [{
+          data: [36, 24, 20, 18, 16, 14],
+          backgroundColor: ['#3b82f6', '#f472b6', '#a855f7', '#fb923c', '#4ade80', '#38bdf8'],
+          borderRadius: 6,
+          barThickness: 24
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, max: 40, grid: { color: '#f1f5f9' }, ticks: { stepSize: 10, font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  // 4. Overtime Stacked Bar Chart
+  const ctxOvertime = document.getElementById('overtimeStackedChart');
+  if (ctxOvertime) {
+    new Chart(ctxOvertime, {
+      type: 'bar',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          { label: 'Approved', data: [5, 5, 10, 8], backgroundColor: '#10b981', borderRadius: 4, barThickness: 22 },
+          { label: 'Pending', data: [1, 2, 2, 2], backgroundColor: '#f59e0b', borderRadius: 4, barThickness: 22 },
+          { label: 'Rejected', data: [1, 0, 1, 0], backgroundColor: '#ef4444', borderRadius: 4, barThickness: 22 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { stacked: true, beginAtZero: true, max: 15, grid: { color: '#f1f5f9' }, ticks: { stepSize: 5, font: { size: 10 } } }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

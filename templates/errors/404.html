@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}404 - Page Not Found - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport d-flex flex-column align-items-center justify-content-center py-4" style="min-height: 80vh;">
+  <!-- Illustration -->
+  <div class="text-center mb-2">
+    <img src="{% static 'img/404_robot.png' %}" alt="404 Page Not Found" style="max-width: 420px; width: 100%; height: auto;">
+  </div>
+
+  <!-- Big 404 Text -->
+  <h1 style="font-size: 4.5rem; font-weight: 800; color: #0f172a; line-height: 1; letter-spacing: -2px; margin-bottom: 4px;">
+    404
+  </h1>
+
+  <!-- Heading & Subheading -->
+  <h2 class="fw-bold text-dark mb-2" style="font-size: 1.8rem; letter-spacing: -0.5px;">
+    Page Not Found
+  </h2>
+  <p class="text-secondary text-center mb-4" style="font-size: 0.95rem; max-width: 480px;">
+    The page you are looking for doesn't exist or has been moved to a different location.
+  </p>
+
+  <!-- Action Buttons -->
+  <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+    <a href="{% url 'core:dashboard' %}" class="btn text-white px-4 py-2" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+      <i class="ri-home-4-line"></i> Go to Dashboard
+    </a>
+    <button onclick="history.back()" class="btn btn-white border px-4 py-2 text-dark bg-white" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; border-color: #e2e8f0 !important;">
+      <i class="ri-arrow-left-line"></i> Go Back
+    </button>
+  </div>
+
+  <!-- OR Divider -->
+  <div class="d-flex align-items-center justify-content-center mb-4 position-relative" style="width: 100%; max-width: 440px;">
+    <hr class="w-100 my-0" style="border-color: #e2e8f0;">
+    <span class="px-3 bg-light text-muted fw-semibold position-absolute" style="font-size: 0.72rem; background-color: #f6f8fa !important;">OR</span>
+  </div>
+
+  <!-- Search Box -->
+  <div class="mb-4" style="width: 100%; max-width: 440px;">
+    <form method="GET" action="{% url 'core:search' %}" class="d-flex align-items-center gap-2">
+      <div class="flex-grow-1" style="position: relative;">
+        <i class="ri-search-line" style="position: absolute; left: 14px; top: 11px; color: #94a3b8; font-size: 1rem;"></i>
+        <input type="text" name="q" placeholder="Search for pages, projects, or features..." class="form-control" style="border-radius: 8px; border: 1px solid #e2e8f0; padding-left: 42px; font-size: 0.86rem; height: 42px; background-color: #fff;">
+      </div>
+      <button type="submit" class="btn text-white" style="background-color: #ea580c; border-radius: 8px; height: 42px; width: 44px; display: flex; align-items: center; justify-content: center;">
+        <i class="ri-search-line"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- Popular Pages Links -->
+  <div class="text-center">
+    <div class="text-muted fw-semibold mb-2" style="font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.5px;">Popular Pages</div>
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2">
+      <a href="{% url 'core:dashboard' %}" class="btn btn-sm btn-white border px-3 py-1 bg-white text-secondary d-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+        <i class="ri-dashboard-line text-muted"></i> Dashboard
+      </a>
+      <a href="{% url 'projects:project_list' %}" class="btn btn-sm btn-white border px-3 py-1 bg-white text-secondary d-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+        <i class="ri-file-list-3-line text-muted"></i> Projects
+      </a>
+      <a href="{% url 'tasks:task_list' %}" class="btn btn-sm btn-white border px-3 py-1 bg-white text-secondary d-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+        <i class="ri-checkbox-line text-muted"></i> Tasks
+      </a>
+      <a href="{% url 'users:member_list' %}" class="btn btn-sm btn-white border px-3 py-1 bg-white text-secondary d-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+        <i class="ri-group-line text-muted"></i> Members
+      </a>
+      <a href="{% url 'reports:overview' %}" class="btn btn-sm btn-white border px-3 py-1 bg-white text-secondary d-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.8rem; border-color: #e2e8f0 !important;">
+        <i class="ri-file-chart-line text-muted"></i> Reports
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

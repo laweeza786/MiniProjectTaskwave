@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Check Your Email - TaskWave{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page-wrapper" style="min-height: 100vh; background: #faf8f5; display: flex; flex-direction: column;">
+  <div class="container-fluid px-4 px-md-5 my-auto py-5">
+    <div class="row align-items-center justify-content-center g-5">
+      <!-- Left Column -->
+      <div class="col-lg-5 pe-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+            <path d="M4 14C7 8 11 8 14 14C17 20 21 20 24 14" stroke="#d97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 20C11 14 15 14 18 20C21 26 25 26 28 20" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 24px; color: #1e293b;">TaskWave</span>
+        </div>
+
+        <h1 style="font-size: 38px; font-weight: 800; color: #0f172a; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px;">
+          Check <br><span style="color: #b45309;">Your Email</span>
+        </h1>
+        <p style="color: #64748b; font-size: 15px; line-height: 1.5; margin-bottom: 36px;">
+          We've sent a password reset link to your email address.
+        </p>
+
+        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 220px; width: 100%; max-width: 440px;">
+          <img src="{% static 'img/login_desk_photo.jpg' %}" alt="TaskWave Workspace" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      </div>
+
+      <!-- Right Card -->
+      <div class="col-lg-5 col-xl-4 offset-xl-1">
+        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border text-center" style="border-color: #f1f5f9;">
+          <!-- Mail Icon -->
+          <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border-radius: 50%; background: #fff7ed; color: #ea580c; font-size: 24px;">
+            <i class="ri-mail-send-line"></i>
+          </div>
+
+          <h2 class="fw-bold text-dark mb-2" style="font-size: 20px;">Reset Link Sent</h2>
+          <p class="text-muted small mb-3">We've sent a password reset link to<br><strong class="text-dark">{{ email|default:'rahul.kumar@company.com' }}</strong></p>
+
+          <!-- Blue Notice -->
+          <div class="p-3 rounded-3 text-start mb-3" style="background: #eff6ff; border: 1px solid #dbeafe;">
+            <div class="d-flex align-items-start gap-2">
+              <i class="ri-information-line text-primary mt-0.5" style="font-size: 16px;"></i>
+              <div class="text-secondary small" style="font-size: 12px; line-height: 1.5;">
+                Please check your inbox and click the link to reset your password. The link will expire in 30 minutes.
+              </div>
+            </div>
+          </div>
+
+          <div class="text-muted small mb-2" style="font-size: 12px;">Didn't receive the email?<br>Check your spam folder or click below to resend.</div>
+
+          <button type="button" class="btn btn-outline-secondary w-100 py-2 small fw-medium mb-3" style="border-radius: 8px;">
+            <i class="ri-refresh-line me-1"></i>Resend Email
+          </button>
+
+          <div>
+            <a href="{% url 'accounts:login' %}" class="small text-decoration-none fw-medium text-primary">
+              Back to Login
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

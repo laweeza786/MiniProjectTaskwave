@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Empty States & Confirmation Modals - TaskWave{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <!-- Section 1: Empty States -->
+  <div class="mb-5">
+    <div class="mb-3">
+      <h2 class="fw-bold text-dark fs-4 mb-1">Empty States</h2>
+      <div class="text-muted small">These are shown when there is no data available in different modules.</div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
+      <!-- 1. No Projects -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Projects</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-folder-add-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No projects found</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Create your first project to start managing tasks and team members.</div>
+          </div>
+          <a href="{% url 'projects:project_create' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            + Create Project
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. No Tasks -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Tasks</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-survey-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No tasks yet</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Create a new task and assign it to team members.</div>
+          </div>
+          <a href="{% url 'tasks:task_create' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            + Create Task
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. No Members -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Members</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-user-add-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No team members found</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Add team members to collaborate on projects and tasks.</div>
+          </div>
+          <a href="{% url 'users:member_create' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            + Add Members
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. No Files -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Files</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-folder-upload-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No files uploaded</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Upload files to share with your team members.</div>
+          </div>
+          <a href="{% url 'files:list' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            <i class="ri-upload-2-line me-1"></i>Upload Files
+          </a>
+        </div>
+      </div>
+
+      <!-- 5. No Notifications -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Notifications</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-notification-off-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No new notifications</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">You're all caught up! We'll notify you when something new happens.</div>
+          </div>
+          <div style="height: 31px;"></div>
+        </div>
+      </div>
+
+      <!-- 6. No Messages -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Messages</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-message-3-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No messages yet</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Start a conversation with your team members.</div>
+          </div>
+          <a href="{% url 'messaging:inbox' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            + New Message
+          </a>
+        </div>
+      </div>
+
+      <!-- 7. No Overtime Requests -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Overtime Requests</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-time-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No overtime requests</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">There are no overtime requests at the moment.</div>
+          </div>
+          <a href="{% url 'overtime:list' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            Request Overtime
+          </a>
+        </div>
+      </div>
+
+      <!-- 8. No Calendar Events -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Calendar Events</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-calendar-event-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No events scheduled</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">Add important dates and deadlines to your calendar.</div>
+          </div>
+          <a href="{% url 'calendar_app:calendar' %}" class="btn text-white w-100 py-1.5 fw-medium mt-3" style="background-color: #b45309; border-radius: 6px; font-size: 12px;">
+            + Add Event
+          </a>
+        </div>
+      </div>
+
+      <!-- 9. No Search Results -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Search Results</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-file-search-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No results found</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">We couldn't find anything matching your search. Try a different keyword.</div>
+          </div>
+          <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary w-100 py-1.5 fw-medium mt-3 bg-white" style="border-radius: 6px; font-size: 12px;">
+            Clear Search
+          </a>
+        </div>
+      </div>
+
+      <!-- 10. No Activity Logs -->
+      <div class="col">
+        <div class="tw-card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+          <div class="text-start w-100 fw-bold small text-dark mb-2">No Activity Logs</div>
+          <div class="my-auto py-2">
+            <div class="mx-auto mb-2.5 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 12px; background: #eff6ff; color: #2563eb; font-size: 26px;">
+              <i class="ri-file-list-2-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">No Activity logs</div>
+            <div class="text-muted" style="font-size: 11px; line-height: 1.4;">There are no system activities to display yet.</div>
+          </div>
+          <div style="height: 31px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Confirmation Modals Preview -->
+  <div class="mb-4">
+    <div class="mb-3">
+      <h2 class="fw-bold text-dark fs-4 mb-1">Confirmation Modals</h2>
+      <div class="text-muted small">These modals are used for important actions across the system.</div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3">
+      <!-- 1. Delete Confirmation -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Delete Confirmation</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #fef2f2; color: #ef4444; font-size: 20px;">
+              <i class="ri-delete-bin-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Delete Task?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">Are you sure you want to delete this task? This action cannot be undone.</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm btn-danger flex-grow-1" style="font-size: 11px;">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Deactivate User -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Deactivate User</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #fff7ed; color: #ea580c; font-size: 20px;">
+              <i class="ri-error-warning-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Deactivate User?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">This user will no longer be able to access the system. You can activate them later.</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Deactivate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Assign Task -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Assign Task</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-size: 20px;">
+              <i class="ri-user-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Assign Task</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">Are you sure you want to assign this task to Neha Tiwari?</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Assign</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Upload File -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Upload File</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #10b981; font-size: 20px;">
+              <i class="ri-upload-2-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Upload File</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">Do you want to upload this file to the selected project?</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Upload</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Overtime Request -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Overtime Request</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #fff7ed; color: #ea580c; font-size: 20px;">
+              <i class="ri-time-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Submit Overtime Request?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">This request will be sent to admin for approval.</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Logout Confirmation -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Logout Confirmation</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #fef2f2; color: #ef4444; font-size: 20px;">
+              <i class="ri-logout-box-r-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Logout?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">Are you sure you want to logout from your account?</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm btn-danger flex-grow-1" style="font-size: 11px;">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Status Change -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Status Change</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #10b981; font-size: 20px;">
+              <i class="ri-check-line fw-bold"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Mark Task as Completed?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">This will change the task status to Completed.</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Cancel</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Mark Completed</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Discard Changes -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Discard Changes</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #fff7ed; color: #ea580c; font-size: 20px;">
+              <i class="ri-alert-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Discard Changes?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">You have unsaved changes. Do you want to discard them?</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Keep Editing</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Discard</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Leave Page -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Leave Page?</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #faf5ff; color: #7c3aed; font-size: 20px;">
+              <i class="ri-information-line"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Leave Page?</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">You have unsaved changes. If you leave this page, your changes will be lost.</div>
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-sm btn-light border flex-grow-1" style="font-size: 11px;">Stay</button>
+            <button class="btn btn-sm text-white flex-grow-1" style="background-color: #b45309; font-size: 11px;">Leave</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Success Modal -->
+      <div class="col">
+        <div class="p-3 bg-white rounded-3 shadow-sm border text-center h-100 d-flex flex-column justify-content-between" style="border-color: #e2e8f0;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold text-dark" style="font-size: 11.5px;">Success Modal</span>
+            <i class="ri-close-line text-muted cursor-pointer"></i>
+          </div>
+          <div class="py-2">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #10b981; font-size: 20px;">
+              <i class="ri-check-line fw-bold"></i>
+            </div>
+            <div class="fw-bold text-dark small mb-1">Task Created Successfully!</div>
+            <div class="text-muted" style="font-size: 10.5px; line-height: 1.4;">The task has been created and assigned to the selected member.</div>
+          </div>
+          <div class="mt-2">
+            <a href="{% url 'tasks:task_list' %}" class="btn btn-sm text-white w-100 py-1" style="background-color: #b45309; font-size: 11px;">Go to Task</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,571 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Video Meetings - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Header Row -->
+  <div class="dash-header-row mb-3">
+    <div>
+      <h1 class="dash-title">Video Meetings</h1>
+      <div class="dash-subtitle">Connect, collaborate, and conduct meetings with your team.</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-white border px-3 py-2 bg-white text-secondary" data-bs-toggle="modal" data-bs-target="#scheduleMeetingModal" style="border-radius: 8px; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border-color: #e2e8f0 !important;">
+        <i class="ri-calendar-line text-muted"></i> Schedule Meeting
+      </button>
+      <a href="{% url 'meetings:create' %}" class="btn-primary-tw" style="background-color: #ea580c; border: none; padding: 8px 18px; border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+        <i class="ri-video-on-line" style="font-size: 1.05rem;"></i> Start Instant Meeting
+      </a>
+    </div>
+  </div>
+
+  <!-- 4 Stat KPI Cards Grid -->
+  <div class="dash-kpi-grid mb-4">
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+          <i class="ri-video-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Meetings</span>
+          <span class="dash-kpi-value">24</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+          <i class="ri-team-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Scheduled</span>
+          <span class="dash-kpi-value">8</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 14%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-orange">
+          <i class="ri-play-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Ongoing</span>
+          <span class="dash-kpi-value">2</span>
+          <div class="dash-kpi-trend">
+            <span class="text-muted" style="font-size: 0.75rem;">-- vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-red">
+          <i class="ri-stop-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed</span>
+          <span class="dash-kpi-value">14</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 27%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+      <button class="dash-card-menu-btn"><i class="ri-more-2-fill"></i></button>
+    </div>
+  </div>
+
+  <!-- Middle Row: Upcoming Meetings + Live Meeting Room + Participants Panel -->
+  <div class="row g-4 mb-4">
+    <!-- Left: Upcoming Meetings -->
+    <div class="col-lg-6">
+      <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important; height: 350px; overflow: hidden; display: flex; flex-direction: column;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Upcoming Meetings</h6>
+          <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-3 overflow-auto">
+          <!-- Item 1 -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #e0f2fe; color: #0284c7; flex-shrink: 0;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.8rem; line-height: 1.2;">Project Review - TaskWave</div>
+                <div class="text-muted" style="font-size: 0.7rem;">Today, 04:00 PM - 05:00 PM</div>
+                <div class="text-muted" style="font-size: 0.68rem;">10 members</div>
+              </div>
+            </div>
+            <a href="{% url 'meetings:room' 'TW-101' %}" class="btn btn-sm text-white px-2 py-1" style="background-color: #2563eb; font-size: 0.75rem; border-radius: 6px; font-weight: 600;">Join</a>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #fee2e2; color: #ef4444; flex-shrink: 0;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.8rem; line-height: 1.2;">UI/UX Discussion</div>
+                <div class="text-muted" style="font-size: 0.7rem;">Today, 06:00 PM - 07:00 PM</div>
+                <div class="text-muted" style="font-size: 0.68rem;">6 members</div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Join</button>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #fef3c7; color: #d97706; flex-shrink: 0;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.8rem; line-height: 1.2;">Development Sync</div>
+                <div class="text-muted" style="font-size: 0.7rem;">Tomorrow, 10:00 AM - 11:00 AM</div>
+                <div class="text-muted" style="font-size: 0.68rem;">9 members</div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Join</button>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #dcfce7; color: #16a34a; flex-shrink: 0;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.8rem; line-height: 1.2;">Client Meeting</div>
+                <div class="text-muted" style="font-size: 0.7rem;">18 Oct 2026, 03:00 PM - 04:00 PM</div>
+                <div class="text-muted" style="font-size: 0.68rem;">5 members</div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Join</button>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #f3e8ff; color: #9333ea; flex-shrink: 0;">
+                <i class="ri-team-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.8rem; line-height: 1.2;">Sprint Planning</div>
+                <div class="text-muted" style="font-size: 0.7rem;">19 Oct 2026, 11:00 AM - 12:00 PM</div>
+                <div class="text-muted" style="font-size: 0.68rem;">7 members</div>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Participants Panel -->
+    <div class="col-lg-6">
+      <div class="bg-white border rounded-3 p-3 shadow-sm d-flex flex-column justify-content-between" style="border-color: #edf2f7 !important; height: 350px;">
+        <div>
+          <!-- Panel Header Tabs -->
+          <div class="d-flex align-items-center border-bottom pb-2 mb-3" style="border-color: #edf2f7 !important;">
+            <a href="#" class="pb-1 text-decoration-none fw-semibold me-3" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.82rem;">Participants (10)</a>
+            <a href="#" class="pb-1 text-decoration-none text-muted" style="font-size: 0.82rem;">Chat</a>
+          </div>
+
+          <!-- Search Input -->
+          <div class="mb-3" style="position: relative;">
+            <i class="ri-search-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
+            <input type="text" class="form-control form-control-sm" placeholder="Search participants..." style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
+          </div>
+
+          <!-- Participants List -->
+          <div class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Rahul Kumar</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">You (Admin)</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-success" style="font-size: 0.85rem;">
+                <i class="ri-mic-fill"></i>
+                <i class="ri-video-fill"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Priya Singh</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Online</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-success" style="font-size: 0.85rem;">
+                <i class="ri-mic-fill"></i>
+                <i class="ri-video-fill"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Aman Sharma</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Online</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-success" style="font-size: 0.85rem;">
+                <i class="ri-mic-fill"></i>
+                <i class="ri-video-fill"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Neha Tiwari</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Online</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-success" style="font-size: 0.85rem;">
+                <i class="ri-mic-fill"></i>
+                <i class="ri-video-fill"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Vikram Singh</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Online</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-success" style="font-size: 0.85rem;">
+                <i class="ri-mic-fill"></i>
+                <i class="ri-video-fill"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Pooja Sharma</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Online</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.85rem;">
+                <i class="ri-mic-line"></i>
+                <i class="ri-video-line"></i>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between py-1">
+              <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.76rem;">Arjun Patel</div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Offline</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.85rem;">
+                <i class="ri-mic-off-line"></i>
+                <i class="ri-video-off-line"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Footer -->
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top" style="border-color: #edf2f7 !important;">
+          <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Invite</button>
+          <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.75rem; border-radius: 6px;">Mute All</button>
+          <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Meeting Tools + Recent Meetings + Meeting Settings -->
+  <div class="row g-4">
+    <!-- Meeting Tools -->
+    <div class="col-xl-3 col-lg-4">
+      <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+        <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Meeting Tools</h6>
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-tv-line text-primary" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Screen Share</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-record-circle-line text-danger" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Record Meeting</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-image-line text-success" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Virtual Background</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-hand-line" style="color: #ea580c; font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Raise Hand</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-user-add-line text-purple" style="color: #9333ea; font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Invite Members</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-links-line text-info" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Meeting Link</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-chat-3-line text-primary" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Live Chat</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center" style="background-color: #f8fafc; cursor: pointer;">
+              <i class="ri-settings-3-line text-secondary" style="font-size: 1.25rem;"></i>
+              <div class="text-dark fw-medium mt-1" style="font-size: 0.72rem;">Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Meetings -->
+    <div class="col-xl-6 col-lg-5">
+      <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Meetings</h6>
+          <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #dcfce7; color: #16a34a;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Development Team Sync</div>
+                <div class="text-muted" style="font-size: 0.72rem;">16 Oct 2026, 11:00 AM - 12:00 PM</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="text-muted" style="font-size: 0.72rem;">8 attendees</span>
+              <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.72rem; border-radius: 6px;">View</button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fee2e2; color: #ef4444;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Design Review</div>
+                <div class="text-muted" style="font-size: 0.72rem;">15 Oct 2026, 03:00 PM - 04:00 PM</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="text-muted" style="font-size: 0.72rem;">6 attendees</span>
+              <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.72rem; border-radius: 6px;">View</button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #f3e8ff; color: #9333ea;">
+                <i class="ri-team-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Client Discussion</div>
+                <div class="text-muted" style="font-size: 0.72rem;">14 Oct 2026, 02:00 PM - 03:00 PM</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="text-muted" style="font-size: 0.72rem;">5 attendees</span>
+              <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.72rem; border-radius: 6px;">View</button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fef3c7; color: #d97706;">
+                <i class="ri-video-line"></i>
+              </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.82rem;">Sprint Retrospective</div>
+                <div class="text-muted" style="font-size: 0.72rem;">13 Oct 2026, 10:00 AM - 11:00 AM</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="text-muted" style="font-size: 0.72rem;">7 attendees</span>
+              <button class="btn btn-sm btn-outline-secondary px-2 py-1" style="font-size: 0.72rem; border-radius: 6px;">View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meeting Settings -->
+    <div class="col-xl-3 col-lg-3">
+      <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+        <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Meeting Settings</h6>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-tv-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Allow Screen Sharing</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked>
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-record-circle-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Allow Recording</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked>
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-user-shared-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Waiting Room</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox">
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-shield-user-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Require Host Approval</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox">
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-mic-off-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Auto Mute on Join</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked>
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-chat-3-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Allow Chat</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked>
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-file-upload-line text-muted"></i>
+              <span class="text-dark" style="font-size: 0.8rem;">Allow File Sharing</span>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked>
+              <span class="tw-slider blue"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal fade" id="scheduleMeetingModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 12px; border: 1px solid #edf2f7;">
+      <form method="POST" action="{% url 'meetings:create' %}">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0 pt-4 px-4">
+          <h5 class="modal-title fw-bold text-dark">Schedule Video Conference</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body px-4 pt-3 pb-2">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">MEETING TITLE</label>
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="e.g. Project Review - TaskWave" required style="border-radius: 8px;">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">AGENDA / DETAILS</label>
+            <textarea name="description" rows="2" class="form-control form-control-sm" placeholder="Meeting discussion points..." style="border-radius: 8px;"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">SCHEDULED DATE & TIME</label>
+            <input type="datetime-local" name="scheduled_start" class="form-control form-control-sm" required style="border-radius: 8px;">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">SELECT ATTENDEES</label>
+            <select name="participants" class="form-select form-select-sm" multiple size="3" style="border-radius: 8px;">
+              {% for u in users %}
+              <option value="{{ u.id }}">{{ u.get_full_name }} ({{ u.role.name|default:'Member' }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer border-0 px-4 pb-4">
+          <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; padding: 6px 16px;">Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

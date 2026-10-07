@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Search Results - TaskWave{% endblock %}
+
+{% block content %}
+<div class="page-header-row mb-4">
+  <div>
+    <h1 class="page-title">Search Results</h1>
+    <div class="page-subtitle">Showing matching results for "<strong>{{ query }}</strong>"</div>
+  </div>
+</div>
+
+{% if not tasks and not projects and not users %}
+<div class="tw-card text-center py-5 my-4" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7;">
+  <div class="mx-auto mb-3" style="width: 64px; height: 64px; border-radius: 14px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+    <i class="ri-file-search-line"></i>
+  </div>
+  <h4 class="fw-bold text-dark mb-1 fs-5">No results found</h4>
+  <p class="text-muted small mb-4" style="max-width: 380px; margin: 0 auto;">We couldn't find anything matching your search. Try a different keyword.</p>
+  <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px; font-size: 13px; font-weight: 500;">
+    Clear Search
+  </a>
+</div>
+{% else %}
+<div class="row g-4">
+  <!-- Tasks Found -->
+  <div class="col-md-4">
+    <div class="tw-card h-100" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 20px;">
+      <h5 class="tw-card-title mb-3 fs-6 fw-bold"><i class="ri-task-line me-2 text-warning"></i>Tasks ({{ tasks|length }})</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for t in tasks %}
+        <div class="p-2.5 border rounded-3 bg-light">
+          <a href="{% url 'tasks:task_detail' t.id %}" class="fw-bold text-dark text-decoration-none small">
+            {{ t.title }}
+          </a>
+          <div class="text-muted" style="font-size: 11px;">{{ t.task_number }} • {{ t.get_status_display }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects Found -->
+  <div class="col-md-4">
+    <div class="tw-card h-100" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 20px;">
+      <h5 class="tw-card-title mb-3 fs-6 fw-bold"><i class="ri-folder-line me-2 text-primary"></i>Projects ({{ projects|length }})</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for p in projects %}
+        <div class="p-2.5 border rounded-3 bg-light">
+          <a href="{% url 'projects:project_detail' p.id %}" class="fw-bold text-dark text-decoration-none small">
+            {{ p.name }}
+          </a>
+          <div class="text-muted" style="font-size: 11px;">{{ p.project_key }} • {{ p.get_status_display }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Found -->
+  <div class="col-md-4">
+    <div class="tw-card h-100" style="background: #ffffff; border-radius: 12px; border: 1px solid #edf2f7; padding: 20px;">
+      <h5 class="tw-card-title mb-3 fs-6 fw-bold"><i class="ri-team-line me-2 text-success"></i>People ({{ users|length }})</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for u in users %}
+        <div class="p-2.5 border rounded-3 bg-light d-flex align-items-center gap-2">
+          <div class="user-avatar-circle" style="width: 32px; height: 32px; font-size: 0.75rem;">
+            {{ u.get_initials }}
+          </div>
+          <div>
+            <a href="{% url 'users:member_detail' u.id %}" class="fw-bold text-dark text-decoration-none small">
+              {{ u.get_full_name }}
+            </a>
+            <div class="text-muted" style="font-size: 11px;">{{ u.email }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

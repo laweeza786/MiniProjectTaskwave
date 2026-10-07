@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendar - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Calendar</h1>
+      <p class="dash-subtitle">View and manage all your tasks, deadlines, meetings, and important events.</p>
+    </div>
+    <div>
+      <button class="btn-new-entity" type="button">
+        <i class="ri-add-line"></i> Add Event <i class="ri-arrow-down-s-line ms-1"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendar Main Grid Layout (Calendar on Left, Sidebar Widgets on Right) -->
+  <div class="row g-4">
+    <!-- Left: Calendar Area -->
+    <div class="col-xl-9">
+      <div class="dash-card">
+        <!-- Calendar Toolbar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <!-- View Switcher -->
+          <div class="d-flex align-items-center gap-1 bg-light p-1 rounded-3 border">
+            <button class="cal-view-btn active" type="button">Month</button>
+            <button class="cal-view-btn" type="button">Week</button>
+            <button class="cal-view-btn" type="button">Day</button>
+            <button class="cal-view-btn" type="button">List</button>
+          </div>
+
+          <!-- Filters & Date Nav -->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="dash-select-pill">
+              <span>All Projects</span>
+              <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <div class="dash-select-pill">
+              <span>All Members</span>
+              <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <div class="dash-select-pill">
+              <span>All Event Types</span>
+              <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <button class="dash-clear-btn border rounded px-2 py-1" type="button">Today</button>
+            <div class="d-flex align-items-center gap-1">
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Month Title -->
+        <h2 class="fs-4 fw-bold text-dark mb-3">October 2026</h2>
+
+        <!-- Monthly Grid -->
+        <div class="cal-month-table">
+          <div class="cal-month-head">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+          <div class="cal-month-body">
+            <!-- Week 1 -->
+            <div class="cal-cell text-muted"><span class="cal-day-num">27</span></div>
+            <div class="cal-cell text-muted"><span class="cal-day-num">28</span></div>
+            <div class="cal-cell text-muted"><span class="cal-day-num">29</span></div>
+            <div class="cal-cell text-muted">
+              <span class="cal-day-num">30</span>
+              <div class="cal-event-pill event-blue">
+                <span class="event-dot"></span> Project Planning
+                <span class="small d-block">10:00 AM - 11:00 AM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">1</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">2</span>
+              <div class="cal-event-pill event-red">
+                <span class="event-dot"></span> UI Design Review
+                <span class="small d-block">11:00 AM - 12:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">3</span></div>
+
+            <!-- Week 2 -->
+            <div class="cal-cell"><span class="cal-day-num">4</span></div>
+            <div class="cal-cell"><span class="cal-day-num">5</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">6</span>
+              <div class="cal-event-pill event-green">
+                <span class="event-dot"></span> Database Setup
+                <span class="small d-block">9:00 AM - 11:00 AM</span>
+              </div>
+            </div>
+            <div class="cal-cell">
+              <span class="cal-day-num">7</span>
+              <div class="cal-event-pill event-amber">
+                <span class="event-dot"></span> Team Meeting
+                <span class="small d-block">2:00 PM - 3:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">8</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">9</span>
+              <div class="cal-event-pill event-blue">
+                <span class="event-dot"></span> API Development
+                <span class="small d-block">10:00 AM - 1:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">10</span></div>
+
+            <!-- Week 3 -->
+            <div class="cal-cell"><span class="cal-day-num">11</span></div>
+            <div class="cal-cell"><span class="cal-day-num">12</span></div>
+            <div class="cal-cell"><span class="cal-day-num">13</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">14</span>
+              <div class="cal-event-pill event-red">
+                <span class="event-dot"></span> Client Review
+                <span class="small d-block">11:00 AM - 12:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell">
+              <span class="cal-day-num active-day">15</span>
+              <div class="cal-event-pill event-green">
+                <span class="event-dot"></span> Testing & QA
+                <span class="small d-block">9:00 AM - 12:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">16</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">17</span>
+              <div class="cal-event-pill event-purple">
+                <span class="event-dot"></span> Design Discussion
+                <span class="small d-block">2:00 PM - 3:00 PM</span>
+              </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div class="cal-cell"><span class="cal-day-num">18</span></div>
+            <div class="cal-cell"><span class="cal-day-num">19</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">20</span>
+              <div class="cal-event-pill event-blue">
+                <span class="event-dot"></span> Documentation
+                <span class="small d-block">10:00 AM - 1:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">21</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">22</span>
+              <div class="cal-event-pill event-amber">
+                <span class="event-dot"></span> Sprint Planning
+                <span class="small d-block">11:00 AM - 12:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell">
+              <span class="cal-day-num">23</span>
+              <div class="cal-event-pill event-red">
+                <span class="event-dot"></span> Security Testing
+                <span class="small d-block">9:00 AM - 11:00 AM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">24</span></div>
+
+            <!-- Week 5 -->
+            <div class="cal-cell"><span class="cal-day-num">25</span></div>
+            <div class="cal-cell"><span class="cal-day-num">26</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">27</span>
+              <div class="cal-event-pill event-green">
+                <span class="event-dot"></span> Final Review
+                <span class="small d-block">2:00 PM - 4:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell">
+              <span class="cal-day-num">28</span>
+              <div class="cal-event-pill event-blue">
+                <span class="event-dot"></span> Deployment
+                <span class="small d-block">10:00 AM - 12:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">29</span></div>
+            <div class="cal-cell">
+              <span class="cal-day-num">30</span>
+              <div class="cal-event-pill event-amber">
+                <span class="event-dot"></span> Project Presentation
+                <span class="small d-block">11:00 AM - 1:00 PM</span>
+              </div>
+            </div>
+            <div class="cal-cell"><span class="cal-day-num">31</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar Widgets -->
+    <div class="col-xl-3">
+      <!-- Mini Calendar -->
+      <div class="dash-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="fw-bold small text-dark"><i class="ri-arrow-left-s-line me-1"></i> October 2026</span>
+          <i class="ri-arrow-right-s-line text-muted"></i>
+        </div>
+        <div class="mini-cal-grid">
+          <div class="mini-head">Su</div><div class="mini-head">Mo</div><div class="mini-head">Tu</div><div class="mini-head">We</div><div class="mini-head">Th</div><div class="mini-head">Fr</div><div class="mini-head">Sa</div>
+          <div class="text-muted">27</div><div class="text-muted">28</div><div class="text-muted">29</div><div class="text-muted">30</div><div>1</div><div>2</div><div>3</div>
+          <div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+          <div>11</div><div>12</div><div>13</div><div>14</div><div class="mini-today">15</div><div>16</div><div>17</div>
+          <div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div>
+          <div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div>
+        </div>
+      </div>
+
+      <!-- Event Types -->
+      <div class="dash-card mb-4">
+        <h3 class="dash-card-title mb-3">Event Types</h3>
+        <div class="d-flex flex-column gap-2">
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #ef4444;"> Task Deadline
+          </label>
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #3b82f6;"> Meeting
+          </label>
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #10b981;"> Project Milestone
+          </label>
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #8b5cf6;"> Review
+          </label>
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #f59e0b;"> Training
+          </label>
+          <label class="d-flex align-items-center gap-2 small text-dark">
+            <input type="checkbox" checked class="form-check-input" style="accent-color: #64748b;"> Other
+          </label>
+        </div>
+      </div>
+
+      <!-- Upcoming Events -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h3 class="dash-card-title">Upcoming Events</h3>
+          <a href="#" class="dash-view-all">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3 align-items-start">
+            <div class="date-badge-box">
+              <span class="fs-5 fw-bold text-dark">15</span>
+              <span class="small text-muted" style="font-size: 10px;">OCT</span>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small fw-semibold text-dark"><span class="event-dot dot-green me-1"></span>Testing & QA</div>
+              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>9:00 AM - 12:00 PM</div>
+              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Development Lab</div>
+              <div class="d-flex align-items-center mt-1">
+                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
+                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="date-badge-box">
+              <span class="fs-5 fw-bold text-dark">17</span>
+              <span class="small text-muted" style="font-size: 10px;">OCT</span>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small fw-semibold text-dark"><span class="event-dot dot-purple me-1"></span>Design Discussion</div>
+              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>2:00 PM - 3:00 PM</div>
+              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Meeting Room</div>
+              <div class="d-flex align-items-center mt-1">
+                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
+                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <img src="{% static 'img/avatars/sahil_khan.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+3</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="date-badge-box">
+              <span class="fs-5 fw-bold text-dark">20</span>
+              <span class="small text-muted" style="font-size: 10px;">OCT</span>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small fw-semibold text-dark"><span class="event-dot dot-blue me-1"></span>Documentation</div>
+              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>10:00 AM - 1:00 PM</div>
+              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Online Meet</div>
+              <div class="d-flex align-items-center mt-1">
+                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
+                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="date-badge-box">
+              <span class="fs-5 fw-bold text-dark">23</span>
+              <span class="small text-muted" style="font-size: 10px;">OCT</span>
+            </div>
+            <div class="flex-grow-1">
+              <div class="small fw-semibold text-dark"><span class="event-dot dot-red me-1"></span>Security Testing</div>
+              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>9:00 AM - 11:00 AM</div>
+              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>IT Lab</div>
+              <div class="d-flex align-items-center mt-1">
+                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
+                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
+                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

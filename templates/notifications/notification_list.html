@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Notifications</h1>
+      <p class="dash-subtitle">Stay updated with important activities, tasks, and team updates.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn-import-tw" type="button">
+        <i class="ri-check-line me-1"></i> Mark All as Read
+      </button>
+      <button class="btn-import-tw" type="button">
+        <i class="ri-settings-3-line me-1"></i> Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs Bar -->
+  <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
+    <button class="cal-view-btn active" type="button" style="border-radius: 9999px; padding: 6px 16px;">All <span class="badge bg-light text-dark ms-1">24</span></button>
+    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Tasks <span class="badge bg-light text-muted ms-1">6</span></button>
+    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Projects <span class="badge bg-light text-muted ms-1">4</span></button>
+    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Messages <span class="badge bg-light text-muted ms-1">3</span></button>
+    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;"><i class="ri-checkbox-circle-line me-1"></i> System <span class="badge bg-light text-muted ms-1">5</span></button>
+    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Mentions <span class="badge bg-light text-muted ms-1">2</span></button>
+  </div>
+
+  <!-- Main Split Layout -->
+  <div class="row g-4">
+    <!-- Left Notifications List -->
+    <div class="col-xl-8">
+      <div class="dash-card">
+        <div class="d-flex flex-column gap-3">
+          <!-- Item 1 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon icon-red" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-file-text-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">New Task Assigned</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Rahul Kumar assigned you a new task "API Documentation" in project Mobile App.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">10:24 AM</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon icon-green" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-check-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">Task Completed</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Priya Singh marked task "UI Design Review" as completed.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">09:15 AM</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #dbeafe; color: #2563eb;"><i class="ri-message-3-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">New Message</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">You have a new message from Development Team.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">08:32 AM</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #ede9fe; color: #7c3aed;"><i class="ri-group-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">Project Update</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">The project "College Portal" has been moved to Review stage.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon icon-orange" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-time-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">Upcoming Deadline</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Task "Database Optimization" is due tomorrow (16 Oct 2026).</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #ccfbf1; color: #0d9488;"><i class="ri-at-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">You were mentioned</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Aman Sharma mentioned you in a comment on "Security Module".</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
+            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 7 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #dbeafe; color: #2563eb;"><i class="ri-file-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">New File Shared</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Neha Tiwari shared a file "api_documentation.pdf" in project TaskWave.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">14 Oct 2026</span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+
+          <!-- Item 8 -->
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
+            <input type="checkbox" class="form-check-input">
+            <div class="dash-kpi-icon icon-red" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-error-warning-line"></i></div>
+            <div class="flex-grow-1 min-width-0">
+              <div class="fw-bold small text-dark">Overdue Task</div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">Task "Testing & Bug Fixes" is overdue.</div>
+            </div>
+            <span class="text-muted small" style="font-size: 11px;">14 Oct 2026</span>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+          <div class="small text-muted">Showing 1 to 12 of 24 notifications</div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="small text-muted">Rows per page</span>
+              <div class="dash-select-pill"><span>12</span><i class="ri-arrow-down-s-line"></i></div>
+            </div>
+            <div class="dash-pagination-btns">
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
+              <button class="dash-page-btn active" type="button">1</button>
+              <button class="dash-page-btn" type="button">2</button>
+              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Widgets -->
+    <div class="col-xl-4">
+      <!-- Notification Summary -->
+      <div class="dash-card mb-4">
+        <h3 class="dash-card-title mb-3">Notification Summary</h3>
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+              <div class="dash-kpi-icon" style="width: 32px; height: 32px; background-color: #dbeafe; color: #2563eb; font-size: 1rem;"><i class="ri-notification-3-line"></i></div>
+              <div><div class="fw-bold text-dark fs-6">24</div><div class="text-muted small" style="font-size: 10px;">Total Notifications</div></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+              <div class="dash-kpi-icon icon-red" style="width: 32px; height: 32px; font-size: 1rem;"><i class="ri-record-circle-line"></i></div>
+              <div><div class="fw-bold text-dark fs-6">5</div><div class="text-muted small" style="font-size: 10px;">Unread</div></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+              <div class="dash-kpi-icon icon-green" style="width: 32px; height: 32px; font-size: 1rem;"><i class="ri-checkbox-circle-line"></i></div>
+              <div><div class="fw-bold text-dark fs-6">12</div><div class="text-muted small" style="font-size: 10px;">Task Related</div></div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
+              <div class="dash-kpi-icon" style="width: 32px; height: 32px; background-color: #ede9fe; color: #7c3aed; font-size: 1rem;"><i class="ri-group-line"></i></div>
+              <div><div class="fw-bold text-dark fs-6">6</div><div class="text-muted small" style="font-size: 10px;">Project Related</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="dash-card mb-4">
+        <div class="dash-card-header">
+          <h3 class="dash-card-title">Recent Activity</h3>
+          <a href="#" class="dash-view-all">View All</a>
+        </div>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Rahul Kumar assigned a new task</div><div class="text-muted" style="font-size: 10px;">API Documentation</div></div>
+            </div>
+            <span class="text-muted small" style="font-size: 10px;">10:24 AM</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Priya Singh completed a task</div><div class="text-muted" style="font-size: 10px;">UI Design Review</div></div>
+            </div>
+            <span class="text-muted small" style="font-size: 10px;">09:15 AM</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">New message in Development Team</div><div class="text-muted" style="font-size: 10px;">3 new messages</div></div>
+            </div>
+            <span class="text-muted small" style="font-size: 10px;">08:32 AM</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #ede9fe; color: #7c3aed; font-size: 0.8rem;"><i class="ri-group-line"></i></div>
+              <div><div class="small fw-semibold text-dark">Project moved to Review</div><div class="text-muted" style="font-size: 10px;">College Portal</div></div>
+            </div>
+            <span class="text-muted small" style="font-size: 10px;">Yesterday</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+              <div><div class="small fw-semibold text-dark">Vikram Singh joined the team</div><div class="text-muted" style="font-size: 10px;">Quality Assurance</div></div>
+            </div>
+            <span class="text-muted small" style="font-size: 10px;">13 Oct</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="dash-card">
+        <h3 class="dash-card-title mb-3">Notification Settings</h3>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="small fw-semibold text-dark">Email Notifications</div>
+              <div class="text-muted" style="font-size: 10px;">Receive notifications via email</div>
+            </div>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="small fw-semibold text-dark">Browser Notifications</div>
+              <div class="text-muted" style="font-size: 10px;">Show notifications in browser</div>
+            </div>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="small fw-semibold text-dark">Task Updates</div>
+              <div class="text-muted" style="font-size: 10px;">Notify about task changes</div>
+            </div>
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Header Row -->
+  <div class="dash-header-row mb-4">
+    <div>
+      <h1 class="dash-title">My Profile</h1>
+      <div class="dash-subtitle">View and manage your personal information, tasks, and account settings.</div>
+    </div>
+    <div>
+      <button class="btn text-white px-3 py-2" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.86rem; display: flex; align-items: center; gap: 6px;">
+        <i class="ri-edit-line"></i> Edit Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Banner Header Card -->
+  <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
+      <div class="d-flex align-items-center gap-4">
+        <div class="position-relative">
+          <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="84" height="84" style="object-fit: cover;">
+          <div class="position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 26px; height: 26px; background-color: #0f172a; border: 2px solid #fff; font-size: 0.75rem; cursor: pointer;">
+            <i class="ri-camera-line"></i>
+          </div>
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-3 mb-1">
+            <h4 class="fw-bold text-dark mb-0" style="font-size: 1.35rem;">Rahul Kumar</h4>
+            <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.72rem; padding: 4px 8px; border-radius: 9999px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #16a34a;"></span> Active
+            </span>
+          </div>
+          <div class="text-secondary fw-medium mb-2" style="font-size: 0.88rem;">Software Developer</div>
+          <div class="d-flex flex-wrap align-items-center gap-3 text-secondary" style="font-size: 0.78rem;">
+            <span class="d-flex align-items-center gap-1"><i class="ri-building-line text-muted"></i> Development Department</span>
+            <span class="d-flex align-items-center gap-1"><i class="ri-mail-line text-muted"></i> rahul@taskwave.com</span>
+            <span class="d-flex align-items-center gap-1"><i class="ri-phone-line text-muted"></i> +91 98765 43210</span>
+            <span class="d-flex align-items-center gap-1"><i class="ri-map-pin-line text-muted"></i> Jamshedpur, Jharkhand, India</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fst-italic text-secondary" style="font-size: 0.85rem; max-width: 220px; text-align: right;">
+        "Good teamwork turns ideas into reality."
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="d-flex align-items-center gap-4 border-bottom mb-4 overflow-x-auto pb-1" style="border-color: #edf2f7 !important;">
+    <a href="#" class="pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.84rem;">
+      <i class="ri-dashboard-line"></i> Overview
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-user-line"></i> Personal Information
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-briefcase-line"></i> Work Details
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-code-s-slash-line"></i> Skills
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-folder-line"></i> Assigned Projects
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-history-line"></i> Task History
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-pulse-line"></i> Activity
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-settings-3-line"></i> Settings
+    </a>
+  </div>
+
+  <!-- 4 Stat KPI Cards Grid -->
+  <div class="dash-kpi-grid mb-4">
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+          <i class="ri-checkbox-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Total Tasks</span>
+          <span class="dash-kpi-value">28</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+          <i class="ri-checkbox-circle-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completed Tasks</span>
+          <span class="dash-kpi-value">26</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon icon-amber">
+          <i class="ri-time-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Pending Tasks</span>
+          <span class="dash-kpi-value">2</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-down"><i class="ri-arrow-down-line"></i> 33%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-kpi-card">
+      <div class="kpi-left-group">
+        <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
+          <i class="ri-focus-3-line"></i>
+        </div>
+        <div class="dash-kpi-info">
+          <span class="dash-kpi-label">Completion Rate</span>
+          <span class="dash-kpi-value">93%</span>
+          <div class="dash-kpi-trend">
+            <span class="trend-up"><i class="ri-arrow-up-line"></i> 5%</span>
+            <span class="trend-vs">vs last month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3-Column Layout -->
+  <div class="row g-4">
+    <!-- Col 1: Personal Info & Skills -->
+    <div class="col-xl-4 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Personal Information Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-user-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Personal Information</h6>
+            </div>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">Edit</a>
+          </div>
+
+          <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Full Name</span>
+              <span class="fw-semibold text-dark">Rahul Kumar</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Email</span>
+              <span class="text-secondary">rahul@taskwave.com</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Phone</span>
+              <span class="text-secondary">+91 98765 43210</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Date of Birth</span>
+              <span class="text-secondary">15 March 2002</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Address</span>
+              <span class="text-secondary text-end" style="max-width: 170px;">Jamshedpur, Jharkhand, India</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Joined Date</span>
+              <span class="text-secondary">10 Jan 2026</span>
+            </div>
+            <div class="d-flex justify-content-between py-1">
+              <span class="text-muted">Employee ID</span>
+              <span class="text-secondary font-monospace">TW-EMP-001</span>
+            </div>
+            <div class="py-1">
+              <span class="text-muted d-block mb-1">Bio</span>
+              <span class="text-secondary" style="line-height: 1.4;">Passionate about building efficient solutions and working with great teams.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-bar-chart-box-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Skills</h6>
+            </div>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">Edit</a>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Python</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Django</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">JavaScript</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">MySQL</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">HTML</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">CSS</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Bootstrap</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Git</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">API Development</span>
+            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Problem Solving</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 2: Assigned Projects & Task Overview -->
+    <div class="col-xl-4 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Assigned Projects Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-folder-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Assigned Projects</h6>
+            </div>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-computer-line text-muted"></i> TaskWave (Main System)</span>
+                <span class="text-muted">80%</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                <div class="progress-bar" style="width: 80%; background-color: #10b981; border-radius: 9999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-bank-line text-muted"></i> College Portal</span>
+                <span class="text-muted">65%</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                <div class="progress-bar" style="width: 65%; background-color: #3b82f6; border-radius: 9999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-smartphone-line text-muted"></i> Mobile App</span>
+                <span class="text-muted">40%</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                <div class="progress-bar" style="width: 40%; background-color: #ea580c; border-radius: 9999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-tools-line text-muted"></i> Internal Tools</span>
+                <span class="text-muted">90%</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                <div class="progress-bar" style="width: 90%; background-color: #8b5cf6; border-radius: 9999px;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-global-line text-muted"></i> Website Redesign</span>
+                <span class="text-muted">25%</span>
+              </div>
+              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                <div class="progress-bar" style="width: 25%; background-color: #ef4444; border-radius: 9999px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Overview Donut Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-checkbox-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Task Overview</h6>
+            </div>
+            <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
+              <option selected>This Month</option>
+              <option>Last Month</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <div style="width: 130px; height: 130px; position: relative; flex-shrink: 0;">
+              <canvas id="profileTaskDonutChart"></canvas>
+              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                <div class="fw-bold text-dark" style="font-size: 1.3rem; line-height: 1;">28</div>
+                <div class="text-muted" style="font-size: 0.65rem;">Total Tasks</div>
+              </div>
+            </div>
+            <div class="d-flex flex-column gap-2 flex-grow-1" style="font-size: 0.76rem;">
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981;"></span> Completed</span>
+                <span class="text-muted">26 <span class="ms-1" style="font-size: 0.7rem;">(93%)</span></span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #f59e0b;"></span> In Progress</span>
+                <span class="text-muted">1 <span class="ms-1" style="font-size: 0.7rem;">(4%)</span></span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8;"></span> To Do</span>
+                <span class="text-muted">1 <span class="ms-1" style="font-size: 0.7rem;">(4%)</span></span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></span> Overdue</span>
+                <span class="text-muted">0 <span class="ms-1" style="font-size: 0.7rem;">(0%)</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 3: Recent Activity & Account Settings -->
+    <div class="col-xl-4 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+        <!-- Recent Activity Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-time-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Activity</h6>
+            </div>
+            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #dcfce7; color: #16a34a; font-size: 0.85rem;">
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Completed a task</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">UI Design Review</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">2 hours ago</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
+                  <i class="ri-chat-3-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Commented on a task</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">API Documentation</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">4 hours ago</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #f3e8ff; color: #9333ea; font-size: 0.85rem;">
+                  <i class="ri-file-upload-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Uploaded a file</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">design_mockup.png</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">1 day ago</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #ffedd5; color: #ea580c; font-size: 0.85rem;">
+                  <i class="ri-video-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Joined a meeting</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Development Team Sync</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">1 day ago</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #fee2e2; color: #ef4444; font-size: 0.85rem;">
+                  <i class="ri-task-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Task assigned</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Database Optimization</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">2 days ago</span>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
+                  <i class="ri-edit-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Updated task status</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Changed to In Progress</div>
+                </div>
+              </div>
+              <span class="text-muted" style="font-size: 0.7rem;">2 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Settings Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="ri-settings-3-line text-dark" style="font-size: 1.1rem;"></i>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Account Settings</h6>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                <i class="ri-lock-line text-muted"></i> Change Password
+              </span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                <i class="ri-shield-check-line text-muted"></i> Two-Factor Authentication
+              </span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                <i class="ri-computer-line text-muted"></i> Login Sessions
+              </span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                <i class="ri-eye-line text-muted"></i> Privacy Settings
+              </span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
+              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                <i class="ri-notification-3-line text-muted"></i> Notification Preferences
+              </span>
+              <i class="ri-arrow-right-s-line text-muted"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ctxDonut = document.getElementById('profileTaskDonutChart');
+  if (ctxDonut) {
+    new Chart(ctxDonut, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'In Progress', 'To Do', 'Overdue'],
+        datasets: [{
+          data: [26, 1, 1, 0],
+          backgroundColor: ['#10b981', '#f59e0b', '#94a3b8', '#ef4444'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          cutout: '72%'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

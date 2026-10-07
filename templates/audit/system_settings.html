@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Top Header Row -->
+  <div class="dash-header-row mb-3">
+    <div>
+      <h1 class="dash-title">Settings</h1>
+      <div class="dash-subtitle">Manage your account, team, and system preferences.</div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="d-flex align-items-center gap-4 border-bottom mb-4 overflow-x-auto pb-1" style="border-color: #edf2f7 !important;">
+    <a href="#" class="pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.84rem;">
+      <i class="ri-settings-3-line"></i> General
+    </a>
+    <a href="{% url 'users:roles_list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-user-settings-line"></i> User Management
+    </a>
+    <a href="{% url 'users:roles_list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-shield-keyhole-line"></i> Roles & Permissions
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-folder-settings-line"></i> Project Settings
+    </a>
+    <a href="{% url 'notifications:list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-notification-3-line"></i> Notifications
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-lock-line"></i> Security
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-paint-brush-line"></i> Appearance
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-server-line"></i> System
+    </a>
+    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+      <i class="ri-links-line"></i> Integrations
+    </a>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <!-- Main Top Layout: Organization & Email Settings Left + System Info & Backup Right -->
+    <div class="row g-4 mb-4">
+      <!-- Left Column (Organization + Email Settings) -->
+      <div class="col-lg-8">
+        <div class="d-flex flex-column gap-4">
+          <!-- Organization Settings Card -->
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
+                  <i class="ri-building-line" style="font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Organization Settings</h6>
+                  <div class="text-muted" style="font-size: 0.76rem;">Basic information about your organization.</div>
+                </div>
+              </div>
+              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
+            </div>
+
+            <div class="row g-4 align-items-center">
+              <div class="col-md-3 text-center">
+                <div class="border rounded-3 p-3 d-flex flex-column align-items-center justify-content-center bg-light mb-1" style="height: 110px;">
+                  <i class="ri-building-2-line text-muted" style="font-size: 2rem;"></i>
+                  <button type="button" class="btn btn-sm btn-white border mt-2 px-2 py-1 text-secondary" style="font-size: 0.72rem; border-radius: 4px;">
+                    <i class="ri-upload-line me-1"></i> Change Logo
+                  </button>
+                </div>
+                <div class="text-muted" style="font-size: 0.65rem;">Recommended size: 200x200 (PNG, JPG)</div>
+              </div>
+
+              <div class="col-md-9">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Organization Name</label>
+                    <input type="text" name="org_name" class="form-control form-control-sm" value="TaskWave Solutions" style="border-radius: 6px;">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Email</label>
+                    <input type="email" name="org_email" class="form-control form-control-sm" value="admin@taskwave.com" style="border-radius: 6px;">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Phone</label>
+                    <input type="text" name="org_phone" class="form-control form-control-sm" value="+91 98765 43210" style="border-radius: 6px;">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Address</label>
+                    <input type="text" name="org_address" class="form-control form-control-sm" value="Jamshedpur, Jharkhand, India" style="border-radius: 6px;">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Website</label>
+                    <input type="text" class="form-control form-control-sm" value="https://taskwave.com" style="border-radius: 6px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Settings Card -->
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
+                  <i class="ri-mail-line" style="font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Email Settings</h6>
+                  <div class="text-muted" style="font-size: 0.76rem;">Configure email settings for notifications and system alerts.</div>
+                </div>
+              </div>
+              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Host</label>
+                <input type="text" class="form-control form-control-sm" value="smtp.gmail.com" style="border-radius: 6px;">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Port</label>
+                <input type="text" class="form-control form-control-sm" value="587" style="border-radius: 6px;">
+              </div>
+              <div class="col-md-2 d-flex flex-column justify-content-center">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Use TLS</label>
+                <label class="tw-switch mt-1">
+                  <input type="checkbox" checked>
+                  <span class="tw-slider"></span>
+                </label>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Email</label>
+                <input type="email" class="form-control form-control-sm" value="noreply@taskwave.com" style="border-radius: 6px;">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Name</label>
+                <input type="text" class="form-control form-control-sm" value="TaskWave" style="border-radius: 6px;">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Username</label>
+                <input type="text" class="form-control form-control-sm" value="admin@taskwave.com" style="border-radius: 6px;">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Password</label>
+                <div class="input-group input-group-sm">
+                  <input type="password" class="form-control" value="password123" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+                  <button class="btn btn-outline-secondary" type="button"><i class="ri-eye-line"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (System Info + Backup & Maintenance) -->
+      <div class="col-lg-4">
+        <div class="d-flex flex-column gap-4">
+          <!-- System Information Card -->
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="ri-database-2-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">System Information</h6>
+            </div>
+            <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
+              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-hashtag"></i> Application Version</span>
+                <span class="fw-semibold text-dark">v1.0.0</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-cpu-line"></i> Django Version</span>
+                <span class="fw-semibold text-dark">5.2.15</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-code-box-line"></i> Python Version</span>
+                <span class="fw-semibold text-dark">3.11.9</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-database-line"></i> Database</span>
+                <span class="fw-semibold text-dark">MySQL 8.0</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-global-line"></i> Environment</span>
+                <span class="badge bg-light text-secondary border">Development</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between py-1">
+                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-time-line"></i> Last Backup</span>
+                <span class="text-muted">15 Oct 2026, 02:00 AM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Backup & Maintenance Card -->
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="ri-database-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Backup & Maintenance</h6>
+            </div>
+            <div class="text-muted mb-3" style="font-size: 0.74rem;">Manage system backup and maintenance.</div>
+
+            <div class="d-flex flex-column gap-3" style="font-size: 0.8rem;">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-shield-keyhole-line text-muted"></i>
+                  <span class="text-dark">Create Backup</span>
+                </div>
+                <button type="button" class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">Backup Now</button>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-download-2-line text-muted"></i>
+                  <span class="text-dark">Download Latest Backup</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Download</button>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-calendar-check-line text-muted"></i>
+                  <span class="text-dark">Schedule Automatic Backup</span>
+                </div>
+                <label class="tw-switch">
+                  <input type="checkbox" checked>
+                  <span class="tw-slider"></span>
+                </label>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-delete-bin-line text-muted"></i>
+                  <span class="text-dark">Clear Cache</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Clear Cache</button>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-settings-4-line text-muted"></i>
+                  <span class="text-dark">Database Optimization</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Optimize</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row (3 Columns: Notification Preferences + Appearance Settings + Security Settings) -->
+    <div class="row g-4">
+      <!-- Notification Preferences -->
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="ri-notification-3-line text-dark" style="font-size: 1.1rem;"></i>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Notification Preferences</h6>
+          </div>
+          <div class="text-muted mb-3" style="font-size: 0.74rem;">Choose what notifications you want to receive.</div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">
+                  <i class="ri-group-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">New Task Assigned</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Notify when a new task is assigned to you</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #dcfce7; color: #16a34a; font-size: 0.75rem;">
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Task Status Updates</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Notify when task status changes</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #fce7f3; color: #db2777; font-size: 0.75rem;">
+                  <i class="ri-file-list-3-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Project Updates</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Notify about project activities</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #f3e8ff; color: #9333ea; font-size: 0.75rem;">
+                  <i class="ri-message-3-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">New Messages</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Notify when you receive a new message</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #fef3c7; color: #d97706; font-size: 0.75rem;">
+                  <i class="ri-time-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Overtime Requests</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Notify about overtime requests</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #ffedd5; color: #ea580c; font-size: 0.75rem;">
+                  <i class="ri-notification-badge-line"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">System Notifications</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Important system alerts and announcements</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox">
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appearance Settings -->
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="ri-paint-brush-line text-dark" style="font-size: 1.1rem;"></i>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Appearance Settings</h6>
+          </div>
+          <div class="text-muted mb-3" style="font-size: 0.74rem;">Customize the look and feel of the application.</div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Theme</span>
+              <select name="theme" class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
+                <option selected>Light</option>
+                <option>Dark</option>
+                <option>System</option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Primary Color</span>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 16px; height: 16px; border-radius: 4px; background-color: #b45309; display: inline-block;"></span>
+                <span class="text-muted" style="font-size: 0.78rem;">#b45309</span>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Sidebar Style</span>
+              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
+                <option selected>Default</option>
+                <option>Compact</option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Font Size</span>
+              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
+                <option selected>Medium</option>
+                <option>Small</option>
+                <option>Large</option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Date Format</span>
+              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
+                <option selected>DD MMM YYYY (15 Oct 2026)</option>
+                <option>YYYY-MM-DD</option>
+                <option>MM/DD/YYYY</option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="text-dark" style="font-size: 0.8rem;">Time Format</span>
+              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
+                <option selected>12 Hour (02:30 PM)</option>
+                <option>24 Hour (14:30)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Settings -->
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="ri-lock-line text-dark" style="font-size: 1.1rem;"></i>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Security Settings</h6>
+          </div>
+          <div class="text-muted mb-3" style="font-size: 0.74rem;">Manage security and access control.</div>
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-shield-keyhole-line text-warning mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Two-Factor Authentication (2FA)</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Add an extra layer of security</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox">
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-user-follow-line text-primary mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Password Expiry</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Require password change every 90 days</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-shield-check-line text-success mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Login Attempt Limit</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Block after 5 failed attempts</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-time-line text-danger mt-1"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Session Timeout</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Auto logout after 30 minutes</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox" checked>
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-start gap-2">
+                <i class="ri-node-tree text-purple mt-1" style="color: #9333ea;"></i>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Allow Login from Company Network Only</div>
+                  <div class="text-muted" style="font-size: 0.7rem;">Restrict access to office network</div>
+                </div>
+              </div>
+              <label class="tw-switch">
+                <input type="checkbox">
+                <span class="tw-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

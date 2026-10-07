@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kanban Board - TaskWave{% endblock %}
+
+{% block content %}
+<div class="dash-viewport">
+  <!-- Page Header -->
+  <div class="dash-header-row">
+    <div>
+      <h1 class="dash-title">Kanban Board</h1>
+      <p class="dash-subtitle">Visualize and manage tasks across different stages.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn-import-tw" type="button">
+        <i class="ri-layout-grid-line"></i> View <i class="ri-arrow-down-s-line ms-1"></i>
+      </button>
+      <a href="{% url 'tasks:task_create' %}" class="btn-new-entity">
+        <i class="ri-add-line"></i> New Task
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="dash-filter-bar">
+    <div class="dash-select-pill">
+      <i class="ri-folder-line me-1 text-muted"></i>
+      <span>TaskWave</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <i class="ri-user-line me-1 text-muted"></i>
+      <span>All Assignees</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <span>All Priority</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <span>All Status</span>
+      <i class="ri-arrow-down-s-line"></i>
+    </div>
+    <div class="dash-select-pill">
+      <i class="ri-calendar-line me-1 text-muted"></i>
+      <span>Start Date - End Date</span>
+    </div>
+    <div class="filter-search-box ms-auto">
+      <i class="ri-search-line"></i>
+      <input type="text" placeholder="Search tasks...">
+    </div>
+    <button class="dash-clear-btn" type="button">Clear</button>
+  </div>
+
+  <!-- Kanban 4 Columns Grid -->
+  <div class="kanban-4cols-grid">
+    {% for col in columns %}
+    <div class="kanban-column-box col-{{ col.id }}">
+      <!-- Column Header -->
+      <div class="kanban-col-header">
+        <div class="d-flex align-items-center gap-2">
+          <span class="legend-dot" style="background-color: {{ col.dot_color }};"></span>
+          <span class="fw-bold text-dark fs-6">{{ col.title }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="kanban-count-badge">{{ col.count }}</span>
+          <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+        </div>
+      </div>
+
+      <!-- Column Cards List -->
+      <div class="kanban-cards-stack">
+        {% for task in col.tasks %}
+        <div class="kanban-task-card">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <h4 class="kanban-card-title">{{ task.title }}</h4>
+            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          </div>
+          <p class="kanban-card-desc">{{ task.desc }}</p>
+
+          <!-- Tags -->
+          <div class="d-flex align-items-center gap-1 mb-3 flex-wrap">
+            {% for tg in task.tags %}
+            <span class="tag-pill {% if forloop.first %}tag-pill-project{% else %}tag-pill-category{% endif %}">{{ tg }}</span>
+            {% endfor %}
+          </div>
+
+          <!-- Bottom Meta -->
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+            <div class="d-flex align-items-center gap-2">
+              <span class="priority-pill {{ task.priority_class }}">{{ task.priority }}</span>
+              <span class="small text-muted"><i class="ri-calendar-line me-1"></i>{{ task.date }}</span>
+            </div>
+            <div class="d-flex align-items-center">
+              {% for av in task.avatars %}
+              <img src="{% static av %}" class="rounded-circle border border-white" width="24" height="24" style="object-fit: cover; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+              {% endfor %}
+              {% if task.extra > 0 %}
+              <span class="small text-muted ms-1 fw-bold" style="font-size: 0.7rem;">+{{ task.extra }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- + Add Task Button -->
+        <button class="kanban-add-task-btn" type="button">
+          <i class="ri-add-line"></i> Add Task
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

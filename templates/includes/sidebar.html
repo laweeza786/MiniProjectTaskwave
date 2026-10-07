@@ -1,0 +1,95 @@
+{% load static %}
+<aside class="app-sidebar" id="appSidebar">
+  <!-- Brand Logo -->
+  <div class="sidebar-brand">
+    <div class="brand-logo-wave">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8.5C5.5 5.5 8.5 5.5 11 8.5C13.5 11.5 16.5 11.5 19 8.5C20.2 7 21.2 7 22 7.5" stroke="#f59e0b" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M3 15.5C5.5 12.5 8.5 12.5 11 15.5C13.5 18.5 16.5 18.5 19 15.5C20.2 14 21.2 14 22 14.5" stroke="#ea580c" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="brand-text">TaskWave</span>
+  </div>
+
+  <!-- Main Navigation Links -->
+  <nav class="sidebar-nav">
+    <a href="{% url 'core:dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'dashboard_alt' %}active{% endif %}">
+      <i class="ri-dashboard-line"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="{% url 'projects:project_list' %}" class="sidebar-link {% if 'projects' in request.path %}active{% endif %}">
+      <i class="ri-file-list-3-line"></i>
+      <span>Projects</span>
+    </a>
+    <a href="{% url 'tasks:task_list' %}" class="sidebar-link {% if 'tasks' in request.path and not 'kanban' in request.path %}active{% endif %}">
+      <i class="ri-checkbox-line"></i>
+      <span>Tasks</span>
+    </a>
+    <a href="{% url 'kanban:board' %}" class="sidebar-link {% if 'kanban' in request.path %}active{% endif %}">
+      <i class="ri-layout-column-line"></i>
+      <span>Kanban</span>
+    </a>
+    <a href="{% url 'calendar_app:calendar' %}" class="sidebar-link {% if 'calendar' in request.path %}active{% endif %}">
+      <i class="ri-calendar-line"></i>
+      <span>Calendar</span>
+    </a>
+    <a href="{% url 'users:member_list' %}" class="sidebar-link {% if 'members' in request.path and not 'roles' in request.path %}active{% endif %}">
+      <i class="ri-group-line"></i>
+      <span>Members</span>
+    </a>
+    <a href="{% url 'departments:department_list' %}" class="sidebar-link {% if 'departments' in request.path %}active{% endif %}">
+      <i class="ri-node-tree"></i>
+      <span>Departments</span>
+    </a>
+    <a href="{% url 'users:roles_list' %}" class="sidebar-link {% if 'roles' in request.path %}active{% endif %}">
+      <i class="ri-shield-keyhole-line"></i>
+      <span>Roles & Permissions</span>
+    </a>
+    <a href="{% url 'audit:logs' %}" class="sidebar-link {% if request.resolver_match.url_name == 'logs' %}active{% endif %}">
+      <i class="ri-bar-chart-box-line"></i>
+      <span>Activity Logs</span>
+    </a>
+    <a href="{% url 'files:list' %}" class="sidebar-link {% if 'files' in request.path %}active{% endif %}">
+      <i class="ri-folder-open-line"></i>
+      <span>File Management</span>
+    </a>
+    <a href="{% url 'messaging:inbox' %}" class="sidebar-link {% if 'messages' in request.path %}active{% endif %}">
+      <i class="ri-message-3-line"></i>
+      <span>Messages</span>
+      <span class="sidebar-badge-red">{{ unread_messages_count|default:"3" }}</span>
+    </a>
+    <a href="{% url 'notifications:list' %}" class="sidebar-link {% if 'notifications' in request.path %}active{% endif %}">
+      <i class="ri-notification-3-line"></i>
+      <span>Notifications</span>
+      <span class="sidebar-badge-red">{{ unread_notifications_count|default:"5" }}</span>
+    </a>
+    <a href="{% url 'analytics:dashboard' %}" class="sidebar-link {% if 'analytics' in request.path %}active{% endif %}">
+      <i class="ri-bar-chart-2-line"></i>
+      <span>Analytics</span>
+    </a>
+    <a href="{% url 'overtime:list' %}" class="sidebar-link {% if 'overtime' in request.path %}active{% endif %}">
+      <i class="ri-time-line"></i>
+      <span>Overtime</span>
+    </a>
+    <a href="{% url 'reports:overview' %}" class="sidebar-link {% if 'reports' in request.path %}active{% endif %}">
+      <i class="ri-file-chart-line"></i>
+      <span>Reports</span>
+    </a>
+    <a href="{% url 'meetings:list' %}" class="sidebar-link {% if 'meetings' in request.path %}active{% endif %}">
+      <i class="ri-video-line"></i>
+      <span>Meetings</span>
+    </a>
+  </nav>
+
+  <!-- Pinned Bottom Links -->
+  <div class="sidebar-footer">
+    <a href="{% url 'audit:settings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+      <i class="ri-settings-3-line"></i>
+      <span>Settings</span>
+    </a>
+    <a href="{% url 'core:help_support' %}" class="sidebar-link {% if request.resolver_match.url_name == 'help_support' %}active{% endif %}">
+      <i class="ri-question-line"></i>
+      <span>Help & Support</span>
+    </a>
+  </div>
+</aside>

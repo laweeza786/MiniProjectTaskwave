@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - TaskWave{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h1 class="page-title">{{ title }}</h1>
+        <div class="page-subtitle">Configure department leadership, contacts, and functions.</div>
+      </div>
+      <a href="{% url 'departments:department_list' %}" class="btn-outline-tw">
+        <i class="bi bi-arrow-left me-1"></i>Back
+      </a>
+    </div>
+
+    <div class="tw-card">
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">DEPARTMENT NAME</label>
+          {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">DESCRIPTION</label>
+          {{ form.description }}
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold text-secondary">DEPARTMENT HEAD</label>
+            {{ form.head }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold text-secondary">STATUS</label>
+            {{ form.status }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold text-secondary">EMAIL</label>
+            {{ form.email }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold text-secondary">PHONE</label>
+            {{ form.phone }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-8">
+            <label class="form-label small fw-semibold text-secondary">OFFICE LOCATION</label>
+            {{ form.location }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-secondary">ICON (BOOTSTRAP ICONS CLASS)</label>
+            {{ form.icon }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'departments:department_list' %}" class="btn btn-outline-secondary">Cancel</a>
+          <button type="submit" class="btn-primary-tw">Save Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
