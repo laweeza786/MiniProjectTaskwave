@@ -108,9 +108,17 @@
     <div class="dash-card overview-card">
       <div class="dash-card-header">
         <h2 class="dash-card-title">Task Overview</h2>
-        <div class="dash-select-pill">
-          <span>Last 7 Days</span>
-          <i class="ri-arrow-down-s-line"></i>
+        <div class="dropdown">
+          <button class="dash-select-pill dropdown-toggle border-0" type="button" id="chartPeriodDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; color: #475569; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+            <span id="chartPeriodLabel">Last 7 Days</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-1" aria-labelledby="chartPeriodDropdown" style="font-size: 0.8rem; border-radius: 8px; min-width: 130px;">
+            <li><a class="dropdown-item chart-filter-opt active" href="#" data-period="Last 7 Days">Last 7 Days</a></li>
+            <li><a class="dropdown-item chart-filter-opt" href="#" data-period="Last 14 Days">Last 14 Days</a></li>
+            <li><a class="dropdown-item chart-filter-opt" href="#" data-period="Last 30 Days">Last 30 Days</a></li>
+            <li><a class="dropdown-item chart-filter-opt" href="#" data-period="This Month">This Month</a></li>
+          </ul>
         </div>
       </div>
       
@@ -235,9 +243,17 @@
     <div class="dash-card">
       <div class="dash-card-header">
         <h2 class="dash-card-title">Team Workload</h2>
-        <div class="dash-select-pill">
-          <span>This Week</span>
-          <i class="ri-arrow-down-s-line"></i>
+        <div class="dropdown">
+          <button class="dash-select-pill dropdown-toggle border-0" type="button" id="workloadPeriodDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; color: #475569; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+            <span id="workloadPeriodLabel">This Week</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-1" aria-labelledby="workloadPeriodDropdown" style="font-size: 0.8rem; border-radius: 8px; min-width: 130px;">
+            <li><a class="dropdown-item workload-filter-opt active" href="#" data-period="This Week">This Week</a></li>
+            <li><a class="dropdown-item workload-filter-opt" href="#" data-period="Last Week">Last Week</a></li>
+            <li><a class="dropdown-item workload-filter-opt" href="#" data-period="This Month">This Month</a></li>
+            <li><a class="dropdown-item workload-filter-opt" href="#" data-period="Quarter to Date">Quarter to Date</a></li>
+          </ul>
         </div>
       </div>
 
@@ -311,8 +327,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   // 1. Task Overview Multi-line Bezier Chart
   const ctxOverview = document.getElementById("taskOverviewChart");
+  let overviewChart = null;
   if (ctxOverview) {
-    new Chart(ctxOverview, {
+    overviewChart = new Chart(ctxOverview, {
       type: "line",
       data: {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -449,6 +466,130 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }
       }
+    });
+  }
+
+  // 3. Team Workload Dropdown Interactive Filtering
+  const workloadOpts = document.querySelectorAll(".workload-filter-opt");
+  const workloadLabel = document.getElementById("workloadPeriodLabel");
+  const workloadItems = document.querySelectorAll(".workload-item");
+
+  const workloadDataByPeriod = {
+    "This Week": [
+      { completed: 8, total: 12, percent: 67, barColor: "#22c55e" },
+      { completed: 6, total: 10, percent: 60, barColor: "#64748b" },
+      { completed: 4, total: 8, percent: 50, barColor: "#64748b" },
+      { completed: 7, total: 10, percent: 70, barColor: "#22c55e" },
+      { completed: 5, total: 8, percent: 63, barColor: "#64748b" }
+    ],
+    "Last Week": [
+      { completed: 11, total: 12, percent: 92, barColor: "#22c55e" },
+      { completed: 9, total: 10, percent: 90, barColor: "#22c55e" },
+      { completed: 7, total: 8, percent: 88, barColor: "#22c55e" },
+      { completed: 8, total: 10, percent: 80, barColor: "#22c55e" },
+      { completed: 6, total: 8, percent: 75, barColor: "#22c55e" }
+    ],
+    "This Month": [
+      { completed: 28, total: 36, percent: 78, barColor: "#22c55e" },
+      { completed: 22, total: 30, percent: 73, barColor: "#22c55e" },
+      { completed: 17, total: 24, percent: 71, barColor: "#f59e0b" },
+      { completed: 25, total: 32, percent: 78, barColor: "#22c55e" },
+      { completed: 19, total: 26, percent: 73, barColor: "#22c55e" }
+    ],
+    "Quarter to Date": [
+      { completed: 72, total: 90, percent: 80, barColor: "#22c55e" },
+      { completed: 58, total: 75, percent: 77, barColor: "#22c55e" },
+      { completed: 44, total: 60, percent: 73, barColor: "#22c55e" },
+      { completed: 65, total: 80, percent: 81, barColor: "#22c55e" },
+      { completed: 51, total: 68, percent: 75, barColor: "#22c55e" }
+    ]
+  };
+
+  workloadOpts.forEach(opt => {
+    opt.addEventListener("click", function (e) {
+      e.preventDefault();
+      const period = this.getAttribute("data-period");
+      if (workloadLabel) workloadLabel.textContent = period;
+      workloadOpts.forEach(o => o.classList.remove("active"));
+      this.classList.add("active");
+
+      const stats = workloadDataByPeriod[period] || workloadDataByPeriod["This Week"];
+      workloadItems.forEach((item, idx) => {
+        if (stats[idx]) {
+          const ratioEl = item.querySelector(".workload-ratio");
+          const fillEl = item.querySelector(".workload-progress-fill");
+          if (ratioEl) ratioEl.textContent = `${stats[idx].completed}/${stats[idx].total}`;
+          if (fillEl) {
+            fillEl.style.width = `${stats[idx].percent}%`;
+            fillEl.style.backgroundColor = stats[idx].barColor;
+          }
+        }
+      });
+    });
+  });
+
+  // 4. Chart Period Dropdown Interactive Filtering
+  const chartOpts = document.querySelectorAll(".chart-filter-opt");
+  const chartLabel = document.getElementById("chartPeriodLabel");
+  if (overviewChart) {
+    const chartDataByPeriod = {
+      "Last 7 Days": {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [
+          [13, 17, 24, 21, 28, 30, 36],
+          [7, 11, 14, 12, 17, 18, 22],
+          [3, 4, 4, 7, 6, 8, 9],
+          [0, 1, 1, 2, 2, 3, 3]
+        ]
+      },
+      "Last 14 Days": {
+        labels: ["Day 1", "Day 3", "Day 5", "Day 7", "Day 9", "Day 11", "Day 14"],
+        datasets: [
+          [18, 22, 29, 31, 35, 42, 48],
+          [10, 14, 18, 20, 24, 27, 30],
+          [5, 6, 7, 9, 8, 11, 12],
+          [2, 3, 3, 4, 4, 5, 6]
+        ]
+      },
+      "Last 30 Days": {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        datasets: [
+          [35, 52, 68, 85],
+          [20, 32, 41, 55],
+          [8, 12, 15, 18],
+          [4, 7, 9, 12]
+        ]
+      },
+      "This Month": {
+        labels: ["Oct 1", "Oct 3", "Oct 5", "Oct 7", "Oct 9"],
+        datasets: [
+          [12, 20, 28, 35, 42],
+          [8, 14, 19, 24, 29],
+          [2, 4, 5, 8, 10],
+          [1, 2, 3, 4, 5]
+        ]
+      }
+    };
+
+    chartOpts.forEach(opt => {
+      opt.addEventListener("click", function (e) {
+        e.preventDefault();
+        const period = this.getAttribute("data-period");
+        if (chartLabel) chartLabel.textContent = period;
+        chartOpts.forEach(o => o.classList.remove("active"));
+        this.classList.add("active");
+
+        const dataObj = chartDataByPeriod[period];
+        if (dataObj) {
+          overviewChart.data.labels = dataObj.labels;
+          dataObj.datasets.forEach((arr, i) => {
+            if (overviewChart.data.datasets[i]) {
+              overviewChart.data.datasets[i].data = arr;
+            }
+          });
+          overviewChart.update();
+        }
+      });
     });
   }
 });

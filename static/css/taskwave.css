@@ -937,6 +937,17 @@ body {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.dash-select-pill:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.dash-select-pill.dropdown-toggle::after {
+  display: none;
 }
 
 .dash-view-all {
