@@ -441,8 +441,35 @@ body {
   z-index: 1040;
   height: 100vh;
   position: sticky;
-  top: 0;
   overflow: hidden;
+}
+
+/* Collapsed Sidebar (Desktop Mini-Bar Mode) */
+.app-sidebar.collapsed {
+  width: 68px;
+}
+
+.app-sidebar.collapsed .brand-text,
+.app-sidebar.collapsed .sidebar-link span,
+.app-sidebar.collapsed .badge-count,
+.app-sidebar.collapsed .sidebar-footer span {
+  display: none !important;
+}
+
+.app-sidebar.collapsed .sidebar-brand {
+  justify-content: center;
+  padding: 22px 0 18px 0;
+}
+
+.app-sidebar.collapsed .sidebar-link {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.app-sidebar.collapsed .sidebar-link i {
+  margin-right: 0 !important;
+  width: auto;
+  font-size: 1.25rem;
 }
 
 .sidebar-brand {
@@ -1598,6 +1625,22 @@ body {
   }
   .app-sidebar.show {
     left: 0;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1030;
+    display: none;
+  }
+
+  .sidebar-backdrop.show {
+    display: block;
   }
 }
 

@@ -22,12 +22,29 @@ function getCookie(name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Mobile Sidebar Toggle
+  // Sidebar Toggle (Desktop Collapse & Mobile Drawer)
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebar = document.querySelector('.app-sidebar');
   if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('show');
+    sidebarToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (window.innerWidth <= 992) {
+        sidebar.classList.toggle('show');
+        let backdrop = document.querySelector('.sidebar-backdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.className = 'sidebar-backdrop';
+          document.body.appendChild(backdrop);
+          backdrop.addEventListener('click', () => {
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+          });
+        }
+        backdrop.classList.toggle('show', sidebar.classList.contains('show'));
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
     });
   }
 
