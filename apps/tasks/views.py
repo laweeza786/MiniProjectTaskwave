@@ -278,6 +278,13 @@ def task_list_view(request):
         }
     ]
 
+    if status_filter:
+        s_norm = status_filter.lower().replace('-', ' ').replace('_', ' ').strip()
+        sample_tasks = [
+            t for t in sample_tasks
+            if t['status'].lower().replace('-', ' ').replace('_', ' ').strip() == s_norm
+        ]
+
     projects = Project.objects.all().order_by('name')
     users = User.objects.filter(is_active=True).order_by('first_name')
 

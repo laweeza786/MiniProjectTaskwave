@@ -16,16 +16,13 @@
         <i class="ri-calendar-line"></i>
         <span>Tuesday, 30 September 2026</span>
       </div>
-      <a href="{% url 'core:admin_dashboard' %}" class="btn btn-sm btn-outline-secondary px-2.5 py-1.5" style="border-radius: 8px; font-size: 12px; background: #fff;" title="Switch to Admin View">
-        Admin View
-      </a>
     </div>
   </div>
 
   <!-- KPI Stat Cards Row (4 cards) -->
   <div class="dash-kpi-grid">
     <!-- Total Tasks -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}" class="dash-kpi-card" title="View All Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-file-text-line"></i>
@@ -39,13 +36,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- In Progress -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-orange">
           <i class="ri-time-line"></i>
@@ -59,13 +56,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Completed -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-checkbox-circle-fill"></i>
@@ -79,13 +76,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Overdue -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-error-warning-line"></i>
@@ -99,10 +96,10 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
   </div>
 
   <!-- Row 2: Middle 3 Cards Grid -->

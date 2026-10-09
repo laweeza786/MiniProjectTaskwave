@@ -24,7 +24,7 @@
   <!-- KPI Stat Cards Row (4 cards) -->
   <div class="dash-kpi-grid">
     <!-- Total Tasks -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}" class="dash-kpi-card" title="View All Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-file-text-line"></i>
@@ -38,13 +38,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- In Progress -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-play-line"></i>
@@ -58,13 +58,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Completed -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-check-line"></i>
@@ -78,13 +78,13 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Overdue -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'tasks:list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-error-warning-line"></i>
@@ -98,10 +98,10 @@
           </div>
         </div>
       </div>
-      <button class="dash-card-menu-btn" type="button" aria-label="Menu">
+      <button class="dash-card-menu-btn" type="button" aria-label="Menu" onclick="event.preventDefault(); event.stopPropagation();">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
   </div>
 
   <!-- Filter Bar -->
@@ -127,7 +127,7 @@
     <div class="d-flex align-items-center gap-1">
       <span class="text-muted small">Status</span>
       <div class="dash-select-pill">
-        <span>All Status</span>
+        <span>{% if status_filter %}{{ status_filter }}{% else %}All Status{% endif %}</span>
         <i class="ri-arrow-down-s-line"></i>
       </div>
     </div>
@@ -142,16 +142,16 @@
       <i class="ri-calendar-line me-1 text-muted"></i>
       <span>Start Date - End Date</span>
     </div>
-    <button class="dash-clear-btn" type="button">Clear</button>
+    <a href="{% url 'tasks:list' %}" class="dash-clear-btn text-decoration-none">Clear</a>
   </div>
 
   <!-- Tasks Tabs Row -->
   <div class="tasks-tabs-nav mb-3">
-    <button class="tasks-tab-btn active" type="button">All Tasks (128)</button>
-    <button class="tasks-tab-btn" type="button">My Tasks (18)</button>
-    <button class="tasks-tab-btn" type="button">Assigned to Others (92)</button>
-    <button class="tasks-tab-btn" type="button">Overdue (12)</button>
-    <button class="tasks-tab-btn" type="button">Completed (64)</button>
+    <a href="{% url 'tasks:list' %}" class="tasks-tab-btn text-decoration-none {% if not status_filter %}active{% endif %}">All Tasks (128)</a>
+    <a href="{% url 'tasks:list' %}?my_tasks=true" class="tasks-tab-btn text-decoration-none">My Tasks (18)</a>
+    <a href="{% url 'tasks:list' %}?status=In+Progress" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'in progress' or status_filter|lower == 'in_progress' %}active{% endif %}">In Progress (42)</a>
+    <a href="{% url 'tasks:list' %}?status=Overdue" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'overdue' %}active{% endif %}">Overdue (12)</a>
+    <a href="{% url 'tasks:list' %}?status=Completed" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'completed' %}active{% endif %}">Completed (64)</a>
   </div>
 
   <!-- Tasks Table Card -->
@@ -219,7 +219,7 @@
 
     <!-- Pagination Footer -->
     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <div class="small text-muted">Showing 1 to 12 of 128 tasks</div>
+      <div class="small text-muted">Showing 1 to {{ sample_tasks|length }} {% if status_filter %}of {{ sample_tasks|length }} filtered{% else %}of 128{% endif %} tasks</div>
       <div class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2">
           <span class="small text-muted">Rows per page</span>
