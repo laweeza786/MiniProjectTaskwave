@@ -22,7 +22,7 @@
   <!-- KPI Stat Cards Row (4 cards) -->
   <div class="dash-kpi-grid">
     <!-- Total Tasks -->
-    <a href="{% url 'tasks:list' %}" class="dash-kpi-card" title="View All Tasks">
+    <a href="{% url 'tasks:task_list' %}" class="dash-kpi-card" title="View All Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-file-text-line"></i>
@@ -42,7 +42,7 @@
     </a>
 
     <!-- In Progress -->
-    <a href="{% url 'tasks:list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-orange">
           <i class="ri-time-line"></i>
@@ -62,7 +62,7 @@
     </a>
 
     <!-- Completed -->
-    <a href="{% url 'tasks:list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-checkbox-circle-fill"></i>
@@ -82,7 +82,7 @@
     </a>
 
     <!-- Overdue -->
-    <a href="{% url 'tasks:list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-error-warning-line"></i>

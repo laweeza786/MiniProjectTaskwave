@@ -24,7 +24,7 @@
   <!-- KPI Stat Cards Row (4 cards) -->
   <div class="dash-kpi-grid">
     <!-- Total Tasks -->
-    <a href="{% url 'tasks:list' %}" class="dash-kpi-card" title="View All Tasks">
+    <a href="{% url 'tasks:task_list' %}" class="dash-kpi-card" title="View All Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-file-text-line"></i>
@@ -44,7 +44,7 @@
     </a>
 
     <!-- In Progress -->
-    <a href="{% url 'tasks:list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-play-line"></i>
@@ -64,7 +64,7 @@
     </a>
 
     <!-- Completed -->
-    <a href="{% url 'tasks:list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-check-line"></i>
@@ -84,7 +84,7 @@
     </a>
 
     <!-- Overdue -->
-    <a href="{% url 'tasks:list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-error-warning-line"></i>
@@ -142,16 +142,16 @@
       <i class="ri-calendar-line me-1 text-muted"></i>
       <span>Start Date - End Date</span>
     </div>
-    <a href="{% url 'tasks:list' %}" class="dash-clear-btn text-decoration-none">Clear</a>
+    <a href="{% url 'tasks:task_list' %}" class="dash-clear-btn text-decoration-none">Clear</a>
   </div>
 
   <!-- Tasks Tabs Row -->
   <div class="tasks-tabs-nav mb-3">
-    <a href="{% url 'tasks:list' %}" class="tasks-tab-btn text-decoration-none {% if not status_filter %}active{% endif %}">All Tasks (128)</a>
-    <a href="{% url 'tasks:list' %}?my_tasks=true" class="tasks-tab-btn text-decoration-none">My Tasks (18)</a>
-    <a href="{% url 'tasks:list' %}?status=In+Progress" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'in progress' or status_filter|lower == 'in_progress' %}active{% endif %}">In Progress (42)</a>
-    <a href="{% url 'tasks:list' %}?status=Overdue" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'overdue' %}active{% endif %}">Overdue (12)</a>
-    <a href="{% url 'tasks:list' %}?status=Completed" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'completed' %}active{% endif %}">Completed (64)</a>
+    <a href="{% url 'tasks:task_list' %}" class="tasks-tab-btn text-decoration-none {% if not status_filter %}active{% endif %}">All Tasks (128)</a>
+    <a href="{% url 'tasks:task_list' %}?my_tasks=true" class="tasks-tab-btn text-decoration-none">My Tasks (18)</a>
+    <a href="{% url 'tasks:task_list' %}?status=In+Progress" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'in progress' or status_filter|lower == 'in_progress' %}active{% endif %}">In Progress (42)</a>
+    <a href="{% url 'tasks:task_list' %}?status=Overdue" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'overdue' %}active{% endif %}">Overdue (12)</a>
+    <a href="{% url 'tasks:task_list' %}?status=Completed" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'completed' %}active{% endif %}">Completed (64)</a>
   </div>
 
   <!-- Tasks Table Card -->
