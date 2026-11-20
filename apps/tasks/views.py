@@ -19,279 +19,155 @@ from apps.audit.middleware import log_activity
 def task_list_view(request):
     user = request.user
     query = request.GET.get('q', '').strip()
-    status_filter = request.GET.get('status', '')
-    priority_filter = request.GET.get('priority', '')
-    project_filter = request.GET.get('project', '')
-    assignee_filter = request.GET.get('assignee', '')
-    my_tasks = request.GET.get('my_tasks', '')
+    status_filter = request.GET.get('status', '').strip()
+    priority_filter = request.GET.get('priority', '').strip()
+    project_filter = request.GET.get('project', '').strip()
+    assignee_filter = request.GET.get('assignee', '').strip()
+    my_tasks = request.GET.get('my_tasks', '').strip()
+    start_date = request.GET.get('start_date', '').strip()
+    end_date = request.GET.get('end_date', '').strip()
 
-    tasks = Task.objects.select_related('project', 'department', 'category', 'created_by').prefetch_related('assignees').all()
+    base_tasks = Task.objects.select_related('project', 'department', 'category', 'created_by').prefetch_related('assignees').all()
 
-    # Filter by user if requested or if employee only
-    if my_tasks or not (user.is_superuser or (user.role and user.role.name in ['Administrator', 'Project Manager'])):
-        tasks = tasks.filter(Q(assignees=user) | Q(created_by=user)).distinct()
+    # Dynamic KPI counts
+    total_tasks = base_tasks.count()
+    my_tasks_count = base_tasks.filter(assignees=user).distinct().count()
+    in_progress_count = base_tasks.filter(status='in_progress').count()
+    completed_count = base_tasks.filter(status='completed').count()
+    overdue_count = base_tasks.filter(
+        Q(status='overdue') | Q(due_date__lt=timezone.now().date(), status__in=['assigned', 'in_progress', 'under_review'])
+    ).count()
+
+    tasks_qs = base_tasks
+
+    # Filter by user if requested
+    if my_tasks in ['true', '1', True]:
+        tasks_qs = tasks_qs.filter(assignees=user).distinct()
 
     if query:
-        tasks = tasks.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(task_number__icontains=query))
+        tasks_qs = tasks_qs.filter(
+            Q(title__icontains=query) | Q(description__icontains=query) | Q(task_number__icontains=query) | Q(project__name__icontains=query)
+        )
+
     if status_filter:
-        tasks = tasks.filter(status=status_filter)
+        s_norm = status_filter.lower().replace('-', '_').replace(' ', '_').strip()
+        if s_norm == 'in_progress':
+            tasks_qs = tasks_qs.filter(status='in_progress')
+        elif s_norm in ['completed', 'overdue', 'under_review', 'assigned', 'draft', 'cancelled']:
+            tasks_qs = tasks_qs.filter(status=s_norm)
+        else:
+            tasks_qs = tasks_qs.filter(status__icontains=status_filter)
+
     if priority_filter:
-        tasks = tasks.filter(priority=priority_filter)
+        tasks_qs = tasks_qs.filter(priority=priority_filter.lower())
+
     if project_filter:
-        tasks = tasks.filter(project_id=project_filter)
+        if project_filter.isdigit():
+            tasks_qs = tasks_qs.filter(project_id=int(project_filter))
+        else:
+            tasks_qs = tasks_qs.filter(project__name__icontains=project_filter)
+
     if assignee_filter:
-        tasks = tasks.filter(assignees__id=assignee_filter)
+        if assignee_filter.isdigit():
+            tasks_qs = tasks_qs.filter(assignees__id=int(assignee_filter))
+        else:
+            tasks_qs = tasks_qs.filter(Q(assignees__first_name__icontains=assignee_filter) | Q(assignees__last_name__icontains=assignee_filter))
 
-    total_tasks = 128
-    in_progress_count = 42
-    completed_count = 64
-    overdue_count = 12
+    if start_date:
+        tasks_qs = tasks_qs.filter(due_date__gte=start_date)
 
-    sample_tasks = [
-        {
-            'id': 1,
-            'title': 'Design User Interface',
-            'subtitle': 'Create modern UI for dashboard',
-            'project': 'TaskWave',
-            'assignee': 'Rahul Kumar',
-            'assignee_initials': 'RK',
-            'assignee_avatar': 'img/avatars/rahul_kumar.jpg',
-            'priority': 'High',
-            'priority_class': 'badge-high',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'due_date': '2 Oct 2026',
-            'progress': 60,
-            'bar_color': '#f59e0b',
-            'icon_class': 'ri-edit-circle-line',
-            'icon_bg': '#fee2e2',
-            'icon_color': '#ef4444'
-        },
-        {
-            'id': 2,
-            'title': 'Database Schema Design',
-            'subtitle': 'Design database structure and relations',
-            'project': 'College Portal',
-            'assignee': 'Priya Singh',
-            'assignee_initials': 'PS',
-            'assignee_avatar': 'img/avatars/priya_singh.jpg',
-            'priority': 'Medium',
-            'priority_class': 'badge-medium',
-            'status': 'Completed',
-            'status_class': 'badge-completed',
-            'due_date': '28 Sep 2026',
-            'progress': 100,
-            'bar_color': '#22c55e',
-            'icon_class': 'ri-play-circle-line',
-            'icon_bg': '#fef3c7',
-            'icon_color': '#d97706'
-        },
-        {
-            'id': 3,
-            'title': 'API Development',
-            'subtitle': 'Develop and test REST APIs',
-            'project': 'Mobile App',
-            'assignee': 'Aman Sharma',
-            'assignee_initials': 'AS',
-            'assignee_avatar': 'img/avatars/aman_sharma.jpg',
-            'priority': 'High',
-            'priority_class': 'badge-high',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'due_date': '5 Oct 2026',
-            'progress': 50,
-            'bar_color': '#f59e0b',
-            'icon_class': 'ri-code-box-line',
-            'icon_bg': '#e0f2fe',
-            'icon_color': '#0284c7'
-        },
-        {
-            'id': 4,
-            'title': 'Testing & Bug Fixes',
-            'subtitle': 'Fix reported issues and testing',
-            'project': 'TaskWave',
-            'assignee': 'Neha Tiwari',
-            'assignee_initials': 'NT',
-            'assignee_avatar': 'img/avatars/neha_tiwari.jpg',
-            'priority': 'Medium',
-            'priority_class': 'badge-medium',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'due_date': '3 Oct 2026',
-            'progress': 40,
-            'bar_color': '#f59e0b',
-            'icon_class': 'ri-focus-3-line',
-            'icon_bg': '#fee2e2',
-            'icon_color': '#ef4444'
-        },
-        {
-            'id': 5,
-            'title': 'Project Documentation',
-            'subtitle': 'Write technical documentation',
-            'project': 'Website Redesign',
-            'assignee': 'Vikram Singh',
-            'assignee_initials': 'VS',
-            'assignee_avatar': 'img/avatars/vikram_singh.jpg',
-            'priority': 'Low',
-            'priority_class': 'badge-low',
-            'status': 'Not Started',
-            'status_class': 'badge-not-started',
-            'due_date': '10 Oct 2026',
-            'progress': 0,
-            'bar_color': '#cbd5e1',
-            'icon_class': 'ri-file-text-line',
-            'icon_bg': '#dcfce7',
-            'icon_color': '#16a34a'
-        },
-        {
-            'id': 6,
-            'title': 'Client Review Meeting',
-            'subtitle': 'Discuss progress with client',
-            'project': 'College Portal',
-            'assignee': 'Rahul Kumar',
-            'assignee_initials': 'RK',
-            'assignee_avatar': 'img/avatars/rahul_kumar.jpg',
-            'priority': 'Medium',
-            'priority_class': 'badge-medium',
-            'status': 'Completed',
-            'status_class': 'badge-completed',
-            'due_date': '25 Sep 2026',
-            'progress': 100,
-            'bar_color': '#22c55e',
-            'icon_class': 'ri-compass-3-line',
-            'icon_bg': '#fef3c7',
-            'icon_color': '#d97706'
-        },
-        {
-            'id': 7,
-            'title': 'UI Improvements',
-            'subtitle': 'Enhance responsive design',
-            'project': 'Mobile App',
-            'assignee': 'Priya Singh',
-            'assignee_initials': 'PS',
-            'assignee_avatar': 'img/avatars/priya_singh.jpg',
-            'priority': 'High',
-            'priority_class': 'badge-high',
-            'status': 'Overdue',
-            'status_class': 'badge-overdue',
-            'due_date': '20 Sep 2026',
-            'progress': 20,
-            'bar_color': '#ef4444',
-            'icon_class': 'ri-compass-3-line',
-            'icon_bg': '#fef3c7',
-            'icon_color': '#d97706'
-        },
-        {
-            'id': 8,
-            'title': 'Deployment Setup',
-            'subtitle': 'Setup server and deployment',
-            'project': 'TaskWave',
-            'assignee': 'Aman Sharma',
-            'assignee_initials': 'AS',
-            'assignee_avatar': 'img/avatars/aman_sharma.jpg',
-            'priority': 'Medium',
-            'priority_class': 'badge-medium',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'due_date': '6 Oct 2026',
-            'progress': 70,
-            'bar_color': '#f59e0b',
-            'icon_class': 'ri-terminal-box-line',
-            'icon_bg': '#e0f2fe',
-            'icon_color': '#0284c7'
-        },
-        {
-            'id': 9,
-            'title': 'Performance Optimization',
-            'subtitle': 'Improve application performance',
-            'project': 'Database Optimization',
-            'assignee': 'Neha Tiwari',
-            'assignee_initials': 'NT',
-            'assignee_avatar': 'img/avatars/neha_tiwari.jpg',
-            'priority': 'Low',
-            'priority_class': 'badge-low',
-            'status': 'Not Started',
-            'status_class': 'badge-not-started',
-            'due_date': '12 Oct 2026',
-            'progress': 0,
-            'bar_color': '#cbd5e1',
-            'icon_class': 'ri-compass-3-line',
-            'icon_bg': '#fef3c7',
-            'icon_color': '#d97706'
-        },
-        {
-            'id': 10,
-            'title': 'Security Testing',
-            'subtitle': 'Perform security and vulnerability test',
-            'project': 'Internal Tools',
-            'assignee': 'Vikram Singh',
-            'assignee_initials': 'VS',
-            'assignee_avatar': 'img/avatars/vikram_singh.jpg',
-            'priority': 'High',
-            'priority_class': 'badge-high',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'due_date': '8 Oct 2026',
-            'progress': 30,
-            'bar_color': '#ef4444',
-            'icon_class': 'ri-shield-check-line',
-            'icon_bg': '#fee2e2',
-            'icon_color': '#ef4444'
-        },
-        {
-            'id': 11,
-            'title': 'Content Update',
-            'subtitle': 'Update website content and images',
-            'project': 'Website Redesign',
-            'assignee': 'Rahul Kumar',
-            'assignee_initials': 'RK',
-            'assignee_avatar': 'img/avatars/rahul_kumar.jpg',
-            'priority': 'Low',
-            'priority_class': 'badge-low',
-            'status': 'Completed',
-            'status_class': 'badge-completed',
-            'due_date': '22 Sep 2026',
-            'progress': 100,
-            'bar_color': '#22c55e',
-            'icon_class': 'ri-file-edit-line',
-            'icon_bg': '#dcfce7',
-            'icon_color': '#16a34a'
-        },
-        {
-            'id': 12,
-            'title': 'Final Review & Submission',
-            'subtitle': 'Final check and submit project',
-            'project': 'College Portal',
-            'assignee': 'Priya Singh',
-            'assignee_initials': 'PS',
-            'assignee_avatar': 'img/avatars/priya_singh.jpg',
-            'priority': 'Medium',
-            'priority_class': 'badge-medium',
-            'status': 'Not Started',
-            'status_class': 'badge-not-started',
-            'due_date': '15 Oct 2026',
-            'progress': 0,
-            'bar_color': '#cbd5e1',
-            'icon_class': 'ri-compass-discover-line',
-            'icon_bg': '#e0f2fe',
-            'icon_color': '#0284c7'
-        }
-    ]
+    if end_date:
+        tasks_qs = tasks_qs.filter(due_date__lte=end_date)
 
-    if status_filter:
-        s_norm = status_filter.lower().replace('-', ' ').replace('_', ' ').strip()
-        sample_tasks = [
-            t for t in sample_tasks
-            if t['status'].lower().replace('-', ' ').replace('_', ' ').strip() == s_norm
-        ]
+    tasks_qs = tasks_qs.order_by('-created_at')
+
+    # Format tasks for template
+    formatted_tasks = []
+    for t in tasks_qs:
+        first_assignee = t.assignees.first()
+        assignee_avatar = first_assignee.profile_picture.url if first_assignee and first_assignee.profile_picture else ''
+        assignee_initials = (first_assignee.first_name[:1] + first_assignee.last_name[:1]) if first_assignee and first_assignee.first_name else 'NA'
+        assignee_name = first_assignee.get_full_name() or first_assignee.email if first_assignee else 'Unassigned'
+
+        prio_display = t.get_priority_display() if hasattr(t, 'get_priority_display') else t.priority.title()
+        prio_class = 'badge-high' if t.priority in ['high', 'critical'] else ('badge-medium' if t.priority == 'medium' else 'badge-low')
+
+        status_display = t.get_status_display() if hasattr(t, 'get_status_display') else t.status.replace('_', ' ').title()
+        if t.status == 'completed':
+            status_class = 'badge-completed'
+        elif t.status == 'in_progress':
+            status_class = 'badge-in-progress'
+        elif t.status == 'overdue':
+            status_class = 'badge-overdue'
+        elif t.status == 'under_review':
+            status_class = 'badge-review'
+        else:
+            status_class = 'badge-assigned'
+
+        prog = t.progress or 0
+        bar_color = '#22c55e' if prog >= 75 else ('#f59e0b' if prog >= 30 else '#cbd5e1')
+
+        if t.status == 'completed':
+            icon_class = 'ri-checkbox-circle-line'
+            icon_bg = '#dcfce7'
+            icon_color = '#16a34a'
+        elif t.status == 'in_progress':
+            icon_class = 'ri-play-circle-line'
+            icon_bg = '#fef3c7'
+            icon_color = '#d97706'
+        elif t.status == 'under_review':
+            icon_class = 'ri-eye-line'
+            icon_bg = '#ede9fe'
+            icon_color = '#7c3aed'
+        else:
+            icon_class = 'ri-file-text-line'
+            icon_bg = '#e0f2fe'
+            icon_color = '#0284c7'
+
+        formatted_tasks.append({
+            'id': t.id,
+            'task_number': t.task_number,
+            'title': t.title,
+            'subtitle': (t.description[:45] + '...') if t.description and len(t.description) > 45 else (t.description or 'No description'),
+            'project': t.project.name if t.project else 'General',
+            'project_id': t.project_id,
+            'assignees': list(t.assignees.all()),
+            'assignee': assignee_name,
+            'assignee_initials': assignee_initials,
+            'assignee_avatar': assignee_avatar,
+            'priority': prio_display,
+            'priority_class': prio_class,
+            'status': status_display,
+            'status_class': status_class,
+            'due_date': t.due_date.strftime('%d %b %Y') if t.due_date else 'No Due Date',
+            'progress': prog,
+            'bar_color': bar_color,
+            'icon_class': icon_class,
+            'icon_bg': icon_bg,
+            'icon_color': icon_color,
+        })
+
+    from django.core.paginator import Paginator
+    try:
+        per_page = int(request.GET.get('per_page', 10))
+    except (ValueError, TypeError):
+        per_page = 10
+
+    paginator = Paginator(formatted_tasks, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     projects = Project.objects.all().order_by('name')
     users = User.objects.filter(is_active=True).order_by('first_name')
 
+    is_lead_or_above = user.is_superuser or bool(user.role and user.role.name in ['Administrator', 'Project Manager', 'Team Lead'])
+
     context = {
-        'tasks': tasks,
-        'sample_tasks': sample_tasks,
+        'tasks': page_obj,
+        'page_obj': page_obj,
+        'sample_tasks': page_obj,
         'total_tasks': total_tasks,
+        'my_tasks_count': my_tasks_count,
         'in_progress_count': in_progress_count,
         'completed_count': completed_count,
         'overdue_count': overdue_count,
@@ -300,7 +176,13 @@ def task_list_view(request):
         'status_filter': status_filter,
         'priority_filter': priority_filter,
         'project_filter': project_filter,
+        'assignee_filter': assignee_filter,
         'query': query,
+        'start_date': start_date,
+        'end_date': end_date,
+        'my_tasks': my_tasks,
+        'per_page': per_page,
+        'is_lead_or_above': is_lead_or_above,
     }
     return render(request, 'tasks/task_list.html', context)
 
@@ -343,7 +225,12 @@ def task_detail_view(request, pk):
 
 @login_required
 def task_create_view(request):
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name in ['Administrator', 'Project Manager', 'Team Lead'])):
+        messages.error(request, 'Permission denied. Only Administrators, Project Managers, and Team Leads can create and assign tasks.')
+        return redirect('tasks:task_list')
+
     if request.method == 'POST':
+
         form = TaskForm(request.POST)
         if form.is_valid():
             task = form.save(commit=False)
@@ -383,7 +270,12 @@ def task_create_view(request):
 @login_required
 def task_edit_view(request, pk):
     task = get_object_or_404(Task, pk=pk)
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name in ['Administrator', 'Project Manager', 'Team Lead']) or task.created_by == request.user):
+        messages.error(request, 'Permission denied. You do not have permission to edit this task configuration.')
+        return redirect('tasks:task_detail', pk=task.pk)
+
     old_status = task.status
+
 
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
@@ -434,7 +326,12 @@ def task_edit_view(request, pk):
 @login_required
 def task_delete_view(request, pk):
     task = get_object_or_404(Task, pk=pk)
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name in ['Administrator', 'Project Manager', 'Team Lead']) or task.created_by == request.user):
+        messages.error(request, 'Permission denied. Only Administrators, Project Managers, and Team Leads can delete tasks.')
+        return redirect('tasks:task_detail', pk=task.pk)
+
     if request.method == 'POST':
+
         title = task.title
         log_activity(request.user, 'deleted', 'Tasks', object_type='Task', object_id=task.id, object_repr=title, request=request)
         task.delete()
@@ -516,7 +413,12 @@ def submit_task_view(request, pk):
 def review_task_view(request, pk, submission_id):
     task = get_object_or_404(Task, pk=pk)
     submission = get_object_or_404(TaskSubmission, pk=submission_id, task=task)
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name in ['Administrator', 'Project Manager', 'Team Lead']) or task.created_by == request.user):
+        messages.error(request, 'Permission denied. Only Administrators, Managers, and Team Leads can review deliverables.')
+        return redirect('tasks:task_detail', pk=task.pk)
+
     if request.method == 'POST':
+
         form = TaskReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
@@ -556,247 +458,411 @@ def review_task_view(request, pk, submission_id):
 @login_required
 def kanban_board_view(request):
     user = request.user
-    project_id = request.GET.get('project', '')
+    project_filter = request.GET.get('project', '').strip()
+    assignee_filter = request.GET.get('assignee', '').strip()
+    priority_filter = request.GET.get('priority', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    query = request.GET.get('q', '').strip()
+    start_date = request.GET.get('start_date', '').strip()
+    end_date = request.GET.get('end_date', '').strip()
 
+    # Base columns structure
     columns = [
         {
             'id': 'todo',
+            'status_value': 'assigned',
             'title': 'To Do',
             'dot_color': '#94a3b8',
-            'count': 8,
             'tasks': [
                 {
+                    'id': 101,
                     'title': 'Design Landing Page',
                     'desc': 'Create modern and responsive landing page for TaskWave.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Design'],
                     'priority': 'High',
                     'priority_class': 'badge-high',
                     'date': '5 Oct 2026',
-                    'avatars': ['RK', 'PS'],
-                    'extra': 2
+                    'date_iso': '2026-10-05',
+                    'assignee_names': 'Rahul Kumar, Priya Singh',
+                    'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/priya_singh.jpg'],
+                    'extra': 2,
+                    'is_real': False
                 },
                 {
+                    'id': 102,
                     'title': 'Setup Development Environment',
                     'desc': 'Configure tools, libraries and project structure.',
+                    'project': 'Internal Tools',
                     'tags': ['Internal Tools', 'Setup'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '8 Oct 2026',
-                    'avatars': ['NT'],
-                    'extra': 0
+                    'date_iso': '2026-10-08',
+                    'assignee_names': 'Neha Tiwari',
+                    'avatars': ['img/avatars/neha_tiwari.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 103,
                     'title': 'Create API Documentation',
                     'desc': 'Write complete API documentation for developers.',
+                    'project': 'Mobile App',
                     'tags': ['Mobile App', 'Documentation'],
                     'priority': 'Low',
                     'priority_class': 'badge-low',
                     'date': '12 Oct 2026',
-                    'avatars': ['AS', 'VS'],
-                    'extra': 1
+                    'date_iso': '2026-10-12',
+                    'assignee_names': 'Aman Sharma, Vikram Singh',
+                    'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/vikram_singh.jpg'],
+                    'extra': 1,
+                    'is_real': False
                 },
                 {
+                    'id': 104,
                     'title': 'UI Improvements',
                     'desc': 'Enhance dashboard UI based on feedback.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Design'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '15 Oct 2026',
-                    'avatars': ['PS', 'RK'],
-                    'extra': 0
+                    'date_iso': '2026-10-15',
+                    'assignee_names': 'Priya Singh, Rahul Kumar',
+                    'avatars': ['img/avatars/priya_singh.jpg', 'img/avatars/rahul_kumar.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 105,
                     'title': 'Content Update',
                     'desc': 'Update website content and images.',
+                    'project': 'Website Redesign',
                     'tags': ['Website Redesign', 'Content'],
                     'priority': 'Low',
                     'priority_class': 'badge-low',
                     'date': '20 Oct 2026',
-                    'avatars': ['SK'],
-                    'extra': 0
+                    'date_iso': '2026-10-20',
+                    'assignee_names': 'Sahil Khan',
+                    'avatars': ['img/avatars/sahil_khan.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 }
             ]
         },
         {
             'id': 'in_progress',
+            'status_value': 'in_progress',
             'title': 'In Progress',
             'dot_color': '#f59e0b',
-            'count': 6,
             'tasks': [
                 {
+                    'id': 106,
                     'title': 'Database Schema Design',
                     'desc': 'Design database structure and relations.',
+                    'project': 'College Portal',
                     'tags': ['College Portal', 'Backend'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '28 Sep 2026',
-                    'avatars': ['PS'],
-                    'extra': 0
+                    'date_iso': '2026-09-28',
+                    'assignee_names': 'Priya Singh',
+                    'avatars': ['img/avatars/priya_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 107,
                     'title': 'API Development',
                     'desc': 'Develop and test REST APIs.',
+                    'project': 'Mobile App',
                     'tags': ['Mobile App', 'Development'],
                     'priority': 'High',
                     'priority_class': 'badge-high',
                     'date': '5 Oct 2026',
-                    'avatars': ['AS', 'RK'],
-                    'extra': 1
+                    'date_iso': '2026-10-05',
+                    'assignee_names': 'Aman Sharma, Rahul Kumar',
+                    'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/rahul_kumar.jpg'],
+                    'extra': 1,
+                    'is_real': False
                 },
                 {
+                    'id': 108,
                     'title': 'Testing & Bug Fixes',
                     'desc': 'Fix reported issues and perform testing.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Testing'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '3 Oct 2026',
-                    'avatars': ['NT'],
-                    'extra': 0
+                    'date_iso': '2026-10-03',
+                    'assignee_names': 'Neha Tiwari',
+                    'avatars': ['img/avatars/neha_tiwari.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 109,
                     'title': 'Deployment Setup',
                     'desc': 'Setup server and deployment.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'DevOps'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '6 Oct 2026',
-                    'avatars': ['AS', 'VS'],
-                    'extra': 0
+                    'date_iso': '2026-10-06',
+                    'assignee_names': 'Aman Sharma, Vikram Singh',
+                    'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/vikram_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 110,
                     'title': 'Performance Optimization',
                     'desc': 'Improve application performance.',
+                    'project': 'Database Optimization',
                     'tags': ['Database Optimization', 'Optimization'],
                     'priority': 'Low',
                     'priority_class': 'badge-low',
                     'date': '12 Oct 2026',
-                    'avatars': ['NT'],
-                    'extra': 0
+                    'date_iso': '2026-10-12',
+                    'assignee_names': 'Neha Tiwari',
+                    'avatars': ['img/avatars/neha_tiwari.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 }
             ]
         },
         {
             'id': 'review',
+            'status_value': 'submitted',
             'title': 'Review',
             'dot_color': '#3b82f6',
-            'count': 4,
             'tasks': [
                 {
+                    'id': 111,
                     'title': 'Client Review Meeting',
                     'desc': 'Discuss progress with client.',
+                    'project': 'College Portal',
                     'tags': ['College Portal', 'Meeting'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '25 Sep 2026',
-                    'avatars': ['RK', 'PS'],
-                    'extra': 2
+                    'date_iso': '2026-09-25',
+                    'assignee_names': 'Rahul Kumar, Priya Singh',
+                    'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/priya_singh.jpg'],
+                    'extra': 2,
+                    'is_real': False
                 },
                 {
+                    'id': 112,
                     'title': 'Security Testing',
                     'desc': 'Perform security and vulnerability test.',
+                    'project': 'Internal Tools',
                     'tags': ['Internal Tools', 'Testing'],
                     'priority': 'High',
                     'priority_class': 'badge-high',
                     'date': '8 Oct 2026',
-                    'avatars': ['VS'],
-                    'extra': 0
+                    'date_iso': '2026-10-08',
+                    'assignee_names': 'Vikram Singh',
+                    'avatars': ['img/avatars/vikram_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 113,
                     'title': 'Final Review & Submission',
                     'desc': 'Final check and submit project.',
+                    'project': 'College Portal',
                     'tags': ['College Portal', 'Review'],
                     'priority': 'Medium',
                     'priority_class': 'badge-medium',
                     'date': '15 Oct 2026',
-                    'avatars': ['PS'],
-                    'extra': 0
+                    'date_iso': '2026-10-15',
+                    'assignee_names': 'Priya Singh',
+                    'avatars': ['img/avatars/priya_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 114,
                     'title': 'Mobile App Testing',
                     'desc': 'Test application on different devices.',
+                    'project': 'Mobile App',
                     'tags': ['Mobile App', 'Testing'],
                     'priority': 'Low',
                     'priority_class': 'badge-low',
                     'date': '18 Oct 2026',
-                    'avatars': ['AS', 'NT'],
-                    'extra': 0
+                    'date_iso': '2026-10-18',
+                    'assignee_names': 'Aman Sharma, Neha Tiwari',
+                    'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/neha_tiwari.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 }
             ]
         },
         {
             'id': 'completed',
+            'status_value': 'completed',
             'title': 'Completed',
             'dot_color': '#22c55e',
-            'count': 6,
             'tasks': [
                 {
+                    'id': 115,
                     'title': 'Project Planning',
                     'desc': 'Define project scope and requirements.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Planning'],
                     'priority': 'Completed',
                     'priority_class': 'badge-completed',
                     'date': '10 Sep 2026',
-                    'avatars': ['RK', 'VS'],
-                    'extra': 0
+                    'date_iso': '2026-09-10',
+                    'assignee_names': 'Rahul Kumar, Vikram Singh',
+                    'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/vikram_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 116,
                     'title': 'Requirement Analysis',
                     'desc': 'Gather and analyze requirements.',
+                    'project': 'College Portal',
                     'tags': ['College Portal', 'Analysis'],
                     'priority': 'Completed',
                     'priority_class': 'badge-completed',
                     'date': '15 Sep 2026',
-                    'avatars': ['PS'],
-                    'extra': 0
+                    'date_iso': '2026-09-15',
+                    'assignee_names': 'Priya Singh',
+                    'avatars': ['img/avatars/priya_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 117,
                     'title': 'Wireframe Design',
                     'desc': 'Create wireframes for main pages.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Design'],
                     'priority': 'Completed',
                     'priority_class': 'badge-completed',
                     'date': '20 Sep 2026',
-                    'avatars': ['AS', 'NT'],
-                    'extra': 2
+                    'date_iso': '2026-09-20',
+                    'assignee_names': 'Aman Sharma, Neha Tiwari',
+                    'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/neha_tiwari.jpg'],
+                    'extra': 2,
+                    'is_real': False
                 },
                 {
+                    'id': 118,
                     'title': 'Authentication Module',
                     'desc': 'Implement login and registration.',
+                    'project': 'Internal Tools',
                     'tags': ['Internal Tools', 'Development'],
                     'priority': 'Completed',
                     'priority_class': 'badge-completed',
                     'date': '22 Sep 2026',
-                    'avatars': ['VS'],
-                    'extra': 0
+                    'date_iso': '2026-09-22',
+                    'assignee_names': 'Vikram Singh',
+                    'avatars': ['img/avatars/vikram_singh.jpg'],
+                    'extra': 0,
+                    'is_real': False
                 },
                 {
+                    'id': 119,
                     'title': 'Dashboard Module',
                     'desc': 'Develop admin dashboard.',
+                    'project': 'TaskWave',
                     'tags': ['TaskWave', 'Development'],
                     'priority': 'Completed',
                     'priority_class': 'badge-completed',
                     'date': '25 Sep 2026',
-                    'avatars': ['RK', 'PS'],
-                    'extra': 1
+                    'date_iso': '2026-09-25',
+                    'assignee_names': 'Rahul Kumar, Priya Singh',
+                    'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/priya_singh.jpg'],
+                    'extra': 1,
+                    'is_real': False
                 }
             ]
         }
     ]
 
-    avatar_map = {
-        'RK': 'img/avatars/rahul_kumar.jpg',
-        'PS': 'img/avatars/priya_singh.jpg',
-        'AS': 'img/avatars/aman_sharma.jpg',
-        'NT': 'img/avatars/neha_tiwari.jpg',
-        'VS': 'img/avatars/vikram_singh.jpg',
-        'SK': 'img/avatars/sahil_khan.jpg',
+    # Map real database tasks into columns
+    status_to_col = {
+        'assigned': 'todo',
+        'todo': 'todo',
+        'pending': 'todo',
+        'not_started': 'todo',
+        'in_progress': 'in_progress',
+        'submitted': 'review',
+        'changes_requested': 'review',
+        'review': 'review',
+        'completed': 'completed',
+        'approved': 'completed',
     }
+    col_map = {c['id']: c for c in columns}
+
+    db_tasks = Task.objects.select_related('project').prefetch_related('assignees').all()
+    for t in db_tasks:
+        target_col_id = status_to_col.get(t.status, 'todo')
+        assignees_list = list(t.assignees.all())
+        avatars = []
+        for a in assignees_list[:2]:
+            if a.profile_picture:
+                avatars.append(a.profile_picture.url)
+            else:
+                avatars.append('img/avatars/rahul_kumar.jpg')
+        if not avatars:
+            avatars = ['img/avatars/rahul_kumar.jpg']
+
+        assignee_names = ', '.join([a.get_full_name() for a in assignees_list]) or 'Unassigned'
+        proj_name = t.project.name if t.project else 'TaskWave'
+        prio_title = t.get_priority_display() if hasattr(t, 'get_priority_display') else t.priority.capitalize()
+
+        task_item = {
+            'id': t.id,
+            'title': t.title,
+            'desc': (t.description[:70] + '...') if len(t.description) > 70 else (t.description or 'Task deliverable'),
+            'project': proj_name,
+            'tags': [proj_name, prio_title],
+            'priority': prio_title,
+            'priority_class': f"badge-{t.priority.lower()}",
+            'date': t.due_date.strftime('%d %b %Y') if t.due_date else 'No deadline',
+            'date_iso': t.due_date.strftime('%Y-%m-%d') if t.due_date else '',
+            'assignee_names': assignee_names,
+            'avatars': avatars,
+            'extra': max(0, len(assignees_list) - 2),
+            'is_real': True,
+        }
+        # Prepend real tasks to column
+        if target_col_id in col_map:
+            col_map[target_col_id]['tasks'].insert(0, task_item)
+
+    # Calculate counts
     for col in columns:
-        for t in col['tasks']:
-            t['avatars'] = [avatar_map.get(a, 'img/avatars/rahul_kumar.jpg') for a in t['avatars']]
+        col['count'] = len(col['tasks'])
+
+    # Aggregate all distinct projects and assignees for dropdowns
+    project_set = set(['TaskWave', 'College Portal', 'Mobile App', 'Internal Tools', 'Website Redesign', 'Database Optimization'])
+    for p in Project.objects.all():
+        project_set.add(p.name)
+    all_projects = sorted(list(project_set))
+
+    assignee_set = set(['Rahul Kumar', 'Priya Singh', 'Aman Sharma', 'Neha Tiwari', 'Vikram Singh', 'Sahil Khan'])
+    for u in User.objects.filter(is_active=True):
+        assignee_set.add(u.get_full_name())
+    all_assignees = sorted(list(assignee_set))
 
     context = {
         'columns': columns,
-        'selected_project': project_id,
+        'all_projects': all_projects,
+        'all_assignees': all_assignees,
+        'selected_project': project_filter,
+        'selected_assignee': assignee_filter,
+        'selected_priority': priority_filter,
+        'selected_status': status_filter,
+        'query': query,
+        'start_date': start_date,
+        'end_date': end_date,
     }
     return render(request, 'tasks/kanban_board.html', context)

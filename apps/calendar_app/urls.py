@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.calendar_view, name='calendar'),
     path('events/json/', views.calendar_events_json, name='events_json'),
     path('events/add/', views.add_calendar_event, name='add_event'),
+    path('events/<int:event_id>/delete/', views.delete_calendar_event, name='delete_event'),
 ]

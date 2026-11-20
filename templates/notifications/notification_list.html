@@ -6,29 +6,68 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-3">
     <div>
       <h1 class="dash-title">Notifications</h1>
       <p class="dash-subtitle">Stay updated with important activities, tasks, and team updates.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
-      <button class="btn-import-tw" type="button">
-        <i class="ri-check-line me-1"></i> Mark All as Read
+      <button class="btn-import-tw d-flex align-items-center gap-1 shadow-sm" id="btnMarkAllRead" type="button" style="cursor: pointer; border-radius: 8px;">
+        <i class="ri-check-line text-success"></i> Mark All as Read
       </button>
-      <button class="btn-import-tw" type="button">
-        <i class="ri-settings-3-line me-1"></i> Settings
-      </button>
+      <a href="{% url 'notifications:preferences' %}" class="btn-import-tw text-decoration-none d-flex align-items-center gap-1 shadow-sm" style="border-radius: 8px;">
+        <i class="ri-settings-3-line"></i> Settings
+      </a>
     </div>
   </div>
 
+  <!-- Messages Alert -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2 px-3 mb-3" role="alert" style="font-size: 0.84rem; border-radius: 8px;">
+        <i class="ri-information-line me-1"></i> {{ message }}
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
   <!-- Tabs Bar -->
   <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
-    <button class="cal-view-btn active" type="button" style="border-radius: 9999px; padding: 6px 16px;">All <span class="badge bg-light text-dark ms-1">24</span></button>
-    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Tasks <span class="badge bg-light text-muted ms-1">6</span></button>
-    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Projects <span class="badge bg-light text-muted ms-1">4</span></button>
-    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Messages <span class="badge bg-light text-muted ms-1">3</span></button>
-    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;"><i class="ri-checkbox-circle-line me-1"></i> System <span class="badge bg-light text-muted ms-1">5</span></button>
-    <button class="cal-view-btn" type="button" style="border-radius: 9999px; padding: 6px 16px;">Mentions <span class="badge bg-light text-muted ms-1">2</span></button>
+    <a href="?tab=all&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'all' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'all' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        All <span class="badge {% if current_tab == 'all' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ total_count }}</span>
+      </button>
+    </a>
+
+    <a href="?tab=tasks&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'tasks' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'tasks' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        Tasks <span class="badge {% if current_tab == 'tasks' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ tasks_count }}</span>
+      </button>
+    </a>
+
+    <a href="?tab=projects&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'projects' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'projects' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        Projects <span class="badge {% if current_tab == 'projects' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ projects_count }}</span>
+      </button>
+    </a>
+
+    <a href="?tab=messages&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'messages' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'messages' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        Messages <span class="badge {% if current_tab == 'messages' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ messages_count }}</span>
+      </button>
+    </a>
+
+    <a href="?tab=system&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'system' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'system' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        <i class="ri-checkbox-circle-line me-1"></i> System <span class="badge {% if current_tab == 'system' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ system_count }}</span>
+      </button>
+    </a>
+
+    <a href="?tab=mentions&per_page={{ per_page }}" class="text-decoration-none">
+      <button class="cal-view-btn {% if current_tab == 'mentions' %}active{% endif %}" type="button" style="border-radius: 9999px; padding: 6px 16px; {% if current_tab == 'mentions' %}background-color: #ea580c; color: white; border-color: #ea580c;{% endif %}">
+        Mentions <span class="badge {% if current_tab == 'mentions' %}bg-white text-dark{% else %}bg-light text-muted{% endif %} rounded-pill ms-1" style="font-size: 10px;">{{ mentions_count }}</span>
+      </button>
+    </a>
   </div>
 
   <!-- Main Split Layout -->
@@ -36,126 +75,131 @@
     <!-- Left Notifications List -->
     <div class="col-xl-8">
       <div class="dash-card">
-        <div class="d-flex flex-column gap-3">
-          <!-- Item 1 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon icon-red" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-file-text-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">New Task Assigned</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Rahul Kumar assigned you a new task "API Documentation" in project Mobile App.</div>
-            </div>
-            <span class="text-muted small" style="font-size: 11px;">10:24 AM</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+        
+        <!-- Bulk Action Header Bar (visible when items selected) -->
+        <div id="bulkActionBar" class="p-2 mb-2 bg-light border rounded-3 d-flex align-items-center justify-content-between" style="display: none; border-color: #edf2f7 !important;">
+          <div class="d-flex align-items-center gap-2">
+            <span class="small fw-semibold text-dark ps-2" id="selectedCountText">0 selected</span>
           </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-white border shadow-sm px-3" id="btnBulkMarkRead" style="font-size: 0.8rem; border-radius: 6px;">
+              <i class="ri-check-line text-success me-1"></i> Mark as Read
+            </button>
+            <button type="button" class="btn btn-sm btn-white border text-danger shadow-sm px-3" id="btnBulkDelete" style="font-size: 0.8rem; border-radius: 6px;">
+              <i class="ri-delete-bin-line me-1"></i> Delete
+            </button>
+          </div>
+        </div>
 
-          <!-- Item 2 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon icon-green" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-check-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">Task Completed</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Priya Singh marked task "UI Design Review" as completed.</div>
+        <div class="d-flex flex-column gap-2" id="notificationsContainer">
+          {% for n in page_obj %}
+          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3 notif-row-item {% if not n.is_read %}notif-unread{% endif %}"
+               id="notif-row-{{ n.id }}"
+               data-id="{{ n.id }}"
+               style="border-color: #f1f5f9 !important; transition: background-color 0.15s ease; border-radius: 8px;">
+            
+            <input type="checkbox" class="form-check-input notif-checkbox flex-shrink-0" value="{{ n.id }}" style="cursor: pointer;">
+            
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width: 38px; height: 38px; background-color: {{ n.bg_color }}; color: {{ n.icon_color }}; font-size: 1.15rem;">
+              <i class="{{ n.icon }}"></i>
             </div>
-            <span class="text-muted small" style="font-size: 11px;">09:15 AM</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
-          </div>
 
-          <!-- Item 3 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #dbeafe; color: #2563eb;"><i class="ri-message-3-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">New Message</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">You have a new message from Development Team.</div>
+            <div class="flex-grow-1 min-width-0" style="cursor: pointer;" onclick="handleNotificationClick('{{ n.id }}', '{{ n.url }}')">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold small text-dark notif-title" style="font-size: 0.86rem;">{{ n.title }}</span>
+                {% if not n.is_read %}
+                  <span class="badge bg-danger rounded-pill" style="font-size: 8px; padding: 2px 6px;">NEW</span>
+                {% endif %}
+              </div>
+              <div class="text-muted small text-truncate" style="font-size: 11px;">{{ n.message }}</div>
             </div>
-            <span class="text-muted small" style="font-size: 11px;">08:32 AM</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
-          </div>
 
-          <!-- Item 4 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #ede9fe; color: #7c3aed;"><i class="ri-group-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">Project Update</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">The project "College Portal" has been moved to Review stage.</div>
-            </div>
-            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
-          </div>
+            <span class="text-muted small flex-shrink-0" style="font-size: 11px;">{{ n.time_str }}</span>
 
-          <!-- Item 5 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon icon-orange" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-time-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">Upcoming Deadline</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Task "Database Optimization" is due tomorrow (16 Oct 2026).</div>
-            </div>
-            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
-          </div>
+            {% if not n.is_read %}
+              <span class="header-notification-dot notif-dot flex-shrink-0" id="dot-{{ n.id }}" style="position: static; width: 8px; height: 8px; background-color: #ea580c;"></span>
+            {% else %}
+              <span class="notif-dot flex-shrink-0" id="dot-{{ n.id }}" style="width: 8px; height: 8px;"></span>
+            {% endif %}
 
-          <!-- Item 6 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #ccfbf1; color: #0d9488;"><i class="ri-at-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">You were mentioned</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Aman Sharma mentioned you in a comment on "Security Module".</div>
+            <!-- Dropdown Actions -->
+            <div class="dropdown flex-shrink-0">
+              <button class="dash-item-menu btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 28px; height: 28px;">
+                <i class="ri-more-2-line fs-5"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border py-1" style="font-size: 0.8rem; border-color: #e2e8f0; border-radius: 8px;">
+                {% if not n.is_read %}
+                  <li><a class="dropdown-menu-item dropdown-item d-flex align-items-center gap-2 py-1" href="javascript:void(0)" onclick="markSingleRead('{{ n.id }}')"><i class="ri-check-line text-success"></i> Mark as Read</a></li>
+                {% endif %}
+                {% if n.url and n.url != '#' %}
+                  <li><a class="dropdown-menu-item dropdown-item d-flex align-items-center gap-2 py-1" href="{{ n.url }}"><i class="ri-external-link-line text-primary"></i> View Details</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider my-1"></li>
+                <li><a class="dropdown-menu-item dropdown-item d-flex align-items-center gap-2 py-1 text-danger" href="javascript:void(0)" onclick="deleteSingle('{{ n.id }}')"><i class="ri-delete-bin-line"></i> Delete</a></li>
+              </ul>
             </div>
-            <span class="text-muted small" style="font-size: 11px;">Yesterday</span>
-            <span class="header-notification-dot" style="position: static; width: 6px; height: 6px;"></span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
-          </div>
 
-          <!-- Item 7 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon" style="width: 36px; height: 36px; font-size: 1.1rem; background-color: #dbeafe; color: #2563eb;"><i class="ri-file-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">New File Shared</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Neha Tiwari shared a file "api_documentation.pdf" in project TaskWave.</div>
-            </div>
-            <span class="text-muted small" style="font-size: 11px;">14 Oct 2026</span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
           </div>
-
-          <!-- Item 8 -->
-          <div class="d-flex align-items-center gap-3 p-2 border-bottom pb-3">
-            <input type="checkbox" class="form-check-input">
-            <div class="dash-kpi-icon icon-red" style="width: 36px; height: 36px; font-size: 1.1rem;"><i class="ri-error-warning-line"></i></div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="fw-bold small text-dark">Overdue Task</div>
-              <div class="text-muted small text-truncate" style="font-size: 11px;">Task "Testing & Bug Fixes" is overdue.</div>
-            </div>
-            <span class="text-muted small" style="font-size: 11px;">14 Oct 2026</span>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          {% empty %}
+          <div class="text-center py-5 text-muted" id="emptyNotifPlaceholder">
+            <i class="ri-notification-off-line d-block mb-3 fs-1 text-muted" style="opacity: 0.5;"></i>
+            <div class="fw-semibold text-dark fs-6 mb-1">No notifications found</div>
+            <div class="small text-muted">There are no notifications matching the selected category.</div>
           </div>
+          {% endfor %}
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-          <div class="small text-muted">Showing 1 to 12 of 24 notifications</div>
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top" style="border-color: #edf2f7 !important;">
+          <div class="small text-muted">
+            {% if page_obj.paginator.count > 0 %}
+              Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} notifications
+            {% else %}
+              Showing 0 notifications
+            {% endif %}
+          </div>
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center gap-2">
               <span class="small text-muted">Rows per page</span>
-              <div class="dash-select-pill"><span>12</span><i class="ri-arrow-down-s-line"></i></div>
+              <select class="form-select form-select-sm" id="rowsPerPageSelect" style="width: 70px; border-radius: 6px; font-size: 0.8rem;">
+                <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                <option value="12" {% if per_page == 12 %}selected{% endif %}>12</option>
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+              </select>
             </div>
-            <div class="dash-pagination-btns">
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
-              <button class="dash-page-btn active" type="button">1</button>
-              <button class="dash-page-btn" type="button">2</button>
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+            
+            {% if page_obj.has_other_pages %}
+            <div class="dash-pagination-btns d-flex align-items-center gap-1">
+              {% if page_obj.has_previous %}
+                <a href="?tab={{ current_tab }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}" class="dash-page-btn text-decoration-none">
+                  <i class="ri-arrow-left-s-line"></i>
+                </a>
+              {% else %}
+                <button class="dash-page-btn text-muted" disabled><i class="ri-arrow-left-s-line"></i></button>
+              {% endif %}
+
+              {% for p in page_obj.paginator.page_range %}
+                {% if p == page_obj.number %}
+                  <button class="dash-page-btn active" type="button" style="background-color: #ea580c; border-color: #ea580c; color: white;">{{ p }}</button>
+                {% elif p >= page_obj.number|add:'-2' and p <= page_obj.number|add:'2' %}
+                  <a href="?tab={{ current_tab }}&per_page={{ per_page }}&page={{ p }}" class="dash-page-btn text-decoration-none">{{ p }}</a>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <a href="?tab={{ current_tab }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}" class="dash-page-btn text-decoration-none">
+                  <i class="ri-arrow-right-s-line"></i>
+                </a>
+              {% else %}
+                <button class="dash-page-btn text-muted" disabled><i class="ri-arrow-right-s-line"></i></button>
+              {% endif %}
             </div>
+            {% endif %}
           </div>
         </div>
+
       </div>
     </div>
 
@@ -168,25 +212,25 @@
           <div class="col-6">
             <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
               <div class="dash-kpi-icon" style="width: 32px; height: 32px; background-color: #dbeafe; color: #2563eb; font-size: 1rem;"><i class="ri-notification-3-line"></i></div>
-              <div><div class="fw-bold text-dark fs-6">24</div><div class="text-muted small" style="font-size: 10px;">Total Notifications</div></div>
+              <div><div class="fw-bold text-dark fs-6" id="summaryTotalCount">{{ total_count }}</div><div class="text-muted small" style="font-size: 10px;">Total Notifications</div></div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
               <div class="dash-kpi-icon icon-red" style="width: 32px; height: 32px; font-size: 1rem;"><i class="ri-record-circle-line"></i></div>
-              <div><div class="fw-bold text-dark fs-6">5</div><div class="text-muted small" style="font-size: 10px;">Unread</div></div>
+              <div><div class="fw-bold text-dark fs-6" id="summaryUnreadCount">{{ unread_count }}</div><div class="text-muted small" style="font-size: 10px;">Unread</div></div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
               <div class="dash-kpi-icon icon-green" style="width: 32px; height: 32px; font-size: 1rem;"><i class="ri-checkbox-circle-line"></i></div>
-              <div><div class="fw-bold text-dark fs-6">12</div><div class="text-muted small" style="font-size: 10px;">Task Related</div></div>
+              <div><div class="fw-bold text-dark fs-6">{{ tasks_count }}</div><div class="text-muted small" style="font-size: 10px;">Task Related</div></div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-2">
               <div class="dash-kpi-icon" style="width: 32px; height: 32px; background-color: #ede9fe; color: #7c3aed; font-size: 1rem;"><i class="ri-group-line"></i></div>
-              <div><div class="fw-bold text-dark fs-6">6</div><div class="text-muted small" style="font-size: 10px;">Project Related</div></div>
+              <div><div class="fw-bold text-dark fs-6">{{ projects_count }}</div><div class="text-muted small" style="font-size: 10px;">Project Related</div></div>
             </div>
           </div>
         </div>
@@ -194,46 +238,31 @@
 
       <!-- Recent Activity -->
       <div class="dash-card mb-4">
-        <div class="dash-card-header">
-          <h3 class="dash-card-title">Recent Activity</h3>
-          <a href="#" class="dash-view-all">View All</a>
+        <div class="dash-card-header d-flex justify-content-between align-items-center mb-3">
+          <h3 class="dash-card-title mb-0">Recent Activity</h3>
+          <a href="{% url 'audit:logs' %}" class="dash-view-all text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">View All</a>
         </div>
         <div class="d-flex flex-column gap-3">
+          {% for act in recent_logs %}
           <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Rahul Kumar assigned a new task</div><div class="text-muted" style="font-size: 10px;">API Documentation</div></div>
+            <div class="d-flex align-items-center gap-2 min-width-0" style="min-width: 0;">
+              {% if act.avatar %}
+                <img src="{{ act.avatar }}" class="rounded-circle flex-shrink-0" width="28" height="28" style="object-fit: cover;">
+              {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.72rem;">
+                  {{ act.initials }}
+                </div>
+              {% endif %}
+              <div class="min-width-0 text-truncate" style="min-width: 0;">
+                <div class="small fw-semibold text-dark text-truncate" style="font-size: 12px;">{{ act.user_name }} {{ act.action|lower }} a {{ act.module|lower }}</div>
+                <div class="text-muted text-truncate" style="font-size: 10px;">{{ act.details }}</div>
+              </div>
             </div>
-            <span class="text-muted small" style="font-size: 10px;">10:24 AM</span>
+            <span class="text-muted small flex-shrink-0 ms-2" style="font-size: 10px;">{{ act.time_str }}</span>
           </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Priya Singh completed a task</div><div class="text-muted" style="font-size: 10px;">UI Design Review</div></div>
-            </div>
-            <span class="text-muted small" style="font-size: 10px;">09:15 AM</span>
-          </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">New message in Development Team</div><div class="text-muted" style="font-size: 10px;">3 new messages</div></div>
-            </div>
-            <span class="text-muted small" style="font-size: 10px;">08:32 AM</span>
-          </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #ede9fe; color: #7c3aed; font-size: 0.8rem;"><i class="ri-group-line"></i></div>
-              <div><div class="small fw-semibold text-dark">Project moved to Review</div><div class="text-muted" style="font-size: 10px;">College Portal</div></div>
-            </div>
-            <span class="text-muted small" style="font-size: 10px;">Yesterday</span>
-          </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Vikram Singh joined the team</div><div class="text-muted" style="font-size: 10px;">Quality Assurance</div></div>
-            </div>
-            <span class="text-muted small" style="font-size: 10px;">13 Oct</span>
-          </div>
+          {% empty %}
+          <div class="text-muted small py-2">No recent system activity recorded.</div>
+          {% endfor %}
         </div>
       </div>
 
@@ -246,25 +275,289 @@
               <div class="small fw-semibold text-dark">Email Notifications</div>
               <div class="text-muted" style="font-size: 10px;">Receive notifications via email</div>
             </div>
-            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+            <div class="form-check form-switch">
+              <input class="form-check-input pref-toggle" type="checkbox" data-field="email_notifications" {% if preferences.email_notifications %}checked{% endif %} style="cursor: pointer; accent-color: #ea580c;">
+            </div>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="small fw-semibold text-dark">Browser Notifications</div>
               <div class="text-muted" style="font-size: 10px;">Show notifications in browser</div>
             </div>
-            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+            <div class="form-check form-switch">
+              <input class="form-check-input pref-toggle" type="checkbox" data-field="browser_notifications" {% if preferences.browser_notifications %}checked{% endif %} style="cursor: pointer; accent-color: #ea580c;">
+            </div>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <div class="small fw-semibold text-dark">Task Updates</div>
               <div class="text-muted" style="font-size: 10px;">Notify about task changes</div>
             </div>
-            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked style="accent-color: #ea580c;"></div>
+            <div class="form-check form-switch">
+              <input class="form-check-input pref-toggle" type="checkbox" data-field="task_updates" {% if preferences.task_updates %}checked{% endif %} style="cursor: pointer; accent-color: #ea580c;">
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
+
+{% csrf_token %}
+
+<script>
+// CSRF Helper
+function getCsrfToken() {
+  const el = document.querySelector('[name=csrfmiddlewaretoken]');
+  return el ? el.value : '';
+}
+
+// Toast notification helper
+function showToast(msg, type = 'success') {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed py-2 px-3 shadow-lg`;
+  alertDiv.style.top = '20px';
+  alertDiv.style.right = '20px';
+  alertDiv.style.zIndex = '9999';
+  alertDiv.style.borderRadius = '8px';
+  alertDiv.style.fontSize = '0.84rem';
+  alertDiv.innerHTML = `
+    <i class="ri-check-line me-1"></i> ${msg}
+    <button type="button" class="btn-close py-2" data-bs-dismiss="alert"></button>
+  `;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => {
+    alertDiv.remove();
+  }, 3000);
+}
+
+// 1. Mark All as Read
+document.getElementById('btnMarkAllRead')?.addEventListener('click', function() {
+  fetch("{% url 'notifications:mark_all_read' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.querySelectorAll('.unread-dot, .notif-dot').forEach(el => el.style.backgroundColor = 'transparent');
+      document.querySelectorAll('.notif-unread').forEach(el => el.classList.remove('notif-unread'));
+      document.querySelectorAll('.badge.bg-danger').forEach(el => el.remove());
+      const summaryUnread = document.getElementById('summaryUnreadCount');
+      if (summaryUnread) summaryUnread.textContent = '0';
+      showToast('All notifications marked as read.');
+    }
+  });
+});
+
+// 2. Click Notification Item
+function handleNotificationClick(id, url) {
+  fetch(`/notifications/${id}/mark-read/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const dot = document.getElementById(`dot-${id}`);
+    if (dot) dot.style.backgroundColor = 'transparent';
+    const summaryUnread = document.getElementById('summaryUnreadCount');
+    if (summaryUnread && typeof data.unread_count !== 'undefined') {
+      summaryUnread.textContent = data.unread_count;
+    }
+    if (url && url !== '#') {
+      window.location.href = url;
+    }
+  })
+  .catch(() => {
+    if (url && url !== '#') window.location.href = url;
+  });
+}
+
+// 3. Mark Single as Read
+function markSingleRead(id) {
+  fetch(`/notifications/${id}/mark-read/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const row = document.getElementById(`notif-row-${id}`);
+      if (row) {
+        row.classList.remove('notif-unread');
+        const badge = row.querySelector('.badge.bg-danger');
+        if (badge) badge.remove();
+        const dot = document.getElementById(`dot-${id}`);
+        if (dot) dot.style.backgroundColor = 'transparent';
+      }
+      const summaryUnread = document.getElementById('summaryUnreadCount');
+      if (summaryUnread && typeof data.unread_count !== 'undefined') {
+        summaryUnread.textContent = data.unread_count;
+      }
+      showToast('Notification marked as read.');
+    }
+  });
+}
+
+// 4. Delete Single Notification
+function deleteSingle(id) {
+  if (!confirm('Are you sure you want to delete this notification?')) return;
+
+  fetch(`/notifications/${id}/delete/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const row = document.getElementById(`notif-row-${id}`);
+      if (row) row.remove();
+      const summaryUnread = document.getElementById('summaryUnreadCount');
+      const summaryTotal = document.getElementById('summaryTotalCount');
+      if (summaryUnread && typeof data.unread_count !== 'undefined') summaryUnread.textContent = data.unread_count;
+      if (summaryTotal && typeof data.total_count !== 'undefined') summaryTotal.textContent = data.total_count;
+      showToast('Notification deleted.');
+    }
+  });
+}
+
+// 5. Bulk Selection & Actions
+const checkboxes = document.querySelectorAll('.notif-checkbox');
+const bulkBar = document.getElementById('bulkActionBar');
+const selectedCountText = document.getElementById('selectedCountText');
+
+function updateBulkState() {
+  const selected = document.querySelectorAll('.notif-checkbox:checked');
+  if (selected.length > 0) {
+    bulkBar.style.display = 'flex';
+    selectedCountText.textContent = `${selected.length} selected`;
+  } else {
+    bulkBar.style.display = 'none';
+  }
+}
+
+checkboxes.forEach(cb => {
+  cb.addEventListener('change', updateBulkState);
+});
+
+// Bulk Mark as Read
+document.getElementById('btnBulkMarkRead')?.addEventListener('click', function() {
+  const selectedIds = Array.from(document.querySelectorAll('.notif-checkbox:checked')).map(cb => cb.value);
+  if (selectedIds.length === 0) return;
+
+  fetch("{% url 'notifications:bulk_action' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'mark_read',
+      notification_ids: selectedIds
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      selectedIds.forEach(id => {
+        const row = document.getElementById(`notif-row-${id}`);
+        if (row) {
+          row.classList.remove('notif-unread');
+          const badge = row.querySelector('.badge.bg-danger');
+          if (badge) badge.remove();
+          const dot = document.getElementById(`dot-${id}`);
+          if (dot) dot.style.backgroundColor = 'transparent';
+        }
+      });
+      const summaryUnread = document.getElementById('summaryUnreadCount');
+      if (summaryUnread && typeof data.unread_count !== 'undefined') summaryUnread.textContent = data.unread_count;
+      document.querySelectorAll('.notif-checkbox').forEach(cb => cb.checked = false);
+      updateBulkState();
+      showToast('Selected notifications marked as read.');
+    }
+  });
+});
+
+// Bulk Delete
+document.getElementById('btnBulkDelete')?.addEventListener('click', function() {
+  const selectedIds = Array.from(document.querySelectorAll('.notif-checkbox:checked')).map(cb => cb.value);
+  if (selectedIds.length === 0) return;
+  if (!confirm(`Are you sure you want to delete ${selectedIds.length} notifications?`)) return;
+
+  fetch("{% url 'notifications:bulk_action' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'delete',
+      notification_ids: selectedIds
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      selectedIds.forEach(id => {
+        const row = document.getElementById(`notif-row-${id}`);
+        if (row) row.remove();
+      });
+      const summaryUnread = document.getElementById('summaryUnreadCount');
+      const summaryTotal = document.getElementById('summaryTotalCount');
+      if (summaryUnread && typeof data.unread_count !== 'undefined') summaryUnread.textContent = data.unread_count;
+      if (summaryTotal && typeof data.total_count !== 'undefined') summaryTotal.textContent = data.total_count;
+      updateBulkState();
+      showToast('Selected notifications deleted.');
+    }
+  });
+});
+
+// 6. Rows per page selector
+document.getElementById('rowsPerPageSelect')?.addEventListener('change', function() {
+  const perPage = this.value;
+  const currentTab = "{{ current_tab }}";
+  window.location.href = `?tab=${currentTab}&per_page=${perPage}`;
+});
+
+// 7. Notification Preference Switches Toggle
+document.querySelectorAll('.pref-toggle').forEach(toggle => {
+  toggle.addEventListener('change', function() {
+    const field = this.getAttribute('data-field');
+    const isChecked = this.checked;
+
+    const formData = new FormData();
+    formData.append('field', field);
+    formData.append('value', isChecked ? '1' : '0');
+
+    fetch("{% url 'notifications:toggle_preference' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCsrfToken()
+      },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Preference updated.');
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

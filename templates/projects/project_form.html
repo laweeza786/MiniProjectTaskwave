@@ -1,27 +1,45 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Create Project - TaskWave{% endblock %}
+{% block title %}{{ title|default:'Create Project' }} - TaskWave{% endblock %}
 
 {% block content %}
 <div class="dash-viewport">
-  <form method="POST">
+  <form method="POST" id="projectForm">
     {% csrf_token %}
+    
     <!-- Top Header Row -->
     <div class="dash-header-row mb-4">
       <div>
-        <h1 class="dash-title">Create Project</h1>
+        <h1 class="dash-title">{{ title|default:'Create Project' }}</h1>
         <div class="dash-subtitle">Set up a new project and collaborate with your team members.</div>
       </div>
       <div class="d-flex align-items-center gap-2">
         <a href="{% url 'projects:project_list' %}" class="btn btn-sm btn-white border px-3 py-2 text-dark bg-white" style="border-radius: 8px; font-weight: 500; font-size: 0.85rem; border-color: #e2e8f0 !important; text-decoration: none;">
           Cancel
         </a>
-        <button type="submit" class="btn text-white px-3 py-2" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-          <i class="ri-check-line"></i> Create Project
+        <button type="submit" id="btnSubmitProject" class="btn text-white px-3 py-2" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+          <i class="ri-check-line"></i> {% if project %}Save Changes{% else %}Create Project{% endif %}
         </button>
       </div>
     </div>
+
+    {% if form.errors %}
+    <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm" role="alert" style="background-color: #fef2f2; border-left: 4px solid #ef4444 !important; border-radius: 8px;">
+      <div class="d-flex align-items-center gap-2 mb-2 text-danger fw-bold">
+        <i class="ri-error-warning-fill fs-5"></i>
+        <span>Please correct the errors below before submitting:</span>
+      </div>
+      <ul class="mb-0 ps-3 text-danger" style="font-size: 0.84rem;">
+        {% for field, errs in form.errors.items %}
+          {% for err in errs %}
+            <li><strong>{{ field|title }}:</strong> {{ err }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
 
     <!-- Main Content Layout (Form Left + Settings/Assignees Right) -->
     <div class="row g-4">
@@ -40,56 +58,52 @@
 
             <div class="mb-3">
               <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Project Name *</label>
-              <input type="text" name="name" class="form-control" value="TaskWave Mobile App Development" placeholder="Enter project title" style="border-radius: 8px; font-size: 0.85rem;" required>
+              <input type="text" name="name" class="form-control" value="{{ form.name.value|default:'' }}" placeholder="e.g. TaskWave Mobile App Development" style="border-radius: 8px; font-size: 0.85rem;" required>
             </div>
 
             <div class="mb-3">
               <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Project Description *</label>
               <div class="border rounded-3 overflow-hidden" style="border-color: #e2e8f0;">
                 <div class="d-flex align-items-center gap-2 p-2 border-bottom bg-light" style="font-size: 0.85rem; color: #64748b;">
-                  <select class="form-select form-select-sm border-0 bg-transparent" style="width: auto; font-size: 0.78rem;">
-                    <option>Normal</option>
-                  </select>
+                  <span class="fw-medium text-secondary" style="font-size: 0.78rem;">Rich Text Editor</span>
                   <span class="vr"></span>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-bold"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-italic"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-underline"></i></button>
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="formatDesc('bold')"><i class="ri-bold"></i></button>
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="formatDesc('italic')"><i class="ri-italic"></i></button>
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="formatDesc('underline')"><i class="ri-underline"></i></button>
                   <span class="vr"></span>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-list-unordered"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-list-ordered"></i></button>
-                  <span class="vr"></span>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-link"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-image-line"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-code-line"></i></button>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-fullscreen-line"></i></button>
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="formatDesc('list')"><i class="ri-list-unordered"></i></button>
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="formatDesc('code')"><i class="ri-code-line"></i></button>
                 </div>
-                <textarea name="description" class="form-control border-0 p-3" rows="3" style="font-size: 0.84rem; resize: vertical;">Develop a mobile application for TaskWave with core features including task management, notifications, team collaboration, and real-time updates.</textarea>
+                <textarea name="description" id="projectDescription" class="form-control border-0 p-3" rows="3" style="font-size: 0.84rem; resize: vertical;" placeholder="Provide detailed project scope, objectives, and deliverables..." required>{{ form.description.value|default:'' }}</textarea>
               </div>
             </div>
 
             <div class="row g-3">
               <div class="col-md-4">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Department *</label>
-                <select name="department" class="form-select form-select-sm" style="height: 38px; border-radius: 8px;">
-                  <option selected>Development</option>
-                  <option>Design</option>
-                  <option>QA</option>
-                  <option>Marketing</option>
+                <select name="department" class="form-select form-select-sm" style="height: 38px; border-radius: 8px;" required>
+                  <option value="">Select Department</option>
+                  {% for d in departments %}
+                    <option value="{{ d.id }}" {% if form.department.value|stringformat:"s" == d.id|stringformat:"s" or not form.department.value and forloop.first %}selected{% endif %}>{{ d.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
               <div class="col-md-4">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Project Category</label>
                 <select name="category" class="form-select form-select-sm" style="height: 38px; border-radius: 8px;">
-                  <option selected>Web Application</option>
-                  <option>Mobile Application</option>
-                  <option>Infrastructure</option>
+                  <option value="web_application" {% if form.category.value == 'web_application' %}selected{% endif %}>Web Application</option>
+                  <option value="mobile_app" {% if form.category.value == 'mobile_app' or not form.category.value %}selected{% endif %}>Mobile Application</option>
+                  <option value="api" {% if form.category.value == 'api' %}selected{% endif %}>API & Microservices</option>
+                  <option value="design" {% if form.category.value == 'design' %}selected{% endif %}>Design & Branding</option>
+                  <option value="research" {% if form.category.value == 'research' %}selected{% endif %}>Research & Discovery</option>
+                  <option value="other" {% if form.category.value == 'other' %}selected{% endif %}>Other</option>
                 </select>
               </div>
               <div class="col-md-4">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Project Key *</label>
                 <div class="input-group input-group-sm">
-                  <input type="text" name="project_key" class="form-control" value="TW-002" style="height: 38px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
-                  <span class="input-group-text bg-white text-muted" style="border-top-right-radius: 8px; border-bottom-right-radius: 8px;"><i class="ri-information-line"></i></span>
+                  <input type="text" name="project_key" class="form-control" value="{{ form.project_key.value|default:'' }}" placeholder="e.g. TW-002" style="height: 38px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">
+                  <span class="input-group-text bg-white text-muted" style="border-top-right-radius: 8px; border-bottom-right-radius: 8px;" title="Unique project abbreviation"><i class="ri-information-line"></i></span>
                 </div>
               </div>
             </div>
@@ -110,30 +124,32 @@
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Start Date *</label>
                 <div class="input-group input-group-sm">
                   <span class="input-group-text bg-white"><i class="ri-calendar-line text-muted"></i></span>
-                  <input type="text" name="start_date" class="form-control" value="12 Oct 2026" style="height: 38px;">
+                  <input type="date" name="start_date" class="form-control" value="{{ form.start_date.value|date:'Y-m-d'|default:form.start_date.value|default:'' }}" style="height: 38px;" required>
                 </div>
               </div>
               <div class="col-md-3">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">End Date *</label>
                 <div class="input-group input-group-sm">
                   <span class="input-group-text bg-white"><i class="ri-calendar-line text-muted"></i></span>
-                  <input type="text" name="end_date" class="form-control" value="30 Dec 2026" style="height: 38px;">
+                  <input type="date" name="end_date" class="form-control" value="{{ form.end_date.value|date:'Y-m-d'|default:form.end_date.value|default:'' }}" style="height: 38px;" required>
                 </div>
               </div>
               <div class="col-md-3">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Priority *</label>
                 <select name="priority" class="form-select form-select-sm" style="height: 38px; border-radius: 8px;">
-                  <option selected>🚩 High</option>
-                  <option>Medium</option>
-                  <option>Low</option>
+                  <option value="high" {% if form.priority.value == 'high' or not form.priority.value %}selected{% endif %}>🚩 High</option>
+                  <option value="medium" {% if form.priority.value == 'medium' %}selected{% endif %}>⚡ Medium</option>
+                  <option value="low" {% if form.priority.value == 'low' %}selected{% endif %}>🟢 Low</option>
+                  <option value="critical" {% if form.priority.value == 'critical' %}selected{% endif %}>🔥 Critical</option>
                 </select>
               </div>
               <div class="col-md-3">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.78rem;">Status *</label>
                 <select name="status" class="form-select form-select-sm" style="height: 38px; border-radius: 8px;">
-                  <option selected>• Active</option>
-                  <option>Completed</option>
-                  <option>On Hold</option>
+                  <option value="active" {% if form.status.value == 'active' or not form.status.value %}selected{% endif %}>• Active</option>
+                  <option value="planning" {% if form.status.value == 'planning' %}selected{% endif %}>• Planning</option>
+                  <option value="on_hold" {% if form.status.value == 'on_hold' %}selected{% endif %}>• On Hold</option>
+                  <option value="completed" {% if form.status.value == 'completed' %}selected{% endif %}>• Completed</option>
                 </select>
               </div>
             </div>
@@ -147,15 +163,9 @@
               </div>
               <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Project Goals</h6>
             </div>
-            <div class="text-muted mb-3" style="font-size: 0.74rem;">Define project goals and key objectives.</div>
+            <div class="text-muted mb-3" style="font-size: 0.74rem;">Define project goals and key objectives (one per line).</div>
 
-            <ul class="text-secondary mb-0" style="font-size: 0.84rem; line-height: 1.8;">
-              <li>Build a user-friendly mobile application</li>
-              <li>Implement core task management features</li>
-              <li>Integrate real-time notifications</li>
-              <li>Ensure smooth team collaboration</li>
-              <li>Complete development within the given timeline</li>
-            </ul>
+            <textarea name="goals" class="form-control" rows="4" style="font-size: 0.84rem; line-height: 1.6; border-radius: 8px;" placeholder="• Build a user-friendly mobile application&#10;• Implement core task management features&#10;• Integrate real-time notifications&#10;• Ensure smooth team collaboration">{{ form.goals.value|default:'• Build a user-friendly mobile application&#10;• Implement core task management features&#10;• Integrate real-time notifications&#10;• Ensure smooth team collaboration&#10;• Complete development within the given timeline' }}</textarea>
           </div>
 
           <!-- Milestones (Optional) Card -->
@@ -167,26 +177,26 @@
                 </div>
                 <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Milestones (Optional)</h6>
               </div>
-              <button type="button" class="btn btn-sm btn-link text-decoration-none fw-semibold p-0" style="color: #ea580c; font-size: 0.8rem;">
+              <button type="button" class="btn btn-sm btn-link text-decoration-none fw-semibold p-0" id="btnAddMilestone" style="color: #ea580c; font-size: 0.8rem;">
                 + Add Milestone
               </button>
             </div>
             <div class="text-muted mb-3" style="font-size: 0.74rem;">Add key milestones for this project.</div>
 
-            <div class="d-flex flex-column gap-2">
-              <div class="d-flex align-items-center justify-content-between p-2 border rounded" style="background-color: #fff;">
-                <span class="text-dark fw-medium" style="font-size: 0.84rem;">Design and UI/UX finalization</span>
-                <div class="d-flex align-items-center gap-3">
-                  <span class="text-muted d-flex align-items-center gap-1" style="font-size: 0.78rem;"><i class="ri-calendar-line"></i> 25 Oct 2026</span>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-close-line"></i></button>
+            <div class="d-flex flex-column gap-2" id="milestonesContainer">
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded milestone-row" style="background-color: #fff;">
+                <input type="text" name="milestone_titles[]" class="form-control form-control-sm border-0 fw-medium text-dark" value="Design and UI/UX finalization" placeholder="Milestone name" style="font-size: 0.84rem;">
+                <div class="d-flex align-items-center gap-2 ms-2">
+                  <input type="date" name="milestone_dates[]" class="form-control form-control-sm" value="2026-10-25" style="width: 140px; font-size: 0.78rem;">
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0 remove-milestone-btn"><i class="ri-close-line fs-5"></i></button>
                 </div>
               </div>
 
-              <div class="d-flex align-items-center justify-content-between p-2 border rounded" style="background-color: #fff;">
-                <span class="text-dark fw-medium" style="font-size: 0.84rem;">Core development completion</span>
-                <div class="d-flex align-items-center gap-3">
-                  <span class="text-muted d-flex align-items-center gap-1" style="font-size: 0.78rem;"><i class="ri-calendar-line"></i> 20 Nov 2026</span>
-                  <button type="button" class="btn btn-sm btn-link text-muted p-0"><i class="ri-close-line"></i></button>
+              <div class="d-flex align-items-center justify-content-between p-2 border rounded milestone-row" style="background-color: #fff;">
+                <input type="text" name="milestone_titles[]" class="form-control form-control-sm border-0 fw-medium text-dark" value="Core development completion" placeholder="Milestone name" style="font-size: 0.84rem;">
+                <div class="d-flex align-items-center gap-2 ms-2">
+                  <input type="date" name="milestone_dates[]" class="form-control form-control-sm" value="2026-11-20" style="width: 140px; font-size: 0.78rem;">
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0 remove-milestone-btn"><i class="ri-close-line fs-5"></i></button>
                 </div>
               </div>
             </div>
@@ -199,79 +209,48 @@
         <div class="d-flex flex-column gap-4">
           <!-- Assign Project Members Card -->
           <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 1rem;">
-                <i class="ri-group-line"></i>
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 1rem;">
+                  <i class="ri-group-line"></i>
+                </div>
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Assign Project Members</h6>
               </div>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Assign Project Members</h6>
+              <span class="badge bg-light text-muted border" id="memberCountBadge" style="font-size: 0.7rem;">0 Selected</span>
             </div>
             <div class="text-muted mb-3" style="font-size: 0.74rem;">Select team members to work on this project.</div>
 
             <div class="mb-3" style="position: relative;">
               <i class="ri-search-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
-              <input type="text" class="form-control form-control-sm" placeholder="Search members..." style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
+              <input type="text" id="memberSearch" class="form-control form-control-sm" placeholder="Search members..." style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
             </div>
 
-            <div class="d-flex flex-column gap-2">
-              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0" style="cursor: pointer;">
+            <div class="d-flex flex-column gap-2" id="memberListContainer" style="max-height: 380px; overflow-y: auto; padding-right: 2px;">
+              {% for member in team_members %}
+              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0 member-item" style="cursor: pointer; transition: all 0.15s ease;">
                 <div class="d-flex align-items-center gap-2">
-                  <input type="checkbox" class="form-check-input" checked>
-                  <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                  <input type="checkbox" name="members" value="{{ member.id }}" class="form-check-input member-checkbox" {% if forloop.counter <= 3 %}checked{% endif %}>
+                  {% if member.avatar %}
+                    <img src="{{ member.avatar.url }}" class="rounded-circle" width="26" height="26" style="object-fit: cover;">
+                  {% else %}
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary fw-semibold border" style="width: 26px; height: 26px; font-size: 0.72rem;">
+                      {{ member.first_name|slice:":1" }}{{ member.last_name|slice:":1" }}
+                    </div>
+                  {% endif %}
                   <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Rahul Kumar</div>
-                    <div class="text-muted" style="font-size: 0.68rem;">Software Developer</div>
+                    <div class="fw-semibold text-dark member-name" style="font-size: 0.78rem;">{{ member.get_full_name }}</div>
+                    <div class="text-muted member-role" style="font-size: 0.68rem;">
+                      {% if member.role %}{{ member.role.name }}{% elif member.department %}{{ member.department.name }}{% else %}Team Member{% endif %}
+                    </div>
                   </div>
                 </div>
-                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">• Available</span>
+                <span class="badge" style="background-color: {% if member.is_active %}#dcfce7; color: #16a34a;{% else %}#fef3c7; color: #d97706;{% endif %} font-size: 0.68rem; font-weight: 500;">
+                  • {% if member.is_active %}Available{% else %}Away{% endif %}
+                </span>
               </label>
-
-              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0" style="cursor: pointer;">
-                <div class="d-flex align-items-center gap-2">
-                  <input type="checkbox" class="form-check-input" checked>
-                  <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                  <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Priya Singh</div>
-                    <div class="text-muted" style="font-size: 0.68rem;">UI/UX Designer</div>
-                  </div>
-                </div>
-                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">• Available</span>
-              </label>
-
-              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0" style="cursor: pointer;">
-                <div class="d-flex align-items-center gap-2">
-                  <input type="checkbox" class="form-check-input">
-                  <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                  <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Aman Sharma</div>
-                    <div class="text-muted" style="font-size: 0.68rem;">Backend Developer</div>
-                  </div>
-                </div>
-                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">• Available</span>
-              </label>
-
-              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0" style="cursor: pointer;">
-                <div class="d-flex align-items-center gap-2">
-                  <input type="checkbox" class="form-check-input">
-                  <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                  <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Neha Tiwari</div>
-                    <div class="text-muted" style="font-size: 0.68rem;">QA Engineer</div>
-                  </div>
-                </div>
-                <span class="badge" style="background-color: #fef3c7; color: #d97706; font-size: 0.68rem; font-weight: 500;">• Busy</span>
-              </label>
-
-              <label class="d-flex align-items-center justify-content-between p-2 border rounded mb-0" style="cursor: pointer;">
-                <div class="d-flex align-items-center gap-2">
-                  <input type="checkbox" class="form-check-input">
-                  <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                  <div>
-                    <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Vikram Singh</div>
-                    <div class="text-muted" style="font-size: 0.68rem;">DevOps Engineer</div>
-                  </div>
-                </div>
-                <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-size: 0.68rem; font-weight: 500;">• Available</span>
-              </label>
+              {% empty %}
+              <div class="text-center py-3 text-muted" style="font-size: 0.8rem;">No team members found</div>
+              {% endfor %}
             </div>
           </div>
 
@@ -289,45 +268,28 @@
               <div class="col-6">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Visibility *</label>
                 <select name="visibility" class="form-select form-select-sm" style="font-size: 0.78rem;">
-                  <option selected>🔒 Project Members</option>
-                  <option>Public</option>
-                  <option>Private</option>
+                  <option value="project_members" {% if form.visibility.value == 'project_members' or not form.visibility.value %}selected{% endif %}>🔒 Project Members</option>
+                  <option value="department" {% if form.visibility.value == 'department' %}selected{% endif %}>👥 Department</option>
+                  <option value="organization" {% if form.visibility.value == 'organization' %}selected{% endif %}>🌐 Organization (Public)</option>
                 </select>
               </div>
               <div class="col-6">
                 <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Client</label>
-                <select class="form-select form-select-sm" style="font-size: 0.78rem;">
-                  <option selected>Internal Use</option>
-                  <option>External Client</option>
-                </select>
+                <input type="text" name="client" class="form-control form-control-sm" value="{{ form.client.value|default:'Internal Use' }}" placeholder="Internal Use / Client" style="font-size: 0.78rem; height: 31px;">
               </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Tags</label>
-              <div class="d-flex flex-wrap align-items-center gap-1">
-                <span class="badge" style="background-color: #f3e8ff; color: #9333ea; font-size: 0.72rem; font-weight: 500;">mobile-app <i class="ri-close-line ms-1" style="cursor: pointer;"></i></span>
-                <span class="badge" style="background-color: #fee2e2; color: #ef4444; font-size: 0.72rem; font-weight: 500;">development <i class="ri-close-line ms-1" style="cursor: pointer;"></i></span>
-                <span class="badge" style="background-color: #ffedd5; color: #ea580c; font-size: 0.72rem; font-weight: 500;">task-management <i class="ri-close-line ms-1" style="cursor: pointer;"></i></span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem; cursor: pointer;">+ Add Tag</span>
-              </div>
+              <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Tags (comma-separated)</label>
+              <input type="text" name="tags" class="form-control form-control-sm" value="{{ form.tags.value|default:'mobile-app, development, task-management' }}" placeholder="e.g. mobile, frontend, sprint-1" style="font-size: 0.78rem; height: 31px; border-radius: 6px;">
             </div>
 
             <div class="mb-3">
-              <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Related Projects</label>
-              <select class="form-select form-select-sm" style="font-size: 0.78rem;">
-                <option selected>Search and select related projects...</option>
-                <option>TaskWave (Main System)</option>
-                <option>College Portal</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Dependencies</label>
-              <select class="form-select form-select-sm" style="font-size: 0.78rem;">
-                <option selected>Select dependent projects...</option>
-                <option>Database Optimization</option>
-              </select>
+              <label class="form-label text-dark fw-medium mb-1" style="font-size: 0.75rem;">Project Accent Color</label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="color" name="color" class="form-control form-control-color" value="{{ form.color.value|default:'#ea580c' }}" title="Choose project theme color" style="width: 44px; height: 32px; border-radius: 6px; padding: 2px;">
+                <span class="text-muted" style="font-size: 0.75rem;">Used on badges & charts</span>
+              </div>
             </div>
           </div>
 
@@ -365,4 +327,92 @@
     </div>
   </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 1. Member search filter
+  const memberSearch = document.getElementById('memberSearch');
+  const memberItems = document.querySelectorAll('.member-item');
+  const memberCountBadge = document.getElementById('memberCountBadge');
+  const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+
+  function updateMemberCount() {
+    let count = 0;
+    memberCheckboxes.forEach(cb => {
+      if (cb.checked) count++;
+    });
+    if (memberCountBadge) {
+      memberCountBadge.textContent = count + ' Selected';
+    }
+  }
+  updateMemberCount();
+
+  memberCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateMemberCount);
+  });
+
+  if (memberSearch) {
+    memberSearch.addEventListener('input', function(e) {
+      const q = e.target.value.toLowerCase().trim();
+      memberItems.forEach(item => {
+        const name = item.querySelector('.member-name')?.textContent.toLowerCase() || '';
+        const role = item.querySelector('.member-role')?.textContent.toLowerCase() || '';
+        if (name.includes(q) || role.includes(q)) {
+          item.style.setProperty('display', 'flex', 'important');
+        } else {
+          item.style.setProperty('display', 'none', 'important');
+        }
+      });
+    });
+  }
+
+  // 2. Dynamic Milestones
+  const btnAddMilestone = document.getElementById('btnAddMilestone');
+  const milestonesContainer = document.getElementById('milestonesContainer');
+
+  if (btnAddMilestone && milestonesContainer) {
+    btnAddMilestone.addEventListener('click', function() {
+      const row = document.createElement('div');
+      row.className = 'd-flex align-items-center justify-content-between p-2 border rounded milestone-row';
+      row.style.backgroundColor = '#fff';
+      row.innerHTML = `
+        <input type="text" name="milestone_titles[]" class="form-control form-control-sm border-0 fw-medium text-dark" placeholder="New milestone name" style="font-size: 0.84rem;" required>
+        <div class="d-flex align-items-center gap-2 ms-2">
+          <input type="date" name="milestone_dates[]" class="form-control form-control-sm" style="width: 140px; font-size: 0.78rem;">
+          <button type="button" class="btn btn-sm btn-link text-muted p-0 remove-milestone-btn"><i class="ri-close-line fs-5"></i></button>
+        </div>
+      `;
+      milestonesContainer.appendChild(row);
+      attachRemoveBtn(row.querySelector('.remove-milestone-btn'));
+    });
+  }
+
+  function attachRemoveBtn(btn) {
+    if (btn) {
+      btn.addEventListener('click', function() {
+        btn.closest('.milestone-row').remove();
+      });
+    }
+  }
+
+  document.querySelectorAll('.remove-milestone-btn').forEach(btn => attachRemoveBtn(btn));
+});
+
+function formatDesc(cmd) {
+  const ta = document.getElementById('projectDescription');
+  if (!ta) return;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const sel = ta.value.substring(start, end);
+  let replacement = '';
+  if (cmd === 'bold') replacement = `**${sel || 'text'}**`;
+  else if (cmd === 'italic') replacement = `*${sel || 'text'}*`;
+  else if (cmd === 'underline') replacement = `<u>${sel || 'text'}</u>`;
+  else if (cmd === 'list') replacement = `\n- ${sel || 'item'}`;
+  else if (cmd === 'code') replacement = `\`${sel || 'code'}\``;
+  
+  ta.setRangeText(replacement, start, end, 'end');
+  ta.focus();
+}
+</script>
 {% endblock %}

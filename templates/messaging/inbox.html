@@ -6,532 +6,897 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-3">
     <div>
       <h1 class="dash-title">Messages</h1>
-      <p class="dash-subtitle">Communicate with your team members and collaborate effectively.</p>
+      <p class="dash-subtitle">Communicate with your team members and collaborate effectively in real time.</p>
     </div>
     <div>
-      <button class="btn-new-entity" type="button">
+      <button class="btn text-white px-3 py-2 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#newChatModal" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> New Chat
       </button>
     </div>
   </div>
 
+  <!-- Messages Alert -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2 px-3 mb-3" role="alert" style="font-size: 0.84rem; border-radius: 8px;">
+        <i class="ri-information-line me-1"></i> {{ message }}
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
   <!-- 3-Column Chat View Card -->
-  <div class="dash-card p-0 overflow-hidden chat-main-container">
+  <div class="bg-white border rounded-3 shadow-sm overflow-hidden" style="border-color: #edf2f7 !important; height: calc(100vh - 200px); min-height: 600px;">
     <div class="row g-0 h-100">
       
-      <!-- 1. Left Conversations List -->
-      <div class="col-xl-3 border-end d-flex flex-column" style="background-color: #ffffff;">
+      <!-- 1. Left Column: Conversations List -->
+      <div class="col-xl-3 col-lg-4 border-end d-flex flex-column h-100" style="background-color: #ffffff; border-color: #edf2f7 !important;">
         <!-- Search bar -->
-        <div class="p-3 border-bottom">
+        <div class="p-3 border-bottom" style="border-color: #edf2f7 !important;">
           <div class="d-flex align-items-center gap-2">
-            <div class="filter-search-box flex-grow-1" style="min-width: 0;">
-              <i class="ri-search-line"></i>
-              <input type="text" placeholder="Search conversations...">
+            <div class="position-relative flex-grow-1" style="min-width: 0;">
+              <i class="ri-search-line position-absolute" style="left: 12px; top: 9px; color: #94a3b8; font-size: 0.9rem;"></i>
+              <input type="text" id="convoSearchInput" class="form-control form-control-sm" placeholder="Search conversations..." style="padding-left: 34px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; height: 36px;">
             </div>
-            <button class="dash-item-menu" type="button"><i class="ri-equalizer-line"></i></button>
+            <button class="btn btn-sm btn-white border px-2 py-1 text-muted" type="button" title="Filter options" style="height: 36px; border-color: #e2e8f0 !important;"><i class="ri-equalizer-line"></i></button>
           </div>
         </div>
 
         <!-- Chat Filter Tabs -->
-        <div class="d-flex border-bottom px-3 pt-2 gap-3 small fw-semibold">
-          <span class="chat-tab-pill active">All</span>
-          <span class="chat-tab-pill text-muted">Unread <span class="badge bg-dark rounded-pill ms-1" style="font-size: 10px;">3</span></span>
-          <span class="chat-tab-pill text-muted">Groups</span>
-          <span class="chat-tab-pill text-muted">Starred</span>
+        <div class="d-flex border-bottom px-3 pt-2 gap-3 small fw-semibold" style="border-color: #edf2f7 !important;">
+          <span class="chat-tab-pill convo-tab-filter active" data-filter="all" style="cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid #ea580c; color: #ea580c;">All</span>
+          <span class="chat-tab-pill convo-tab-filter text-muted" data-filter="unread" style="cursor: pointer; padding-bottom: 8px;">Unread <span class="badge bg-dark rounded-pill ms-1" id="tabUnreadBadge" style="font-size: 10px; {% if total_unread == 0 %}display: none;{% endif %}">{{ total_unread|default:0 }}</span></span>
+          <span class="chat-tab-pill convo-tab-filter text-muted" data-filter="groups" style="cursor: pointer; padding-bottom: 8px;">Groups</span>
+          <span class="chat-tab-pill convo-tab-filter text-muted" data-filter="starred" style="cursor: pointer; padding-bottom: 8px;">Direct</span>
         </div>
 
         <!-- Conversations Scroll List -->
-        <div class="conversations-scroll-list flex-grow-1 overflow-auto">
-          
-          <!-- 1. Development Team (Active) -->
-          <div class="convo-item active">
-            <div class="chat-circle-icon bg-blue-tint text-primary">
-              <i class="ri-group-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
+        <div class="conversations-scroll-list flex-grow-1 overflow-auto" id="conversationsContainer" style="overflow-y: auto;">
+          {% for c in conversations %}
+          <div class="convo-card-item p-3 border-bottom d-flex align-items-start gap-3 {% if active_convo and active_convo.id == c.id %}active-convo{% endif %}"
+               id="convoItem-{{ c.id }}"
+               data-convo-id="{{ c.id }}"
+               data-type="{{ c.type }}"
+               data-unread="{{ c.unread_count }}"
+               data-name="{{ c.name|lower }}"
+               style="cursor: pointer; transition: background-color 0.15s ease; border-color: #f1f5f9 !important; {% if active_convo and active_convo.id == c.id %}background-color: #fff7ed; border-left: 3px solid #ea580c;{% endif %}">
+            
+            {% if c.meta.is_direct and c.meta.avatar %}
+              <img src="{{ c.meta.avatar }}" class="rounded-circle" width="38" height="38" style="object-fit: cover; flex-shrink: 0;">
+            {% else %}
+              <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                   style="width: 38px; height: 38px; background-color: {{ c.meta.bg_color }}; color: {{ c.meta.icon_color }}; font-size: 1.15rem;">
+                <i class="{{ c.meta.icon }}"></i>
+              </div>
+            {% endif %}
+
+            <div class="flex-grow-1 min-width-0" style="min-width: 0;">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Development Team</span>
-                <span class="text-muted" style="font-size: 11px;">10:24 AM</span>
+                <span class="fw-bold text-dark text-truncate" style="font-size: 0.85rem;" title="{{ c.name }}">{{ c.name }}</span>
+                <span class="text-muted convo-time-display" id="convoTime-{{ c.id }}" style="font-size: 11px; flex-shrink: 0;">{{ c.time_str }}</span>
               </div>
               <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted small text-truncate" style="font-size: 11px;">Neha: I've updated the UI design files.</span>
-                <span class="chat-unread-badge">2</span>
+                <span class="text-muted text-truncate convo-snippet-display" id="convoSnippet-{{ c.id }}" style="font-size: 11px;">
+                  {% if c.last_sender %}<strong>{{ c.last_sender }}:</strong> {% endif %}{{ c.last_message }}
+                </span>
+                {% if c.unread_count > 0 %}
+                <span class="badge rounded-pill text-white ms-1" id="convoBadge-{{ c.id }}" style="background-color: #ea580c; font-size: 10px; padding: 2px 6px;">{{ c.unread_count }}</span>
+                {% else %}
+                <span class="badge rounded-pill text-white ms-1" id="convoBadge-{{ c.id }}" style="display: none; background-color: #ea580c; font-size: 10px; padding: 2px 6px;">0</span>
+                {% endif %}
               </div>
             </div>
           </div>
-
-          <!-- 2. Project TaskWave -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-cyan-tint text-info">
-              <i class="ri-macbook-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Project TaskWave</span>
-                <span class="text-muted" style="font-size: 11px;">09:15 AM</span>
-              </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted small text-truncate" style="font-size: 11px;">Rahul: Deployment is completed ✔</span>
-                <span class="chat-unread-badge">1</span>
-              </div>
-            </div>
+          {% empty %}
+          <div class="text-center py-5 text-muted" style="font-size: 0.8rem;">
+            <i class="ri-chat-voice-line d-block mb-2 fs-3 text-muted"></i>
+            No conversations yet.<br>Click "New Chat" to begin!
           </div>
-
-          <!-- 3. Priya Singh -->
-          <div class="convo-item">
-            <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="38" height="38" style="object-fit: cover;">
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Priya Singh</span>
-                <span class="text-muted" style="font-size: 11px;">Yesterday</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Let me know when the review starts.</span>
-            </div>
-          </div>
-
-          <!-- 4. Aman Sharma -->
-          <div class="convo-item">
-            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="38" height="38" style="object-fit: cover;">
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Aman Sharma</span>
-                <span class="text-muted" style="font-size: 11px;">Yesterday</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Can you share the API documentation?</span>
-            </div>
-          </div>
-
-          <!-- 5. Design Team -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-pink-tint text-danger">
-              <i class="ri-palette-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Design Team</span>
-                <span class="text-muted" style="font-size: 11px;">22 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Sneha: New mockups are ready.</span>
-            </div>
-          </div>
-
-          <!-- 6. Quality Assurance -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-green-tint text-success">
-              <i class="ri-shield-check-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Quality Assurance</span>
-                <span class="text-muted" style="font-size: 11px;">21 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Vikram: Testing completed for module 3.</span>
-            </div>
-          </div>
-
-          <!-- 7. Marketing -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-amber-tint text-warning">
-              <i class="ri-megaphone-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Marketing</span>
-                <span class="text-muted" style="font-size: 11px;">20 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Rohan: Here are the content updates.</span>
-            </div>
-          </div>
-
-          <!-- 8. HR Team -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-purple-tint text-purple" style="color: #8b5cf6;">
-              <i class="ri-team-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">HR Team</span>
-                <span class="text-muted" style="font-size: 11px;">19 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Pooja: Meeting at 11 AM tomorrow.</span>
-            </div>
-          </div>
-
-          <!-- 9. Client Discussion -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-rose-tint text-danger" style="background-color: #ffe4e6; color: #e11d48;">
-              <i class="ri-chat-1-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">Client Discussion</span>
-                <span class="text-muted" style="font-size: 11px;">18 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Anjali: Feedback received from client.</span>
-            </div>
-          </div>
-
-          <!-- 10. General -->
-          <div class="convo-item">
-            <div class="chat-circle-icon bg-gray-tint text-muted" style="background-color: #f1f5f9; color: #64748b;">
-              <i class="ri-group-line"></i>
-            </div>
-            <div class="flex-grow-1 min-width-0">
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold small text-dark">General</span>
-                <span class="text-muted" style="font-size: 11px;">15 Sep</span>
-              </div>
-              <span class="text-muted small text-truncate d-block" style="font-size: 11px;">Admin: Welcome to TaskWave!</span>
-            </div>
-          </div>
-
+          {% endfor %}
         </div>
       </div>
 
-      <!-- 2. Middle Active Chat Area -->
-      <div class="col-xl-6 border-end d-flex flex-column" style="background-color: #ffffff;">
+      <!-- 2. Middle Column: Active Real-Time Chat Area -->
+      <div class="col-xl-6 col-lg-8 border-end d-flex flex-column h-100" style="background-color: #ffffff; border-color: #edf2f7 !important;">
         <!-- Chat Header -->
-        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-color: #edf2f7 !important;">
           <div class="d-flex align-items-center gap-3">
-            <div class="chat-circle-icon bg-blue-tint text-primary" style="width: 42px; height: 42px; font-size: 1.15rem;">
-              <i class="ri-group-line"></i>
+            <div id="headerIconContainer" class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0"
+                 style="width: 42px; height: 42px; background-color: {{ active_convo_meta.bg_color|default:'#e0f2fe' }}; color: {{ active_convo_meta.icon_color|default:'#0284c7' }}; font-size: 1.25rem;">
+              {% if active_convo_meta.is_direct and active_convo_meta.avatar %}
+                <img id="headerAvatarImg" src="{{ active_convo_meta.avatar }}" class="w-100 h-100" style="object-fit: cover;">
+              {% else %}
+                <i id="headerIcon" class="{{ active_convo_meta.icon|default:'ri-group-line' }}"></i>
+              {% endif %}
             </div>
             <div>
-              <div class="fw-bold text-dark fs-6" style="line-height: 1.2;">Development Team</div>
-              <div class="text-muted small" style="font-size: 11px;">6 members • Project discussions and development updates</div>
+              <div class="fw-bold text-dark fs-6" id="headerTitle" style="line-height: 1.2;">
+                {{ active_convo_meta.name|default:"Select a Conversation" }}
+              </div>
+              <div class="text-muted small" id="headerSubtitle" style="font-size: 11px;">
+                {{ active_convo.members.count|default:"0" }} members • {{ active_convo.description|default:"Project discussions and updates" }}
+              </div>
             </div>
           </div>
           <div class="d-flex align-items-center gap-2">
-            <button class="dash-item-menu" type="button"><i class="ri-search-line"></i></button>
-            <button class="dash-item-menu" type="button"><i class="ri-phone-line"></i></button>
-            <button class="dash-item-menu" type="button"><i class="ri-video-line"></i></button>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+            <div class="d-flex align-items-center gap-1 me-2">
+              <span class="spinner-grow spinner-grow-sm text-success" id="livePollingPulse" style="width: 8px; height: 8px;" role="status"></span>
+              <span class="text-success fw-medium" style="font-size: 11px;">Live</span>
+            </div>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" type="button" title="Search messages"><i class="ri-search-line"></i></button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" type="button" title="Start call"><i class="ri-phone-line"></i></button>
+            <button class="btn btn-sm btn-light border text-muted px-2 py-1" type="button" title="Start video call"><i class="ri-video-line"></i></button>
           </div>
         </div>
 
-        <!-- Chat Messages Stack -->
-        <div class="p-4 flex-grow-1 overflow-auto d-flex flex-column gap-3 chat-messages-area" style="max-height: 600px;">
+        <!-- Chat Messages Stack (Real-Time Scroll Container) -->
+        <div class="p-4 flex-grow-1 overflow-auto d-flex flex-column gap-3" id="chatMessagesContainer" style="overflow-y: auto; background-color: #ffffff;">
           <!-- Date divider -->
-          <div class="text-center my-1">
-            <span class="badge bg-light text-muted border px-3 py-1 fw-normal" style="font-size: 11px; border-radius: 20px;">Today, 15 Oct 2026</span>
+          <div class="text-center my-1" id="chatDateDivider">
+            <span class="badge bg-light text-muted border px-3 py-1 fw-normal" style="font-size: 11px; border-radius: 20px;">Today</span>
           </div>
 
-          <!-- Message 1: Rahul Kumar -->
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-bold small text-dark">Rahul Kumar</span>
-                <span class="text-muted" style="font-size: 10px;">10:02 AM</span>
-              </div>
-              <div class="chat-text-incoming">
-                Good morning team! 👋<br>Let's discuss the progress on the current sprint.
-              </div>
-            </div>
-          </div>
-
-          <!-- Message 2: Priya Singh -->
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-bold small text-dark">Priya Singh</span>
-                <span class="text-muted" style="font-size: 10px;">10:05 AM</span>
-              </div>
-              <div class="chat-text-incoming mb-2">
-                The backend APIs are almost ready. I'm working on the authentication module.
-              </div>
-              <!-- File Attachment -->
-              <div class="chat-file-card d-flex align-items-center justify-content-between p-2 px-3 border rounded-3 bg-white" style="max-width: 290px;">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="chat-file-icon-box text-primary bg-blue-tint">
-                    <i class="ri-file-code-line fs-5"></i>
-                  </div>
-                  <div>
-                    <div class="small fw-semibold text-dark" style="font-size: 12px;">auth_module.py</div>
-                    <div class="text-muted" style="font-size: 10px;">12.4 KB • Python File</div>
+          <!-- Messages Stream -->
+          {% for m in messages_list %}
+            {% if m.sender == request.user %}
+              <!-- Outgoing (Mine) -->
+              <div class="d-flex justify-content-end align-items-end gap-2 my-1 msg-row" id="msg-{{ m.id }}" data-id="{{ m.id }}">
+                <div class="d-flex flex-column align-items-end">
+                  <span class="text-muted mb-1" style="font-size: 10px;">{{ m.sent_at|date:'h:i A' }}</span>
+                  <div class="p-3 text-white shadow-sm" style="background-color: #3b82f6; border-radius: 14px 14px 2px 14px; font-size: 0.85rem; max-width: 480px; word-break: break-word; line-height: 1.4;">
+                    {{ m.content|linebreaksbr }}
+                    {% for att in m.attachments.all %}
+                      <div class="d-flex align-items-center justify-content-between p-2 mt-2 rounded bg-white text-dark" style="font-size: 11px;">
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-file-line text-primary fs-5"></i>
+                          <div>
+                            <div class="fw-semibold text-truncate" style="max-width: 180px;">{{ att.original_filename }}</div>
+                            <div class="text-muted" style="font-size: 10px;">{{ att.file_size }} B</div>
+                          </div>
+                        </div>
+                        <a href="{{ att.file.url }}" class="btn btn-sm btn-link text-primary p-0" download><i class="ri-download-2-line"></i></a>
+                      </div>
+                    {% endfor %}
+                    <span class="ms-2" style="font-size: 10px; opacity: 0.85;">✓✓</span>
                   </div>
                 </div>
-                <button class="btn btn-sm text-muted p-0" type="button"><i class="ri-download-2-line fs-5"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Message 3: Outgoing (Mine) -->
-          <div class="d-flex justify-content-end align-items-end gap-2 my-1">
-            <div class="d-flex flex-column align-items-end">
-              <span class="text-muted mb-1" style="font-size: 10px;">10:08 AM</span>
-              <div class="chat-bubble-outgoing">
-                Great work! Please complete it by today EOD.<br>Also, update the task status in the Kanban board.
-                <span class="chat-check-marks ms-2">✓✓</span>
-              </div>
-            </div>
-            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="32" height="32" style="object-fit: cover;">
-          </div>
-
-          <!-- Message 4: Neha Tiwari -->
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-bold small text-dark">Neha Tiwari</span>
-                <span class="text-muted" style="font-size: 10px;">10:12 AM</span>
-              </div>
-              <div class="chat-text-incoming mb-2">
-                I've updated the UI design files. Please review and share feedback.
-              </div>
-              <!-- Figma File Attachment -->
-              <div class="chat-file-card d-flex align-items-center justify-content-between p-2 px-3 border rounded-3 bg-white" style="max-width: 290px;">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="chat-file-icon-box text-danger bg-pink-tint">
-                    <i class="ri-pantone-line fs-5"></i>
+                {% if request.user.profile_picture %}
+                  <img src="{{ request.user.profile_picture.url }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+                {% else %}
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                    {{ request.user.first_name|slice:':1' }}{{ request.user.last_name|slice:':1' }}
                   </div>
-                  <div>
-                    <div class="small fw-semibold text-dark" style="font-size: 12px;">dashboard_design.fig</div>
-                    <div class="text-muted" style="font-size: 10px;">3.2 MB • Figma File</div>
+                {% endif %}
+              </div>
+            {% else %}
+              <!-- Incoming -->
+              <div class="d-flex gap-3 align-items-start msg-row" id="msg-{{ m.id }}" data-id="{{ m.id }}">
+                {% if m.sender.profile_picture %}
+                  <img src="{{ m.sender.profile_picture.url }}" class="rounded-circle" width="34" height="34" style="object-fit: cover; flex-shrink: 0;">
+                {% else %}
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold flex-shrink-0" style="width: 34px; height: 34px; font-size: 0.78rem;">
+                    {{ m.sender.first_name|slice:':1' }}{{ m.sender.last_name|slice:':1' }}
+                  </div>
+                {% endif %}
+                <div class="flex-grow-1" style="max-width: 480px;">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fw-bold small text-dark">{{ m.sender.get_full_name|default:m.sender.email }}</span>
+                    <span class="text-muted" style="font-size: 10px;">{{ m.sent_at|date:'h:i A' }}</span>
+                  </div>
+                  <div class="p-3 border rounded-3 shadow-sm" style="background-color: #f8fafc; border-color: #edf2f7 !important; border-radius: 2px 14px 14px 14px; font-size: 0.85rem; color: #1e293b; line-height: 1.4; word-break: break-word;">
+                    {{ m.content|linebreaksbr }}
+                    {% for att in m.attachments.all %}
+                      <div class="d-flex align-items-center justify-content-between p-2 mt-2 border rounded bg-white text-dark" style="font-size: 11px;">
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ri-file-line text-primary fs-5"></i>
+                          <div>
+                            <div class="fw-semibold text-truncate" style="max-width: 180px;">{{ att.original_filename }}</div>
+                            <div class="text-muted" style="font-size: 10px;">{{ att.file_size }} B</div>
+                          </div>
+                        </div>
+                        <a href="{{ att.file.url }}" class="btn btn-sm btn-link text-primary p-0" download><i class="ri-download-2-line"></i></a>
+                      </div>
+                    {% endfor %}
                   </div>
                 </div>
-                <button class="btn btn-sm text-muted p-0" type="button"><i class="ri-download-2-line fs-5"></i></button>
               </div>
-            </div>
+            {% endif %}
+          {% empty %}
+          <div class="text-center py-5 text-muted my-auto" id="noMessagesPlaceholder">
+            <i class="ri-chat-smile-2-line fs-1 text-muted d-block mb-2"></i>
+            No messages yet in this conversation.<br>Say hello to start chatting!
           </div>
-
-          <!-- Message 5: Aman Sharma -->
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-bold small text-dark">Aman Sharma</span>
-                <span class="text-muted" style="font-size: 10px;">10:18 AM</span>
-              </div>
-              <div class="chat-text-incoming">
-                I'm working on the database optimization. Will update by evening.
-              </div>
-            </div>
-          </div>
-
-          <!-- Message 6: Vikram Singh -->
-          <div class="d-flex gap-3 align-items-start">
-            <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="34" height="34" style="object-fit: cover;">
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="fw-bold small text-dark">Vikram Singh</span>
-                <span class="text-muted" style="font-size: 10px;">10:20 AM</span>
-              </div>
-              <div class="chat-text-incoming">
-                Testing for module 3 is completed <span class="text-success">✅</span><br>Found 2 minor issues, creating bug reports now.
-              </div>
-            </div>
-          </div>
-
-          <!-- Message 7: Outgoing 2 (Mine) -->
-          <div class="d-flex justify-content-end align-items-end gap-2 my-1">
-            <div class="d-flex flex-column align-items-end">
-              <span class="text-muted mb-1" style="font-size: 10px;">10:24 AM</span>
-              <div class="chat-bubble-outgoing">
-                Thanks everyone! Keep up the good work! 🚀
-                <span class="chat-check-marks ms-2">✓✓</span>
-              </div>
-            </div>
-            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="32" height="32" style="object-fit: cover;">
-          </div>
-
+          {% endfor %}
         </div>
 
-        <!-- Chat Input Bar -->
-        <div class="p-3 border-top d-flex align-items-center gap-2" style="background-color: #ffffff;">
-          <button class="dash-item-menu" type="button"><i class="ri-attachment-2 fs-5"></i></button>
-          <input type="text" class="form-control rounded-pill border px-3" style="font-size: 0.85rem;" placeholder="Type a message...">
-          <button class="dash-item-menu" type="button"><i class="ri-emotion-happy-line fs-5"></i></button>
-          <button class="btn btn-warning rounded-circle d-flex align-items-center justify-content-center text-white" style="background-color: #ea580c; border: none; width: 40px; height: 40px; min-width: 40px;">
-            <i class="ri-send-plane-2-fill fs-5"></i>
-          </button>
+        <!-- Chat Input Bar (Form) -->
+        <div class="p-3 border-top" style="background-color: #ffffff; border-color: #edf2f7 !important;">
+          <!-- Attachment Preview Pill (if selected) -->
+          <div id="attachmentPill" class="alert alert-secondary py-1 px-3 d-flex align-items-center justify-content-between mb-2" style="display: none; font-size: 0.76rem; border-radius: 6px;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-attachment-2 text-primary"></i>
+              <span id="attachmentFileName" class="fw-medium text-truncate" style="max-width: 250px;">filename.pdf</span>
+            </div>
+            <button type="button" class="btn-close p-0" id="btnRemoveAttachment" style="font-size: 0.65rem;" aria-label="Remove"></button>
+          </div>
+
+          <form id="chatMessageForm" class="d-flex align-items-center gap-2" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="chatFileInput" name="attachment" style="display: none;">
+            
+            <button type="button" class="btn btn-sm btn-light border text-muted p-2" id="btnTriggerFile" title="Attach Document / File" style="border-radius: 50%; width: 36px; height: 36px;">
+              <i class="ri-attachment-2 fs-5"></i>
+            </button>
+
+            <input type="text" id="chatTextInput" name="content" class="form-control rounded-pill border px-3" style="font-size: 0.85rem; height: 40px;" placeholder="Type a message..." autocomplete="off">
+
+            <button type="button" class="btn btn-sm btn-light border text-muted p-2" id="btnQuickEmoji" title="Insert Emoji" style="border-radius: 50%; width: 36px; height: 36px;">
+              <i class="ri-emotion-happy-line fs-5"></i>
+            </button>
+
+            <button type="submit" class="btn rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm" id="btnSendMsg" style="background-color: #ea580c; border: none; width: 40px; height: 40px; min-width: 40px;">
+              <i class="ri-send-plane-2-fill fs-5"></i>
+            </button>
+          </form>
         </div>
       </div>
 
-      <!-- 3. Right Conversation Details -->
-      <div class="col-xl-3 p-3 d-flex flex-column" style="background-color: #ffffff;">
+      <!-- 3. Right Column: Conversation Details -->
+      <div class="col-xl-3 d-none d-xl-flex flex-column h-100 p-3 overflow-auto" style="background-color: #ffffff; border-color: #edf2f7 !important;">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Conversation Details</h4>
-          <button class="dash-item-menu" type="button"><i class="ri-pencil-line"></i></button>
+          <button class="btn btn-sm btn-link text-muted p-0" type="button"><i class="ri-pencil-line"></i></button>
         </div>
 
         <!-- Group card -->
         <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3">
-          <div class="chat-circle-icon bg-blue-tint text-primary" style="width: 44px; height: 44px; font-size: 1.25rem;">
-            <i class="ri-group-line"></i>
+          <div id="sideIconContainer" class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0"
+               style="width: 44px; height: 44px; background-color: {{ active_convo_meta.bg_color|default:'#e0f2fe' }}; color: {{ active_convo_meta.icon_color|default:'#0284c7' }}; font-size: 1.25rem;">
+            {% if active_convo_meta.is_direct and active_convo_meta.avatar %}
+              <img id="sideAvatarImg" src="{{ active_convo_meta.avatar }}" class="w-100 h-100" style="object-fit: cover;">
+            {% else %}
+              <i id="sideIcon" class="{{ active_convo_meta.icon|default:'ri-group-line' }}"></i>
+            {% endif %}
           </div>
-          <div>
-            <div class="fw-bold small text-dark" style="font-size: 0.85rem;">Development Team</div>
-            <div class="text-muted" style="font-size: 10px;">Project discussions and development updates.</div>
+          <div class="min-width-0">
+            <div class="fw-bold small text-dark text-truncate" id="sideConvoName" style="font-size: 0.85rem;">
+              {{ active_convo_meta.name|default:"Conversation" }}
+            </div>
+            <div class="text-muted text-truncate" id="sideConvoDesc" style="font-size: 11px;">
+              {{ active_convo.description|default:"Project discussions and development updates." }}
+            </div>
           </div>
         </div>
 
         <!-- Metadata items -->
         <div class="d-flex flex-column gap-2 mb-4 small" style="font-size: 0.8rem;">
-          <div class="d-flex align-items-center text-muted"><i class="ri-group-line me-2 text-dark"></i>6 Members</div>
-          <div class="d-flex align-items-center text-muted"><i class="ri-folder-line me-2 text-dark"></i>Project: TaskWave</div>
-          <div class="d-flex align-items-center text-muted"><i class="ri-calendar-line me-2 text-dark"></i>Created on 1 Aug 2026</div>
-          <div class="d-flex align-items-center text-muted"><i class="ri-time-line me-2 text-dark"></i>Last activity: 10:24 AM</div>
+          <div class="d-flex align-items-center text-muted">
+            <i class="ri-group-line me-2 text-dark"></i>
+            <span id="sideMembersCount">{{ active_convo.members.count|default:"0" }} Members</span>
+          </div>
+          <div class="d-flex align-items-center text-muted">
+            <i class="ri-folder-line me-2 text-dark"></i>
+            <span id="sideProjectName">Project: {{ active_convo.project.name|default:"TaskWave" }}</span>
+          </div>
+          <div class="d-flex align-items-center text-muted">
+            <i class="ri-calendar-line me-2 text-dark"></i>
+            <span id="sideCreatedDate">Created on {{ active_convo.created_at|date:'d M Y'|default:"1 Aug 2026" }}</span>
+          </div>
+          <div class="d-flex align-items-center text-muted">
+            <i class="ri-time-line me-2 text-dark"></i>
+            <span id="sideLastActivity">Last activity: Just now</span>
+          </div>
         </div>
 
         <!-- Members section -->
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Members (6)</h4>
-          <a href="#" class="small text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">+ Add</a>
+          <h4 class="small fw-bold text-dark mb-0" id="sideMembersHeading" style="font-size: 0.85rem;">Members ({{ active_members|length }})</h4>
+          <a href="javascript:void(0)" class="small text-decoration-none fw-semibold" data-bs-toggle="modal" data-bs-target="#addMemberModal" style="color: #ea580c; font-size: 0.8rem;">+ Add</a>
         </div>
         
-        <div class="d-flex flex-column gap-2 mb-4">
-          <!-- Member 1: Rahul Kumar -->
+        <div class="d-flex flex-column gap-2 mb-4" id="sideMembersList">
+          {% for m in active_members %}
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
+              {% if m.avatar %}
+                <img src="{{ m.avatar }}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">
+              {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 30px; height: 30px; font-size: 0.72rem;">
+                  {{ m.initials }}
+                </div>
+              {% endif %}
               <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Rahul Kumar</div>
-                <div class="text-danger fw-semibold" style="font-size: 10px;">Admin</div>
+                <div class="small fw-semibold text-dark" style="font-size: 12px;">{{ m.name }}</div>
+                <div class="{% if m.is_admin %}text-danger{% else %}text-muted{% endif %} fw-semibold" style="font-size: 10px;">
+                  {% if m.is_admin %}Admin{% else %}{{ m.role }}{% endif %}
+                </div>
               </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-success fw-semibold" style="font-size: 11px;">Online 👑</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
+            <div class="d-flex align-items-center gap-1">
+              {% if m.status == 'Online' %}
+                <span class="small text-success fw-semibold" style="font-size: 11px;">Online {% if m.is_admin %}👑{% endif %}</span>
+              {% elif m.status == 'Away' %}
+                <span class="small fw-semibold" style="font-size: 11px; color: #f59e0b;">Away</span>
+              {% else %}
+                <span class="small text-muted fw-semibold" style="font-size: 11px;">Offline</span>
+              {% endif %}
             </div>
           </div>
-
-          <!-- Member 2: Priya Singh -->
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
-              <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Priya Singh</div>
-                <div class="text-muted" style="font-size: 10px;">Member</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-success fw-semibold" style="font-size: 11px;">Online</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
-            </div>
-          </div>
-
-          <!-- Member 3: Aman Sharma -->
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
-              <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Aman Sharma</div>
-                <div class="text-muted" style="font-size: 10px;">Member</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-success fw-semibold" style="font-size: 11px;">Online</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
-            </div>
-          </div>
-
-          <!-- Member 4: Neha Tiwari -->
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
-              <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Neha Tiwari</div>
-                <div class="text-muted" style="font-size: 10px;">Member</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small fw-semibold" style="font-size: 11px; color: #f59e0b;">Away</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
-            </div>
-          </div>
-
-          <!-- Member 5: Vikram Singh -->
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
-              <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Vikram Singh</div>
-                <div class="text-muted" style="font-size: 10px;">Member</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-muted fw-semibold" style="font-size: 11px;">Offline</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
-            </div>
-          </div>
-
-          <!-- Member 6: Arjun Patel -->
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle chat-avatar-img" width="30" height="30" style="object-fit: cover;">
-              <div>
-                <div class="small fw-semibold text-dark" style="font-size: 12px;">Arjun Patel</div>
-                <div class="text-muted" style="font-size: 10px;">Member</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-muted fw-semibold" style="font-size: 11px;">Offline</span>
-              <button class="dash-item-menu p-0" type="button"><i class="ri-more-2-line"></i></button>
-            </div>
-          </div>
+          {% endfor %}
         </div>
 
         <!-- Shared Files section -->
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h4 class="small fw-bold text-dark mb-0" style="font-size: 0.85rem;">Shared Files</h4>
-          <a href="#" class="small text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">View All</a>
+          <a href="{% url 'files:list' %}" class="small text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.8rem;">View All</a>
         </div>
         
-        <div class="d-flex flex-column gap-2">
-          <!-- File 1: Python -->
-          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
-            <div class="chat-file-icon-box text-primary bg-blue-tint">
-              <i class="ri-file-code-line fs-5"></i>
+        <div class="d-flex flex-column gap-2" id="sideSharedFilesList">
+          {% for f in shared_files %}
+          <div class="d-flex align-items-center gap-2 p-2 border rounded-2" style="border-color: #edf2f7 !important;">
+            <div class="rounded d-flex align-items-center justify-content-center text-primary" style="width: 28px; height: 28px; background-color: #e0f2fe;">
+              <i class="ri-file-line fs-5"></i>
             </div>
-            <div>
-              <div class="small fw-semibold text-dark" style="font-size: 12px;">auth_module.py</div>
-              <div class="text-muted" style="font-size: 10px;">12.4 KB • 10:05 AM</div>
-            </div>
-          </div>
-
-          <!-- File 2: Figma -->
-          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
-            <div class="chat-file-icon-box text-danger bg-pink-tint">
-              <i class="ri-pantone-line fs-5"></i>
-            </div>
-            <div>
-              <div class="small fw-semibold text-dark" style="font-size: 12px;">dashboard_design.fig</div>
-              <div class="text-muted" style="font-size: 10px;">3.2 MB • 10:12 AM</div>
+            <div class="min-width-0">
+              <div class="small fw-semibold text-dark text-truncate" style="font-size: 12px; max-width: 140px;">{{ f.name }}</div>
+              <div class="text-muted" style="font-size: 10px;">{{ f.size }} • {{ f.time_str }}</div>
             </div>
           </div>
-
-          <!-- File 3: PDF -->
-          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
-            <div class="chat-file-icon-box text-danger" style="background-color: #fee2e2; color: #dc2626;">
-              <i class="ri-file-pdf-line fs-5"></i>
-            </div>
-            <div>
-              <div class="small fw-semibold text-dark" style="font-size: 12px;">api_documentation.pdf</div>
-              <div class="text-muted" style="font-size: 10px;">856 KB • Yesterday</div>
-            </div>
-          </div>
-
-          <!-- File 4: SQL -->
-          <div class="d-flex align-items-center gap-2 p-2 border rounded-2">
-            <div class="chat-file-icon-box text-info" style="background-color: #e0f2fe; color: #0284c7;">
-              <i class="ri-database-2-line fs-5"></i>
-            </div>
-            <div>
-              <div class="small fw-semibold text-dark" style="font-size: 12px;">database_schema.sql</div>
-              <div class="text-muted" style="font-size: 10px;">4.1 KB • 12 Oct 2026</div>
-            </div>
-          </div>
+          {% empty %}
+          <div class="text-muted py-2 small" style="font-size: 11px;">No files shared yet in this chat.</div>
+          {% endfor %}
         </div>
-
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- Modal 1: New Chat Modal -->
+<div class="modal fade" id="newChatModal" tabindex="-1" aria-labelledby="newChatModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow border-0" style="border-radius: 12px;">
+      <form method="POST" action="{% url 'messaging:create_conversation' %}">
+        {% csrf_token %}
+        <div class="modal-header border-bottom py-3 px-4" style="border-color: #edf2f7 !important;">
+          <h6 class="modal-title fw-bold text-dark mb-0" id="newChatModalLabel">
+            <i class="ri-chat-new-line text-primary me-1"></i> Start New Conversation
+          </h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">CONVERSATION TYPE</label>
+            <div class="d-flex gap-3">
+              <label class="d-flex align-items-center gap-2 small" style="cursor: pointer;">
+                <input type="radio" name="type" value="group" checked onchange="toggleConvoTypeInputs('group')"> Group Chat
+              </label>
+              <label class="d-flex align-items-center gap-2 small" style="cursor: pointer;">
+                <input type="radio" name="type" value="direct" onchange="toggleConvoTypeInputs('direct')"> Direct Message
+              </label>
+            </div>
+          </div>
+
+          <div id="groupInputsContainer">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">GROUP NAME *</label>
+              <input type="text" name="name" class="form-control form-control-sm" placeholder="e.g. Frontend Engineers, Sprint Planning" style="border-radius: 8px;">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">DESCRIPTION</label>
+              <textarea name="description" class="form-control form-control-sm" rows="2" placeholder="Optional topic or purpose..." style="border-radius: 8px;"></textarea>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">SELECT TEAM MEMBERS *</label>
+            <div class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
+              {% for u in all_users %}
+              <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor: pointer; font-size: 0.8rem;">
+                <input type="checkbox" name="members" value="{{ u.id }}" class="form-check-input">
+                <span class="fw-medium text-dark">{{ u.get_full_name|default:u.email }}</span>
+                <span class="text-muted ms-auto" style="font-size: 0.72rem;">{{ u.role.name|default:"Member" }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top py-2 px-4" style="border-color: #edf2f7 !important;">
+          <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Create Chat</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// Real-time Chat Architecture
+let activeConversationId = {{ active_convo.id|default:0 }};
+let lastMessageId = {{ last_message_id|default:0 }};
+let isPolling = false;
+let pollingInterval = null;
+
+// Soft Web Audio Chime generator (Zero external files needed)
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } catch(e) {}
+}
+
+// Scroll chat area to bottom
+function scrollToBottom(smooth = true) {
+  const container = document.getElementById('chatMessagesContainer');
+  if (container) {
+    if (smooth) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    } else {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+}
+
+// Render message HTML
+function renderMessageHtml(m) {
+  const isMine = m.is_mine;
+  let attHtml = '';
+  if (m.attachment) {
+    attHtml = `
+      <div class="d-flex align-items-center justify-content-between p-2 mt-2 border rounded bg-white text-dark" style="font-size: 11px;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="ri-file-line text-primary fs-5"></i>
+          <div>
+            <div class="fw-semibold text-truncate" style="max-width: 180px;">${m.attachment.name}</div>
+            <div class="text-muted" style="font-size: 10px;">${m.attachment.size}</div>
+          </div>
+        </div>
+        <a href="${m.attachment.url}" class="btn btn-sm btn-link text-primary p-0" download><i class="ri-download-2-line"></i></a>
+      </div>
+    `;
+  }
+
+  if (isMine) {
+    return `
+      <div class="d-flex justify-content-end align-items-end gap-2 my-1 msg-row" id="msg-${m.id}" data-id="${m.id}">
+        <div class="d-flex flex-column align-items-end">
+          <span class="text-muted mb-1" style="font-size: 10px;">${m.sent_at}</span>
+          <div class="p-3 text-white shadow-sm" style="background-color: #3b82f6; border-radius: 14px 14px 2px 14px; font-size: 0.85rem; max-width: 480px; word-break: break-word; line-height: 1.4;">
+            ${m.content.replace(/\n/g, '<br>')}
+            ${attHtml}
+            <span class="ms-2" style="font-size: 10px; opacity: 0.85;">✓✓</span>
+          </div>
+        </div>
+        ${m.sender_avatar ? 
+          `<img src="${m.sender_avatar}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">` :
+          `<div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 32px; height: 32px; font-size: 0.75rem;">${m.sender_initials}</div>`
+        }
+      </div>
+    `;
+  } else {
+    return `
+      <div class="d-flex gap-3 align-items-start msg-row" id="msg-${m.id}" data-id="${m.id}">
+        ${m.sender_avatar ? 
+          `<img src="${m.sender_avatar}" class="rounded-circle" width="34" height="34" style="object-fit: cover; flex-shrink: 0;">` :
+          `<div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold flex-shrink-0" style="width: 34px; height: 34px; font-size: 0.78rem;">${m.sender_initials}</div>`
+        }
+        <div class="flex-grow-1" style="max-width: 480px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="fw-bold small text-dark">${m.sender_name}</span>
+            <span class="text-muted" style="font-size: 10px;">${m.sent_at}</span>
+          </div>
+          <div class="p-3 border rounded-3 shadow-sm" style="background-color: #f8fafc; border-color: #edf2f7 !important; border-radius: 2px 14px 14px 14px; font-size: 0.85rem; color: #1e293b; line-height: 1.4; word-break: break-word;">
+            ${m.content.replace(/\n/g, '<br>')}
+            ${attHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Real-Time Poller
+function pollForNewMessages() {
+  if (!activeConversationId || isPolling) return;
+  isPolling = true;
+
+  fetch(`/messages/poll/${activeConversationId}/?after=${lastMessageId}`)
+    .then(res => res.json())
+    .then(data => {
+      isPolling = false;
+      if (data.success) {
+        if (data.messages && data.messages.length > 0) {
+          const container = document.getElementById('chatMessagesContainer');
+          const placeholder = document.getElementById('noMessagesPlaceholder');
+          if (placeholder) placeholder.remove();
+
+          let hasIncoming = false;
+          data.messages.forEach(m => {
+            // Check if message is already in DOM
+            if (!document.getElementById(`msg-${m.id}`)) {
+              const html = renderMessageHtml(m);
+              container.insertAdjacentHTML('beforeend', html);
+              if (!m.is_mine) hasIncoming = true;
+            }
+            lastMessageId = Math.max(lastMessageId, m.id);
+          });
+
+          scrollToBottom(true);
+          if (hasIncoming) playChime();
+
+          // Update conversation card preview in left sidebar
+          const lastMsg = data.messages[data.messages.length - 1];
+          const snippet = document.getElementById(`convoSnippet-${activeConversationId}`);
+          const timeEl = document.getElementById(`convoTime-${activeConversationId}`);
+          if (snippet) snippet.textContent = lastMsg.content;
+          if (timeEl) timeEl.textContent = lastMsg.sent_at;
+        }
+
+        // Real-time live sidebar update for all conversations
+        if (data.convo_updates && data.convo_updates.length > 0) {
+          data.convo_updates.forEach(cu => {
+            const badge = document.getElementById(`convoBadge-${cu.id}`);
+            const snippet = document.getElementById(`convoSnippet-${cu.id}`);
+            const timeEl = document.getElementById(`convoTime-${cu.id}`);
+            const card = document.getElementById(`convoItem-${cu.id}`);
+            if (badge) {
+              if (cu.unread_count > 0 && cu.id !== activeConversationId) {
+                badge.textContent = cu.unread_count;
+                badge.style.display = 'inline-block';
+              } else {
+                badge.style.display = 'none';
+              }
+            }
+            if (card) {
+              card.setAttribute('data-unread', (cu.id === activeConversationId) ? 0 : cu.unread_count);
+            }
+            if (snippet && cu.last_message) {
+              snippet.innerHTML = (cu.last_sender ? `<strong>${cu.last_sender}:</strong> ` : '') + cu.last_message;
+            }
+            if (timeEl && cu.time_str) {
+              timeEl.textContent = cu.time_str;
+            }
+          });
+        }
+
+        const tabUnread = document.getElementById('tabUnreadBadge');
+        if (tabUnread && typeof data.total_unread !== 'undefined') {
+          tabUnread.textContent = data.total_unread;
+          tabUnread.style.display = data.total_unread > 0 ? 'inline-block' : 'none';
+        }
+      }
+    })
+    .catch(err => {
+      isPolling = false;
+    });
+}
+
+// Send Message logic
+function sendMessage() {
+  const input = document.getElementById('chatTextInput');
+  const fileInput = document.getElementById('chatFileInput');
+  const content = (input.value || '').trim();
+  const file = fileInput.files[0];
+
+  if (!content && !file) return;
+
+  const formData = new FormData();
+  formData.append('content', content);
+  if (file) formData.append('attachment', file);
+
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Clear inputs immediately
+  input.value = '';
+  fileInput.value = '';
+  const pill = document.getElementById('attachmentPill');
+  if (pill) pill.style.display = 'none';
+
+  // Optimistic UI append
+  const tempId = 'temp-' + Date.now();
+  const tempMsgHtml = `
+    <div class="d-flex justify-content-end align-items-end gap-2 my-1 msg-row" id="${tempId}">
+      <div class="d-flex flex-column align-items-end">
+        <span class="text-muted mb-1" style="font-size: 10px;">Just now</span>
+        <div class="p-3 text-white shadow-sm" style="background-color: #3b82f6; border-radius: 14px 14px 2px 14px; font-size: 0.85rem; max-width: 480px; word-break: break-word; line-height: 1.4;">
+          ${content.replace(/\n/g, '<br>')}
+          ${file ? `<div class="small mt-1 text-white-50"><i class="ri-attachment-2"></i> ${file.name}</div>` : ''}
+          <span class="ms-2" style="font-size: 10px; opacity: 0.7;">✓</span>
+        </div>
+      </div>
+      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 32px; height: 32px; font-size: 0.75rem;">You</div>
+    </div>
+  `;
+  const container = document.getElementById('chatMessagesContainer');
+  const placeholder = document.getElementById('noMessagesPlaceholder');
+  if (placeholder) placeholder.remove();
+  container.insertAdjacentHTML('beforeend', tempMsgHtml);
+  scrollToBottom(true);
+
+  fetch(`/messages/send/${activeConversationId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrftoken },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    const tempEl = document.getElementById(tempId);
+    if (data.success) {
+      if (tempEl) {
+        tempEl.id = `msg-${data.id}`;
+        tempEl.dataset.id = data.id;
+        const check = tempEl.querySelector('span.ms-2');
+        if (check) check.textContent = '✓✓';
+      }
+      lastMessageId = Math.max(lastMessageId, data.id);
+
+      // Update snippet on left sidebar
+      const snippet = document.getElementById(`convoSnippet-${activeConversationId}`);
+      const timeEl = document.getElementById(`convoTime-${activeConversationId}`);
+      if (snippet) snippet.textContent = `You: ${data.content}`;
+      if (timeEl) timeEl.textContent = data.sent_at;
+    } else {
+      if (tempEl) tempEl.remove();
+      alert(data.error || 'Could not send message.');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    const tempEl = document.getElementById(tempId);
+    if (tempEl) tempEl.remove();
+  });
+}
+
+// Switch Conversation Asynchronously (Zero page reload)
+function switchConversation(convoId) {
+  if (activeConversationId === convoId) return;
+
+  // Highlight card
+  document.querySelectorAll('.convo-card-item').forEach(c => {
+    c.classList.remove('active-convo');
+    c.style.backgroundColor = '';
+    c.style.borderLeft = '';
+  });
+  const activeCard = document.getElementById(`convoItem-${convoId}`);
+  if (activeCard) {
+    activeCard.classList.add('active-convo');
+    activeCard.style.backgroundColor = '#fff7ed';
+    activeCard.style.borderLeft = '3px solid #ea580c';
+    // Clear badge
+    const badge = activeCard.querySelector('.badge');
+    if (badge) badge.style.display = 'none';
+  }
+
+  activeConversationId = convoId;
+  window.history.pushState(null, '', `/messages/?c=${convoId}`);
+
+  // Fetch conversation detail
+  fetch(`/messages/conversation/${convoId}/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const c = data.conversation;
+        // Update Header
+        const headerTitle = document.getElementById('headerTitle');
+        const headerSubtitle = document.getElementById('headerSubtitle');
+        const headerIcon = document.getElementById('headerIcon');
+        const headerIconBox = document.getElementById('headerIconContainer');
+
+        if (headerTitle) headerTitle.textContent = c.name;
+        if (headerSubtitle) headerSubtitle.textContent = `${c.members_count} members • ${c.description}`;
+        
+        const sideIconContainer = document.getElementById('sideIconContainer');
+        if (c.meta && c.meta.is_direct && c.meta.avatar) {
+          if (headerIconBox) headerIconBox.innerHTML = `<img src="${c.meta.avatar}" class="w-100 h-100" style="object-fit: cover;">`;
+          if (sideIconContainer) sideIconContainer.innerHTML = `<img src="${c.meta.avatar}" class="w-100 h-100" style="object-fit: cover;">`;
+        } else if (c.meta) {
+          if (headerIconBox) {
+            headerIconBox.innerHTML = `<i id="headerIcon" class="${c.meta.icon}"></i>`;
+            headerIconBox.style.backgroundColor = c.meta.bg_color;
+            headerIconBox.style.color = c.meta.icon_color;
+          }
+          if (sideIconContainer) {
+            sideIconContainer.innerHTML = `<i id="sideIcon" class="${c.meta.icon}"></i>`;
+            sideIconContainer.style.backgroundColor = c.meta.bg_color;
+            sideIconContainer.style.color = c.meta.icon_color;
+          }
+        }
+
+        // Update Right Sidebar
+        const sideConvoName = document.getElementById('sideConvoName');
+        const sideConvoDesc = document.getElementById('sideConvoDesc');
+        const sideMembersCount = document.getElementById('sideMembersCount');
+        const sideMembersHeading = document.getElementById('sideMembersHeading');
+        const sideMembersList = document.getElementById('sideMembersList');
+        const sideSharedFilesList = document.getElementById('sideSharedFilesList');
+
+        if (sideConvoName) sideConvoName.textContent = c.name;
+        if (sideConvoDesc) sideConvoDesc.textContent = c.description;
+        if (sideMembersCount) sideMembersCount.textContent = `${c.members_count} Members`;
+        if (sideMembersHeading) sideMembersHeading.textContent = `Members (${c.members_count})`;
+
+        if (sideMembersList && data.members) {
+          sideMembersList.innerHTML = data.members.map(m => `
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                ${m.avatar ? `<img src="${m.avatar}" class="rounded-circle" width="30" height="30" style="object-fit: cover;">` :
+                  `<div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 30px; height: 30px; font-size: 0.72rem;">${m.initials}</div>`}
+                <div>
+                  <div class="small fw-semibold text-dark" style="font-size: 12px;">${m.name}</div>
+                  <div class="${m.is_admin ? 'text-danger' : 'text-muted'} fw-semibold" style="font-size: 10px;">${m.is_admin ? 'Admin' : m.role}</div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <span class="small ${m.status === 'Online' ? 'text-success' : (m.status === 'Away' ? 'text-warning' : 'text-muted')} fw-semibold" style="font-size: 11px;">
+                  ${m.status} ${m.is_admin ? '👑' : ''}
+                </span>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        if (sideSharedFilesList && data.shared_files) {
+          if (data.shared_files.length > 0) {
+            sideSharedFilesList.innerHTML = data.shared_files.map(f => `
+              <div class="d-flex align-items-center gap-2 p-2 border rounded-2" style="border-color: #edf2f7 !important;">
+                <div class="rounded d-flex align-items-center justify-content-center text-primary" style="width: 28px; height: 28px; background-color: #e0f2fe;">
+                  <i class="ri-file-line fs-5"></i>
+                </div>
+                <div class="min-width-0">
+                  <div class="small fw-semibold text-dark text-truncate" style="font-size: 12px; max-width: 140px;">${f.name}</div>
+                  <div class="text-muted" style="font-size: 10px;">${f.size} • ${f.time_str}</div>
+                </div>
+              </div>
+            `).join('');
+          } else {
+            sideSharedFilesList.innerHTML = '<div class="text-muted py-2 small" style="font-size: 11px;">No files shared yet in this chat.</div>';
+          }
+        }
+
+        // Render Messages
+        const container = document.getElementById('chatMessagesContainer');
+        if (data.messages && data.messages.length > 0) {
+          container.innerHTML = data.messages.map(m => renderMessageHtml(m)).join('');
+          lastMessageId = data.last_id;
+        } else {
+          container.innerHTML = `
+            <div class="text-center py-5 text-muted my-auto" id="noMessagesPlaceholder">
+              <i class="ri-chat-smile-2-line fs-1 text-muted d-block mb-2"></i>
+              No messages yet in this conversation.<br>Say hello to start chatting!
+            </div>
+          `;
+          lastMessageId = 0;
+        }
+
+        scrollToBottom(false);
+      }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  scrollToBottom(false);
+
+  // Setup form submission
+  const form = document.getElementById('chatMessageForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      sendMessage();
+    });
+  }
+
+  // Conversation card click
+  document.querySelectorAll('.convo-card-item').forEach(item => {
+    item.addEventListener('click', function() {
+      const cid = parseInt(this.getAttribute('data-convo-id'));
+      switchConversation(cid);
+    });
+  });
+
+  // Attachment button
+  const btnTriggerFile = document.getElementById('btnTriggerFile');
+  const chatFileInput = document.getElementById('chatFileInput');
+  const attachmentPill = document.getElementById('attachmentPill');
+  const attachmentFileName = document.getElementById('attachmentFileName');
+  const btnRemoveAttachment = document.getElementById('btnRemoveAttachment');
+
+  if (btnTriggerFile && chatFileInput) {
+    btnTriggerFile.addEventListener('click', () => chatFileInput.click());
+    chatFileInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        if (attachmentPill && attachmentFileName) {
+          attachmentFileName.textContent = this.files[0].name;
+          attachmentPill.style.display = 'flex';
+        }
+      }
+    });
+  }
+
+  if (btnRemoveAttachment && chatFileInput && attachmentPill) {
+    btnRemoveAttachment.addEventListener('click', () => {
+      chatFileInput.value = '';
+      attachmentPill.style.display = 'none';
+    });
+  }
+
+  // Quick Emoji Button
+  const btnQuickEmoji = document.getElementById('btnQuickEmoji');
+  const chatTextInput = document.getElementById('chatTextInput');
+  const quickEmojis = ['👋', '🚀', '👍', '✅', '🎉', '🔥'];
+  let emojiIdx = 0;
+  if (btnQuickEmoji && chatTextInput) {
+    btnQuickEmoji.addEventListener('click', () => {
+      chatTextInput.value += quickEmojis[emojiIdx % quickEmojis.length];
+      emojiIdx++;
+      chatTextInput.focus();
+    });
+  }
+
+  // Search filter conversations
+  const convoSearchInput = document.getElementById('convoSearchInput');
+  if (convoSearchInput) {
+    convoSearchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      document.querySelectorAll('.convo-card-item').forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        card.style.display = name.includes(q) ? 'flex' : 'none';
+      });
+    });
+  }
+
+  // Filter tabs: All, Unread, Groups, Starred
+  document.querySelectorAll('.convo-tab-filter').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.convo-tab-filter').forEach(t => {
+        t.classList.remove('active');
+        t.style.borderBottom = '';
+        t.style.color = '#64748b';
+      });
+      this.classList.add('active');
+      this.style.borderBottom = '2px solid #ea580c';
+      this.style.color = '#ea580c';
+
+      const filter = this.getAttribute('data-filter');
+      document.querySelectorAll('.convo-card-item').forEach(card => {
+        const type = card.getAttribute('data-type');
+        const unread = parseInt(card.getAttribute('data-unread') || '0');
+        if (filter === 'all') {
+          card.style.display = 'flex';
+        } else if (filter === 'unread') {
+          card.style.display = (unread > 0) ? 'flex' : 'none';
+        } else if (filter === 'groups') {
+          card.style.display = (type === 'group') ? 'flex' : 'none';
+        } else if (filter === 'starred') {
+          card.style.display = (type === 'direct') ? 'flex' : 'none';
+        }
+      });
+    });
+  });
+
+  // Start Real-Time Polling Loop every 2.0 seconds
+  if (pollingInterval) clearInterval(pollingInterval);
+  pollingInterval = setInterval(pollForNewMessages, 2000);
+});
+
+function toggleConvoTypeInputs(type) {
+  const groupInputs = document.getElementById('groupInputsContainer');
+  if (groupInputs) {
+    groupInputs.style.display = (type === 'group') ? 'block' : 'none';
+  }
+}
+</script>
 {% endblock %}

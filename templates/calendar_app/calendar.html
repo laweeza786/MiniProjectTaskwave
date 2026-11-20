@@ -6,13 +6,13 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-4">
     <div>
       <h1 class="dash-title">Calendar</h1>
       <p class="dash-subtitle">View and manage all your tasks, deadlines, meetings, and important events.</p>
     </div>
     <div>
-      <button class="btn-new-entity" type="button">
+      <button class="btn text-white px-3 py-2 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#addEventModal" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> Add Event <i class="ri-arrow-down-s-line ms-1"></i>
       </button>
     </div>
@@ -22,182 +22,99 @@
   <div class="row g-4">
     <!-- Left: Calendar Area -->
     <div class="col-xl-9">
-      <div class="dash-card">
+      <div class="dash-card bg-white p-4 rounded-3 border shadow-sm" style="border-color: #edf2f7 !important;">
         <!-- Calendar Toolbar -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <!-- View Switcher -->
-          <div class="d-flex align-items-center gap-1 bg-light p-1 rounded-3 border">
-            <button class="cal-view-btn active" type="button">Month</button>
-            <button class="cal-view-btn" type="button">Week</button>
-            <button class="cal-view-btn" type="button">Day</button>
-            <button class="cal-view-btn" type="button">List</button>
+          <div class="d-flex align-items-center gap-1 bg-light p-1 rounded-3 border" id="viewSwitcherGroup">
+            <button class="cal-view-btn active" type="button" data-view="month">Month</button>
+            <button class="cal-view-btn" type="button" data-view="week">Week</button>
+            <button class="cal-view-btn" type="button" data-view="day">Day</button>
+            <button class="cal-view-btn" type="button" data-view="list">List</button>
           </div>
 
           <!-- Filters & Date Nav -->
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <div class="dash-select-pill">
-              <span>All Projects</span>
-              <i class="ri-arrow-down-s-line"></i>
+            <!-- Project Filter -->
+            <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Project">
+              <i class="ri-folder-line text-muted me-1"></i>
+              <select id="calProjectFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+                <option value="">All Projects</option>
+                {% for proj in projects %}
+                  <option value="{{ proj.id }}">{{ proj.name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="dash-select-pill">
-              <span>All Members</span>
-              <i class="ri-arrow-down-s-line"></i>
+
+            <!-- Member Filter -->
+            <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Member">
+              <i class="ri-user-line text-muted me-1"></i>
+              <select id="calMemberFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+                <option value="">All Members</option>
+                {% for m in members %}
+                  <option value="{{ m.id }}">{{ m.get_full_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="dash-select-pill">
-              <span>All Event Types</span>
-              <i class="ri-arrow-down-s-line"></i>
+
+            <!-- Event Type Filter -->
+            <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Event Type">
+              <select id="calEventTypeFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+                <option value="">All Event Types</option>
+                {% for key, val in event_types %}
+                  <option value="{{ key }}">{{ val }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <button class="dash-clear-btn border rounded px-2 py-1" type="button">Today</button>
+
+            <!-- Today & Arrows -->
+            <button class="dash-clear-btn border rounded px-3 py-1 bg-white text-dark fw-medium" type="button" id="btnCalToday" style="font-size: 0.82rem; height: 38px; border-color: #e2e8f0 !important;">Today</button>
             <div class="d-flex align-items-center gap-1">
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+              <button class="dash-page-btn" type="button" id="btnCalPrev" title="Previous"><i class="ri-arrow-left-s-line"></i></button>
+              <button class="dash-page-btn" type="button" id="btnCalNext" title="Next"><i class="ri-arrow-right-s-line"></i></button>
             </div>
           </div>
         </div>
 
         <!-- Month Title -->
-        <h2 class="fs-4 fw-bold text-dark mb-3">October 2026</h2>
+        <h2 class="fs-4 fw-bold text-dark mb-3" id="calCurrentTitle">October 2026</h2>
 
-        <!-- Monthly Grid -->
-        <div class="cal-month-table">
-          <div class="cal-month-head">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
+        <!-- 1. MONTH VIEW -->
+        <div id="calendarMonthView">
+          <div class="cal-month-table">
+            <div class="cal-month-head">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
+            <div class="cal-month-body" id="calMonthGrid">
+              <!-- Dynamically populated by JS -->
+            </div>
           </div>
-          <div class="cal-month-body">
-            <!-- Week 1 -->
-            <div class="cal-cell text-muted"><span class="cal-day-num">27</span></div>
-            <div class="cal-cell text-muted"><span class="cal-day-num">28</span></div>
-            <div class="cal-cell text-muted"><span class="cal-day-num">29</span></div>
-            <div class="cal-cell text-muted">
-              <span class="cal-day-num">30</span>
-              <div class="cal-event-pill event-blue">
-                <span class="event-dot"></span> Project Planning
-                <span class="small d-block">10:00 AM - 11:00 AM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">1</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">2</span>
-              <div class="cal-event-pill event-red">
-                <span class="event-dot"></span> UI Design Review
-                <span class="small d-block">11:00 AM - 12:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">3</span></div>
+        </div>
 
-            <!-- Week 2 -->
-            <div class="cal-cell"><span class="cal-day-num">4</span></div>
-            <div class="cal-cell"><span class="cal-day-num">5</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">6</span>
-              <div class="cal-event-pill event-green">
-                <span class="event-dot"></span> Database Setup
-                <span class="small d-block">9:00 AM - 11:00 AM</span>
-              </div>
-            </div>
-            <div class="cal-cell">
-              <span class="cal-day-num">7</span>
-              <div class="cal-event-pill event-amber">
-                <span class="event-dot"></span> Team Meeting
-                <span class="small d-block">2:00 PM - 3:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">8</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">9</span>
-              <div class="cal-event-pill event-blue">
-                <span class="event-dot"></span> API Development
-                <span class="small d-block">10:00 AM - 1:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">10</span></div>
+        <!-- 2. WEEK VIEW -->
+        <div id="calendarWeekView" class="d-none">
+          <div class="row g-2" id="calWeekGrid">
+            <!-- 7 day columns populated by JS -->
+          </div>
+        </div>
 
-            <!-- Week 3 -->
-            <div class="cal-cell"><span class="cal-day-num">11</span></div>
-            <div class="cal-cell"><span class="cal-day-num">12</span></div>
-            <div class="cal-cell"><span class="cal-day-num">13</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">14</span>
-              <div class="cal-event-pill event-red">
-                <span class="event-dot"></span> Client Review
-                <span class="small d-block">11:00 AM - 12:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell">
-              <span class="cal-day-num active-day">15</span>
-              <div class="cal-event-pill event-green">
-                <span class="event-dot"></span> Testing & QA
-                <span class="small d-block">9:00 AM - 12:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">16</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">17</span>
-              <div class="cal-event-pill event-purple">
-                <span class="event-dot"></span> Design Discussion
-                <span class="small d-block">2:00 PM - 3:00 PM</span>
-              </div>
-            </div>
+        <!-- 3. DAY VIEW -->
+        <div id="calendarDayView" class="d-none">
+          <div class="border rounded-3 p-3 bg-white" id="calDayTimeline">
+            <!-- Hour slots populated by JS -->
+          </div>
+        </div>
 
-            <!-- Week 4 -->
-            <div class="cal-cell"><span class="cal-day-num">18</span></div>
-            <div class="cal-cell"><span class="cal-day-num">19</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">20</span>
-              <div class="cal-event-pill event-blue">
-                <span class="event-dot"></span> Documentation
-                <span class="small d-block">10:00 AM - 1:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">21</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">22</span>
-              <div class="cal-event-pill event-amber">
-                <span class="event-dot"></span> Sprint Planning
-                <span class="small d-block">11:00 AM - 12:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell">
-              <span class="cal-day-num">23</span>
-              <div class="cal-event-pill event-red">
-                <span class="event-dot"></span> Security Testing
-                <span class="small d-block">9:00 AM - 11:00 AM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">24</span></div>
-
-            <!-- Week 5 -->
-            <div class="cal-cell"><span class="cal-day-num">25</span></div>
-            <div class="cal-cell"><span class="cal-day-num">26</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">27</span>
-              <div class="cal-event-pill event-green">
-                <span class="event-dot"></span> Final Review
-                <span class="small d-block">2:00 PM - 4:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell">
-              <span class="cal-day-num">28</span>
-              <div class="cal-event-pill event-blue">
-                <span class="event-dot"></span> Deployment
-                <span class="small d-block">10:00 AM - 12:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">29</span></div>
-            <div class="cal-cell">
-              <span class="cal-day-num">30</span>
-              <div class="cal-event-pill event-amber">
-                <span class="event-dot"></span> Project Presentation
-                <span class="small d-block">11:00 AM - 1:00 PM</span>
-              </div>
-            </div>
-            <div class="cal-cell"><span class="cal-day-num">31</span></div>
+        <!-- 4. LIST VIEW -->
+        <div id="calendarListView" class="d-none">
+          <div class="d-flex flex-column gap-3" id="calListContainer">
+            <!-- Agenda list populated by JS -->
           </div>
         </div>
       </div>
@@ -206,127 +123,781 @@
     <!-- Right: Sidebar Widgets -->
     <div class="col-xl-3">
       <!-- Mini Calendar -->
-      <div class="dash-card mb-4">
+      <div class="dash-card bg-white p-3 rounded-3 border shadow-sm mb-4" style="border-color: #edf2f7 !important;">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="fw-bold small text-dark"><i class="ri-arrow-left-s-line me-1"></i> October 2026</span>
-          <i class="ri-arrow-right-s-line text-muted"></i>
+          <span class="fw-bold small text-dark" id="miniCalTitle">October 2026</span>
+          <div class="d-flex gap-1">
+            <button type="button" class="btn btn-sm btn-link p-0 text-muted" id="btnMiniPrev"><i class="ri-arrow-left-s-line fs-6"></i></button>
+            <button type="button" class="btn btn-sm btn-link p-0 text-muted" id="btnMiniNext"><i class="ri-arrow-right-s-line fs-6"></i></button>
+          </div>
         </div>
-        <div class="mini-cal-grid">
-          <div class="mini-head">Su</div><div class="mini-head">Mo</div><div class="mini-head">Tu</div><div class="mini-head">We</div><div class="mini-head">Th</div><div class="mini-head">Fr</div><div class="mini-head">Sa</div>
-          <div class="text-muted">27</div><div class="text-muted">28</div><div class="text-muted">29</div><div class="text-muted">30</div><div>1</div><div>2</div><div>3</div>
-          <div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
-          <div>11</div><div>12</div><div>13</div><div>14</div><div class="mini-today">15</div><div>16</div><div>17</div>
-          <div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div>
-          <div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div>
+        <div class="mini-cal-grid" id="miniCalGrid">
+          <!-- Dynamically populated by JS -->
         </div>
       </div>
 
-      <!-- Event Types -->
-      <div class="dash-card mb-4">
-        <h3 class="dash-card-title mb-3">Event Types</h3>
-        <div class="d-flex flex-column gap-2">
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #ef4444;"> Task Deadline
+      <!-- Event Types Filter Checkboxes -->
+      <div class="dash-card bg-white p-3 rounded-3 border shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <h3 class="fw-bold text-dark mb-3" style="font-size: 0.92rem;">Event Types</h3>
+        <div class="d-flex flex-column gap-2" id="eventTypesCheckboxes">
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="task_deadline" checked class="form-check-input cal-type-cb" style="accent-color: #ef4444;"> Task Deadline
           </label>
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #3b82f6;"> Meeting
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="meeting" checked class="form-check-input cal-type-cb" style="accent-color: #3b82f6;"> Meeting
           </label>
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #10b981;"> Project Milestone
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="project_milestone" checked class="form-check-input cal-type-cb" style="accent-color: #10b981;"> Project Milestone
           </label>
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #8b5cf6;"> Review
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="review" checked class="form-check-input cal-type-cb" style="accent-color: #8b5cf6;"> Review
           </label>
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #f59e0b;"> Training
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="training" checked class="form-check-input cal-type-cb" style="accent-color: #f59e0b;"> Training
           </label>
-          <label class="d-flex align-items-center gap-2 small text-dark">
-            <input type="checkbox" checked class="form-check-input" style="accent-color: #64748b;"> Other
+          <label class="d-flex align-items-center gap-2 small text-dark" style="cursor: pointer;">
+            <input type="checkbox" value="other" checked class="form-check-input cal-type-cb" style="accent-color: #64748b;"> Other
           </label>
         </div>
       </div>
 
       <!-- Upcoming Events -->
-      <div class="dash-card">
-        <div class="dash-card-header">
-          <h3 class="dash-card-title">Upcoming Events</h3>
-          <a href="#" class="dash-view-all">View All</a>
+      <div class="dash-card bg-white p-3 rounded-3 border shadow-sm" style="border-color: #edf2f7 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="fw-bold text-dark mb-0" style="font-size: 0.92rem;">Upcoming Events</h3>
+          <button type="button" class="btn btn-sm btn-link text-decoration-none fw-semibold p-0" id="btnViewAllUpcoming" style="color: #ea580c; font-size: 0.78rem;">View All</button>
         </div>
-        <div class="d-flex flex-column gap-3">
-          <div class="d-flex gap-3 align-items-start">
-            <div class="date-badge-box">
-              <span class="fs-5 fw-bold text-dark">15</span>
-              <span class="small text-muted" style="font-size: 10px;">OCT</span>
+        <div class="d-flex flex-column gap-3" id="upcomingEventsList">
+          {% for ev in upcoming_events %}
+          <div class="d-flex gap-3 align-items-start upcoming-item cursor-pointer" onclick="openEventDetailModal({{ ev.id }})" style="cursor: pointer;">
+            <div class="date-badge-box text-center p-2 rounded-2 border" style="background-color: #f8fafc; min-width: 44px;">
+              <span class="fs-6 fw-bold text-dark d-block">{{ ev.start_datetime|date:'d' }}</span>
+              <span class="small text-muted text-uppercase" style="font-size: 9px;">{{ ev.start_datetime|date:'M' }}</span>
             </div>
-            <div class="flex-grow-1">
-              <div class="small fw-semibold text-dark"><span class="event-dot dot-green me-1"></span>Testing & QA</div>
-              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>9:00 AM - 12:00 PM</div>
-              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Development Lab</div>
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="small fw-semibold text-dark text-truncate">
+                <span class="event-dot me-1" style="width: 6px; height: 6px; border-radius: 50%; display: inline-block; background-color: {{ ev.get_color }};"></span>{{ ev.title }}
+              </div>
+              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>{{ ev.start_datetime|date:'g:i A' }}{% if ev.end_datetime %} - {{ ev.end_datetime|date:'g:i A' }}{% endif %}</div>
+              <div class="small text-muted text-truncate mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>{{ ev.location|default:'Main Office' }}</div>
               <div class="d-flex align-items-center mt-1">
-                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
-                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+2</span>
+                {% for a in ev.attendees.all|slice:':3' %}
+                  <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light border text-secondary fw-semibold" style="width: 18px; height: 18px; font-size: 8px; margin-left: {% if forloop.first %}0{% else %}-4px{% endif %};">
+                    {{ a.first_name|slice:':1' }}{{ a.last_name|slice:':1' }}
+                  </span>
+                {% endfor %}
+                {% if ev.attendees.count > 3 %}
+                  <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -4px; font-size: 0.6rem;">+{{ ev.attendees.count|add:'-3' }}</span>
+                {% endif %}
               </div>
             </div>
           </div>
-
-          <div class="d-flex gap-3 align-items-start">
-            <div class="date-badge-box">
-              <span class="fs-5 fw-bold text-dark">17</span>
-              <span class="small text-muted" style="font-size: 10px;">OCT</span>
-            </div>
-            <div class="flex-grow-1">
-              <div class="small fw-semibold text-dark"><span class="event-dot dot-purple me-1"></span>Design Discussion</div>
-              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>2:00 PM - 3:00 PM</div>
-              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Meeting Room</div>
-              <div class="d-flex align-items-center mt-1">
-                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
-                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <img src="{% static 'img/avatars/sahil_khan.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+3</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex gap-3 align-items-start">
-            <div class="date-badge-box">
-              <span class="fs-5 fw-bold text-dark">20</span>
-              <span class="small text-muted" style="font-size: 10px;">OCT</span>
-            </div>
-            <div class="flex-grow-1">
-              <div class="small fw-semibold text-dark"><span class="event-dot dot-blue me-1"></span>Documentation</div>
-              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>10:00 AM - 1:00 PM</div>
-              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>Online Meet</div>
-              <div class="d-flex align-items-center mt-1">
-                <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
-                <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+1</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex gap-3 align-items-start">
-            <div class="date-badge-box">
-              <span class="fs-5 fw-bold text-dark">23</span>
-              <span class="small text-muted" style="font-size: 10px;">OCT</span>
-            </div>
-            <div class="flex-grow-1">
-              <div class="small fw-semibold text-dark"><span class="event-dot dot-red me-1"></span>Security Testing</div>
-              <div class="small text-muted" style="font-size: 11px;"><i class="ri-time-line me-1"></i>9:00 AM - 11:00 AM</div>
-              <div class="small text-muted mb-1" style="font-size: 11px;"><i class="ri-map-pin-line me-1"></i>IT Lab</div>
-              <div class="d-flex align-items-center mt-1">
-                <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover;">
-                <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle border border-white" width="18" height="18" style="object-fit: cover; margin-left: -5px;">
-                <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 18px; height: 18px; margin-left: -5px; font-size: 0.6rem;">+2</span>
-              </div>
-            </div>
-          </div>
+          {% empty %}
+          <div class="text-center py-3 text-muted small">No upcoming events scheduled</div>
+          {% endfor %}
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ================= ADD EVENT MODAL ================= -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <form id="addEventForm">
+        {% csrf_token %}
+        <div class="modal-header border-bottom pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fff7ed; color: #ea580c;">
+              <i class="ri-calendar-event-line"></i>
+            </div>
+            <h5 class="modal-title fw-bold text-dark fs-6" id="addEventModalLabel">Add New Event</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+          <div id="addEventAlert" class="alert alert-danger d-none py-2 px-3 small" role="alert"></div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Event Title *</label>
+            <input type="text" name="title" class="form-control form-control-sm" placeholder="e.g. Sprint Backlog Planning" required style="border-radius: 6px;">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Event Type *</label>
+              <select name="event_type" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="meeting">Meeting</option>
+                <option value="task_deadline">Task Deadline</option>
+                <option value="project_milestone">Project Milestone</option>
+                <option value="review">Review</option>
+                <option value="training">Training</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Project</label>
+              <select name="project" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="">General (No Project)</option>
+                {% for proj in projects %}
+                  <option value="{{ proj.id }}">{{ proj.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Start Date & Time *</label>
+              <input type="datetime-local" name="start_datetime" class="form-control form-control-sm" required style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">End Date & Time</label>
+              <input type="datetime-local" name="end_datetime" class="form-control form-control-sm" style="border-radius: 6px;">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Location / Meeting Link</label>
+            <input type="text" name="location" class="form-control form-control-sm" placeholder="e.g. Conference Room A or Zoom link" style="border-radius: 6px;">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Description</label>
+            <textarea name="description" class="form-control form-control-sm" rows="2" placeholder="Key agenda items..." style="border-radius: 6px;"></textarea>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label text-dark fw-medium small mb-1">Attendees</label>
+            <div class="border rounded p-2 overflow-auto" style="max-height: 120px;">
+              {% for m in members %}
+              <label class="d-flex align-items-center gap-2 small text-dark mb-1" style="cursor: pointer;">
+                <input type="checkbox" name="attendees" value="{{ m.id }}" class="form-check-input" {% if forloop.counter <= 2 %}checked{% endif %}>
+                <span>{{ m.get_full_name }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-top p-3 bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Cancel</button>
+          <button type="submit" id="btnSaveEvent" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EVENT DETAIL MODAL ================= -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <div class="modal-header border-bottom pb-3">
+        <div class="d-flex align-items-center gap-2">
+          <span id="detailColorDot" style="width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
+          <h5 class="modal-title fw-bold text-dark fs-6" id="detailTitle">Event Title</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="badge" id="detailTypeBadge" style="font-size: 0.75rem; padding: 4px 8px;">Meeting</span>
+          <span class="badge bg-light text-secondary border" id="detailProject">General</span>
+        </div>
+
+        <div class="mb-3 d-flex align-items-center gap-2 text-dark small">
+          <i class="ri-time-line text-muted fs-5"></i>
+          <span id="detailTime">Time</span>
+        </div>
+
+        <div class="mb-3 d-flex align-items-center gap-2 text-dark small" id="detailLocationRow">
+          <i class="ri-map-pin-line text-muted fs-5"></i>
+          <span id="detailLocation">Location</span>
+        </div>
+
+        <div class="mb-3" id="detailDescRow">
+          <div class="fw-semibold text-dark small mb-1">Description</div>
+          <p class="text-secondary small mb-0" id="detailDescription"></p>
+        </div>
+
+        <div id="detailAttendeesRow">
+          <div class="fw-semibold text-dark small mb-1">Attendees</div>
+          <div class="d-flex flex-wrap gap-1" id="detailAttendeesList"></div>
+        </div>
+      </div>
+      <div class="modal-footer border-top p-3 bg-light d-flex justify-content-between">
+        <button type="button" class="btn btn-sm btn-outline-danger" id="btnDeleteEvent" style="border-radius: 6px;"><i class="ri-delete-bin-line me-1"></i>Delete Event</button>
+        <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let currentDate = new Date(2026, 9, 15); // October 15, 2026 default matching mock
+  let currentView = 'month'; // 'month' | 'week' | 'day' | 'list'
+  let eventsList = [];
+  let activeEventId = null;
+
+  // UI Elements
+  const calTitle = document.getElementById('calCurrentTitle');
+  const miniCalTitle = document.getElementById('miniCalTitle');
+  const monthGrid = document.getElementById('calMonthGrid');
+  const weekGrid = document.getElementById('calWeekGrid');
+  const dayTimeline = document.getElementById('calDayTimeline');
+  const listContainer = document.getElementById('calListContainer');
+  const miniCalGrid = document.getElementById('miniCalGrid');
+
+  const monthView = document.getElementById('calendarMonthView');
+  const weekView = document.getElementById('calendarWeekView');
+  const dayView = document.getElementById('calendarDayView');
+  const listView = document.getElementById('calendarListView');
+
+  // Filters
+  const projFilter = document.getElementById('calProjectFilter');
+  const memberFilter = document.getElementById('calMemberFilter');
+  const typeFilter = document.getElementById('calEventTypeFilter');
+  const typeCheckboxes = document.querySelectorAll('.cal-type-cb');
+
+  // Month Names
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  // Fetch events from server
+  async function loadEvents() {
+    try {
+      const p = projFilter.value;
+      const m = memberFilter.value;
+      const t = typeFilter.value;
+      const url = `/calendar/events/json/?project=${encodeURIComponent(p)}&member=${encodeURIComponent(m)}&event_type=${encodeURIComponent(t)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        eventsList = data.events;
+        renderCalendar();
+      }
+    } catch (err) {
+      console.error('Failed to load events:', err);
+    }
+  }
+
+  // Get active checked types from sidebar
+  function getSelectedTypes() {
+    const types = [];
+    typeCheckboxes.forEach(cb => {
+      if (cb.checked) types.push(cb.value);
+    });
+    return types;
+  }
+
+  // Filter events in memory
+  function getFilteredEvents() {
+    const selectedTypes = getSelectedTypes();
+    const projId = projFilter.value;
+    const memberId = memberFilter.value;
+
+    return eventsList.filter(ev => {
+      if (selectedTypes.length > 0 && !selectedTypes.includes(ev.event_type)) return false;
+      if (projId && String(ev.project_id) !== String(projId)) return false;
+      if (memberId) {
+        const hasMember = (ev.attendees || []).some(a => String(a.id) === String(memberId));
+        if (!hasMember) return false;
+      }
+      return true;
+    });
+  }
+
+  // 1. Render Calendar Main Function
+  function renderCalendar() {
+    updateTitles();
+    renderMiniCalendar();
+
+    const filtered = getFilteredEvents();
+
+    if (currentView === 'month') {
+      renderMonthView(filtered);
+    } else if (currentView === 'week') {
+      renderWeekView(filtered);
+    } else if (currentView === 'day') {
+      renderDayView(filtered);
+    } else if (currentView === 'list') {
+      renderListView(filtered);
+    }
+  }
+
+  function updateTitles() {
+    const y = currentDate.getFullYear();
+    const m = currentDate.getMonth();
+
+    if (currentView === 'month' || currentView === 'list') {
+      calTitle.textContent = `${monthNames[m]} ${y}`;
+    } else if (currentView === 'week') {
+      const startOfWeek = new Date(currentDate);
+      startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      calTitle.textContent = `${startOfWeek.getDate()} ${monthNames[startOfWeek.getMonth()].slice(0,3)} - ${endOfWeek.getDate()} ${monthNames[endOfWeek.getMonth()].slice(0,3)} ${y}`;
+    } else if (currentView === 'day') {
+      calTitle.textContent = `${dayNames[currentDate.getDay()]}, ${currentDate.getDate()} ${monthNames[m]} ${y}`;
+    }
+
+    miniCalTitle.textContent = `${monthNames[m]} ${y}`;
+  }
+
+  // View 1: Month View
+  function renderMonthView(events) {
+    monthGrid.innerHTML = '';
+    const y = currentDate.getFullYear();
+    const m = currentDate.getMonth();
+
+    const firstDayIndex = new Date(y, m, 1).getDay(); // 0 (Sun) - 6 (Sat)
+    const totalDays = new Date(y, m + 1, 0).getDate();
+    const prevMonthDays = new Date(y, m, 0).getDate();
+
+    // Previous month filler days
+    for (let i = firstDayIndex - 1; i >= 0; i--) {
+      const dayNum = prevMonthDays - i;
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell text-muted';
+      cell.innerHTML = `<span class="cal-day-num">${dayNum}</span>`;
+      monthGrid.appendChild(cell);
+    }
+
+    // Current month days
+    for (let day = 1; day <= totalDays; day++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      cell.style.cursor = 'pointer';
+
+      const isToday = (day === currentDate.getDate());
+      const dayStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+      cell.innerHTML = `<span class="cal-day-num ${isToday ? 'active-day' : ''}">${day}</span>`;
+
+      // Filter events on this day
+      const dayEvents = events.filter(e => e.start_date === dayStr);
+      dayEvents.forEach(ev => {
+        const pill = document.createElement('div');
+        pill.className = 'cal-event-pill shadow-xs';
+        pill.style.backgroundColor = getEventBg(ev.event_type);
+        pill.style.color = getEventTextCol(ev.event_type);
+        pill.style.borderLeft = `3px solid ${ev.color}`;
+        pill.innerHTML = `
+          <div class="fw-semibold text-truncate"><span class="event-dot" style="background-color: ${ev.color};"></span> ${ev.title}</div>
+          <span class="small d-block opacity-75">${ev.start_time}${ev.end_time ? ' - ' + ev.end_time : ''}</span>
+        `;
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEventDetailModal(ev.id);
+        });
+        cell.appendChild(pill);
+      });
+
+      // Quick add on cell click
+      cell.addEventListener('click', () => {
+        openAddEventModalForDate(dayStr);
+      });
+
+      monthGrid.appendChild(cell);
+    }
+
+    // Next month filler cells to complete 35 or 42 grid
+    const totalRendered = firstDayIndex + totalDays;
+    const remaining = (totalRendered % 7 === 0) ? 0 : 7 - (totalRendered % 7);
+    for (let i = 1; i <= remaining; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell text-muted';
+      cell.innerHTML = `<span class="cal-day-num">${i}</span>`;
+      monthGrid.appendChild(cell);
+    }
+  }
+
+  // View 2: Week View
+  function renderWeekView(events) {
+    weekGrid.innerHTML = '';
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+
+      const isToday = (d.getDate() === currentDate.getDate() && d.getMonth() === currentDate.getMonth());
+      const dayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const dayEvents = events.filter(e => e.start_date === dayStr);
+
+      const col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = `
+        <div class="border rounded-3 p-2 bg-light h-100" style="min-height: 480px;">
+          <div class="text-center pb-2 mb-2 border-bottom">
+            <div class="small text-muted fw-semibold">${dayNames[i].slice(0, 3)}</div>
+            <div class="fw-bold ${isToday ? 'badge bg-warning text-dark px-2 py-1 rounded-circle' : 'fs-5 text-dark'}">${d.getDate()}</div>
+          </div>
+          <div class="d-flex flex-column gap-2" id="weekDay-${i}"></div>
+        </div>
+      `;
+
+      const dayContainer = col.querySelector(`#weekDay-${i}`);
+      dayEvents.forEach(ev => {
+        const item = document.createElement('div');
+        item.className = 'cal-event-pill p-2 rounded shadow-xs';
+        item.style.backgroundColor = getEventBg(ev.event_type);
+        item.style.color = getEventTextCol(ev.event_type);
+        item.style.borderLeft = `3px solid ${ev.color}`;
+        item.style.cursor = 'pointer';
+        item.innerHTML = `
+          <div class="fw-bold text-truncate" style="font-size: 0.78rem;">${ev.title}</div>
+          <div class="small opacity-75">${ev.start_time}</div>
+          <div class="small text-muted text-truncate mt-1">${ev.location || 'Meeting'}</div>
+        `;
+        item.addEventListener('click', () => openEventDetailModal(ev.id));
+        dayContainer.appendChild(item);
+      });
+
+      weekGrid.appendChild(col);
+    }
+  }
+
+  // View 3: Day View
+  function renderDayView(events) {
+    dayTimeline.innerHTML = '';
+    const y = currentDate.getFullYear();
+    const m = currentDate.getMonth();
+    const d = currentDate.getDate();
+    const dayStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+    const dayEvents = events.filter(e => e.start_date === dayStr);
+
+    const hours = [
+      '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+      '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM'
+    ];
+
+    hours.forEach(hour => {
+      const row = document.createElement('div');
+      row.className = 'd-flex border-bottom py-3 align-items-start';
+      row.innerHTML = `
+        <div class="text-muted small fw-medium" style="width: 80px; flex-shrink: 0;">${hour}</div>
+        <div class="flex-grow-1 ps-3 hour-slot d-flex flex-column gap-2"></div>
+      `;
+
+      const slot = row.querySelector('.hour-slot');
+      dayEvents.forEach(ev => {
+        if (ev.start_time && ev.start_time.startsWith(hour.slice(0, 2))) {
+          const card = document.createElement('div');
+          card.className = 'p-3 rounded-3 border-start border-4 shadow-sm';
+          card.style.backgroundColor = getEventBg(ev.event_type);
+          card.style.borderLeftColor = `${ev.color} !important`;
+          card.style.cursor = 'pointer';
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-dark fs-6">${ev.title}</span>
+              <span class="badge" style="background-color: ${ev.color}; color: #fff;">${ev.event_type_display}</span>
+            </div>
+            <div class="small text-muted mt-1"><i class="ri-time-line me-1"></i>${ev.start_time} - ${ev.end_time || 'Done'} | <i class="ri-map-pin-line me-1"></i>${ev.location || 'Office'}</div>
+            <p class="small text-secondary mb-0 mt-2">${ev.description || ''}</p>
+          `;
+          card.addEventListener('click', () => openEventDetailModal(ev.id));
+          slot.appendChild(card);
+        }
+      });
+
+      dayTimeline.appendChild(row);
+    });
+  }
+
+  // View 4: List View
+  function renderListView(events) {
+    listContainer.innerHTML = '';
+    if (events.length === 0) {
+      listContainer.innerHTML = '<div class="text-center py-5 text-muted">No scheduled events found for this filter.</div>';
+      return;
+    }
+
+    // Sort by date
+    const sorted = [...events].sort((a, b) => new Date(a.start) - new Date(b.start));
+
+    sorted.forEach(ev => {
+      const dt = new Date(ev.start);
+      const card = document.createElement('div');
+      card.className = 'd-flex align-items-center justify-content-between p-3 border rounded-3 bg-white shadow-xs';
+      card.style.cursor = 'pointer';
+      card.innerHTML = `
+        <div class="d-flex align-items-center gap-3">
+          <div class="text-center p-2 rounded-2 border bg-light" style="min-width: 50px;">
+            <span class="fs-5 fw-bold text-dark d-block">${dt.getDate()}</span>
+            <span class="small text-muted text-uppercase" style="font-size: 10px;">${monthNames[dt.getMonth()].slice(0, 3)}</span>
+          </div>
+          <div>
+            <div class="fw-bold text-dark fs-6 mb-1">${ev.title}</div>
+            <div class="small text-muted d-flex align-items-center gap-3 flex-wrap">
+              <span><i class="ri-time-line me-1 text-primary"></i>${ev.start_time} ${ev.end_time ? '- ' + ev.end_time : ''}</span>
+              <span><i class="ri-map-pin-line me-1 text-warning"></i>${ev.location || 'Online'}</span>
+              <span><i class="ri-folder-line me-1 text-info"></i>${ev.project}</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="badge" style="background-color: ${getEventBg(ev.event_type)}; color: ${getEventTextCol(ev.event_type)}; font-size: 0.78rem;">${ev.event_type_display}</span>
+          <i class="ri-arrow-right-s-line fs-5 text-muted"></i>
+        </div>
+      `;
+      card.addEventListener('click', () => openEventDetailModal(ev.id));
+      listContainer.appendChild(card);
+    });
+  }
+
+  // Mini Calendar Widget
+  function renderMiniCalendar() {
+    miniCalGrid.innerHTML = '';
+    const y = currentDate.getFullYear();
+    const m = currentDate.getMonth();
+
+    const heads = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    heads.forEach(h => {
+      const el = document.createElement('div');
+      el.className = 'mini-head';
+      el.textContent = h;
+      miniCalGrid.appendChild(el);
+    });
+
+    const firstDayIndex = new Date(y, m, 1).getDay();
+    const totalDays = new Date(y, m + 1, 0).getDate();
+    const prevDays = new Date(y, m, 0).getDate();
+
+    for (let i = firstDayIndex - 1; i >= 0; i--) {
+      const el = document.createElement('div');
+      el.className = 'text-muted';
+      el.textContent = prevDays - i;
+      miniCalGrid.appendChild(el);
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+      const el = document.createElement('div');
+      const isSelected = (d === currentDate.getDate());
+      if (isSelected) {
+        el.className = 'mini-today';
+      }
+      el.textContent = d;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => {
+        currentDate.setDate(d);
+        renderCalendar();
+      });
+      miniCalGrid.appendChild(el);
+    }
+  }
+
+  // Event Colors Helper
+  function getEventBg(type) {
+    const map = {
+      'meeting': '#eff6ff',
+      'task_deadline': '#fef2f2',
+      'project_milestone': '#f0fdf4',
+      'review': '#faf5ff',
+      'training': '#fffbeb',
+      'other': '#f8fafc'
+    };
+    return map[type] || '#f8fafc';
+  }
+
+  function getEventTextCol(type) {
+    const map = {
+      'meeting': '#1e40af',
+      'task_deadline': '#991b1b',
+      'project_milestone': '#166534',
+      'review': '#6b21a8',
+      'training': '#92400e',
+      'other': '#334155'
+    };
+    return map[type] || '#334155';
+  }
+
+  // 2. View Switcher Tabs Listener
+  document.querySelectorAll('.cal-view-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentView = this.dataset.view;
+
+      // Toggle views visibility
+      monthView.classList.toggle('d-none', currentView !== 'month');
+      weekView.classList.toggle('d-none', currentView !== 'week');
+      dayView.classList.toggle('d-none', currentView !== 'day');
+      listView.classList.toggle('d-none', currentView !== 'list');
+
+      renderCalendar();
+    });
+  });
+
+  // 3. Navigation Controls (<, >, Today)
+  document.getElementById('btnCalPrev').addEventListener('click', function() {
+    if (currentView === 'month' || currentView === 'list') {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+    } else if (currentView === 'week') {
+      currentDate.setDate(currentDate.getDate() - 7);
+    } else if (currentView === 'day') {
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+    renderCalendar();
+  });
+
+  document.getElementById('btnCalNext').addEventListener('click', function() {
+    if (currentView === 'month' || currentView === 'list') {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    } else if (currentView === 'week') {
+      currentDate.setDate(currentDate.getDate() + 7);
+    } else if (currentView === 'day') {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    renderCalendar();
+  });
+
+  document.getElementById('btnCalToday').addEventListener('click', function() {
+    currentDate = new Date(); // Jump to today
+    renderCalendar();
+  });
+
+  // Mini Calendar Navigation
+  document.getElementById('btnMiniPrev').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById('btnMiniNext').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  // 4. Filters Change Listeners
+  [projFilter, memberFilter, typeFilter].forEach(el => {
+    el.addEventListener('change', renderCalendar);
+  });
+
+  typeCheckboxes.forEach(cb => {
+    cb.addEventListener('change', renderCalendar);
+  });
+
+  // View All Upcoming click
+  document.getElementById('btnViewAllUpcoming')?.addEventListener('click', function() {
+    document.querySelector('.cal-view-btn[data-view="list"]').click();
+  });
+
+  // 5. Add Event Form Handling
+  const addEventForm = document.getElementById('addEventForm');
+  const addEventModal = new bootstrap.Modal(document.getElementById('addEventModal'));
+  const addEventAlert = document.getElementById('addEventAlert');
+
+  addEventForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    addEventAlert.classList.add('d-none');
+
+    const formData = new FormData(addEventForm);
+
+    try {
+      const res = await fetch('/calendar/events/add/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        addEventModal.hide();
+        addEventForm.reset();
+        await loadEvents();
+      } else {
+        addEventAlert.textContent = data.error || 'Failed to save event.';
+        addEventAlert.classList.remove('d-none');
+      }
+    } catch (err) {
+      addEventAlert.textContent = 'Server error occurred.';
+      addEventAlert.classList.remove('d-none');
+    }
+  });
+
+  function openAddEventModalForDate(dateStr) {
+    const startInput = addEventForm.querySelector('input[name="start_datetime"]');
+    if (startInput) {
+      startInput.value = `${dateStr}T10:00`;
+    }
+    addEventModal.show();
+  }
+
+  // 6. Event Detail Modal Handling
+  const eventDetailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+
+  window.openEventDetailModal = function(eventId) {
+    const ev = eventsList.find(e => e.id === eventId);
+    if (!ev) return;
+
+    activeEventId = eventId;
+    document.getElementById('detailTitle').textContent = ev.title;
+    document.getElementById('detailColorDot').style.backgroundColor = ev.color;
+    document.getElementById('detailTypeBadge').textContent = ev.event_type_display;
+    document.getElementById('detailTypeBadge').style.backgroundColor = ev.color;
+    document.getElementById('detailTypeBadge').style.color = '#fff';
+    document.getElementById('detailProject').textContent = ev.project || 'General';
+    document.getElementById('detailTime').textContent = `${ev.start_date} | ${ev.start_time} ${ev.end_time ? ' - ' + ev.end_time : ''}`;
+    document.getElementById('detailLocation').textContent = ev.location || 'Online';
+    document.getElementById('detailDescription').textContent = ev.description || 'No description provided.';
+
+    const attendeesDiv = document.getElementById('detailAttendeesList');
+    attendeesDiv.innerHTML = '';
+    (ev.attendees || []).forEach(a => {
+      const span = document.createElement('span');
+      span.className = 'badge bg-light text-dark border px-2 py-1';
+      span.textContent = a.name;
+      attendeesDiv.appendChild(span);
+    });
+
+    eventDetailModal.show();
+  };
+
+  // Delete Event
+  document.getElementById('btnDeleteEvent').addEventListener('click', async function() {
+    if (!activeEventId) return;
+    if (!confirm('Are you sure you want to delete this event?')) return;
+
+    try {
+      const res = await fetch(`/calendar/events/${activeEventId}/delete/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        eventDetailModal.hide();
+        await loadEvents();
+      }
+    } catch (err) {
+      alert('Failed to delete event');
+    }
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Initial Load
+  loadEvents();
+});
+</script>
 {% endblock %}

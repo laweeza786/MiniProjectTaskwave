@@ -8,8 +8,8 @@
   <!-- Top Greeting & Date Header -->
   <div class="dash-header-row">
     <div>
-      <h1 class="dash-title">Dashboard</h1>
-      <p class="dash-subtitle">Welcome back, Admin! Here's what's happening today.</p>
+      <h1 class="dash-title">{% if is_admin_or_pm %}Dashboard{% else %}My Dashboard{% endif %}</h1>
+      <p class="dash-subtitle">Welcome back, {{ request.user.first_name|default:"User" }}! Here's what's happening today.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
       <div class="dash-date-pill">
@@ -28,11 +28,15 @@
           <i class="ri-file-text-line"></i>
         </div>
         <div class="dash-kpi-info">
-          <span class="dash-kpi-label">Total Tasks</span>
+          <span class="dash-kpi-label">{% if is_admin_or_pm %}Total Tasks{% else %}My Tasks{% endif %}</span>
           <span class="dash-kpi-value">{{ total_tasks }}</span>
           <div class="dash-kpi-trend">
+            {% if is_admin_or_pm %}
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
             <span class="trend-vs">vs last month</span>
+            {% else %}
+            <span class="trend-vs">Assigned to you</span>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -51,8 +55,12 @@
           <span class="dash-kpi-label">In Progress</span>
           <span class="dash-kpi-value">{{ in_progress_tasks }}</span>
           <div class="dash-kpi-trend">
+            {% if is_admin_or_pm %}
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
             <span class="trend-vs">vs last month</span>
+            {% else %}
+            <span class="trend-vs">Active now</span>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -71,8 +79,13 @@
           <span class="dash-kpi-label">Completed</span>
           <span class="dash-kpi-value">{{ completed_tasks }}</span>
           <div class="dash-kpi-trend">
+            {% if is_admin_or_pm %}
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
             <span class="trend-vs">vs last month</span>
+            {% else %}
+            <span class="trend-up">{{ completed_percent }}%</span>
+            <span class="trend-vs">completion rate</span>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -91,8 +104,13 @@
           <span class="dash-kpi-label">Overdue</span>
           <span class="dash-kpi-value">{{ overdue_tasks }}</span>
           <div class="dash-kpi-trend">
+            {% if is_admin_or_pm %}
             <span class="trend-down"><i class="ri-arrow-down-line"></i> 5%</span>
             <span class="trend-vs">vs last month</span>
+            {% else %}
+            <span class="{% if overdue_tasks > 0 %}trend-down{% else %}trend-up{% endif %}">{{ overdue_tasks }}</span>
+            <span class="trend-vs">need attention</span>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -107,7 +125,7 @@
     <!-- Card 1: Task Overview -->
     <div class="dash-card overview-card">
       <div class="dash-card-header">
-        <h2 class="dash-card-title">Task Overview</h2>
+        <h2 class="dash-card-title">{% if is_admin_or_pm %}Task Overview{% else %}My Task Overview{% endif %}</h2>
         <div class="dropdown">
           <button class="dash-select-pill dropdown-toggle border-0" type="button" id="chartPeriodDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; color: #475569; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
             <span id="chartPeriodLabel">Last 7 Days</span>
@@ -149,7 +167,7 @@
           <canvas id="statusDonutChart"></canvas>
           <div class="donut-center-text">
             <div class="donut-number">{{ total_tasks }}</div>
-            <div class="donut-label">Total Tasks</div>
+            <div class="donut-label">{% if is_admin_or_pm %}Total Tasks{% else %}My Tasks{% endif %}</div>
           </div>
         </div>
 
@@ -158,28 +176,28 @@
             <span class="legend-dot dot-green"></span>
             <div class="donut-legend-info">
               <span class="donut-legend-name">Completed</span>
-              <span class="donut-legend-stat">64 (50%)</span>
+              <span class="donut-legend-stat">{{ completed_tasks }} ({{ completed_percent }}%)</span>
             </div>
           </div>
           <div class="donut-legend-item">
             <span class="legend-dot dot-amber"></span>
             <div class="donut-legend-info">
               <span class="donut-legend-name">In Progress</span>
-              <span class="donut-legend-stat">42 (33%)</span>
+              <span class="donut-legend-stat">{{ in_progress_tasks }} ({{ in_progress_percent }}%)</span>
             </div>
           </div>
           <div class="donut-legend-item">
             <span class="legend-dot dot-gray"></span>
             <div class="donut-legend-info">
               <span class="donut-legend-name">Assigned</span>
-              <span class="donut-legend-stat">10 (8%)</span>
+              <span class="donut-legend-stat">{{ assigned_tasks }} ({{ assigned_percent }}%)</span>
             </div>
           </div>
           <div class="donut-legend-item">
             <span class="legend-dot dot-red"></span>
             <div class="donut-legend-info">
               <span class="donut-legend-name">Overdue</span>
-              <span class="donut-legend-stat">12 (9%)</span>
+              <span class="donut-legend-stat">{{ overdue_tasks }} ({{ overdue_percent }}%)</span>
             </div>
           </div>
         </div>
@@ -189,7 +207,7 @@
     <!-- Card 3: Upcoming Deadlines -->
     <div class="dash-card deadlines-card">
       <div class="dash-card-header">
-        <h2 class="dash-card-title">Upcoming Deadlines</h2>
+        <h2 class="dash-card-title">{% if is_admin_or_pm %}Upcoming Deadlines{% else %}My Upcoming Deadlines{% endif %}</h2>
         <a href="{% url 'tasks:task_list' %}" class="dash-view-all">View All</a>
       </div>
 
@@ -219,8 +237,10 @@
     <!-- Card 1: Recent Activity -->
     <div class="dash-card">
       <div class="dash-card-header">
-        <h2 class="dash-card-title">Recent Activity</h2>
+        <h2 class="dash-card-title">{% if is_admin_or_pm %}Recent Activity{% else %}My Recent Activity{% endif %}</h2>
+        {% if is_admin_or_pm %}
         <a href="{% url 'audit:logs' %}" class="dash-view-all">View All</a>
+        {% endif %}
       </div>
 
       <div class="activity-list">
@@ -239,10 +259,11 @@
       </div>
     </div>
 
-    <!-- Card 2: Team Workload -->
+    <!-- Card 2: Workload / Progress Breakdown -->
     <div class="dash-card">
       <div class="dash-card-header">
-        <h2 class="dash-card-title">Team Workload</h2>
+        <h2 class="dash-card-title">{% if is_admin_or_pm %}Team Workload{% else %}My Workload & Checklist{% endif %}</h2>
+        {% if is_admin_or_pm %}
         <div class="dropdown">
           <button class="dash-select-pill dropdown-toggle border-0" type="button" id="workloadPeriodDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; font-size: 0.76rem; color: #475569; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
             <span id="workloadPeriodLabel">This Week</span>
@@ -255,6 +276,7 @@
             <li><a class="dropdown-item workload-filter-opt" href="#" data-period="Quarter to Date">Quarter to Date</a></li>
           </ul>
         </div>
+        {% endif %}
       </div>
 
       <div class="workload-list">
@@ -288,7 +310,7 @@
     <!-- Card 3: Tasks by Project -->
     <div class="dash-card">
       <div class="dash-card-header">
-        <h2 class="dash-card-title">Tasks by Project</h2>
+        <h2 class="dash-card-title">{% if is_admin_or_pm %}Tasks by Project{% else %}My Project Tasks{% endif %}</h2>
         <a href="{% url 'projects:project_list' %}" class="dash-view-all">View All</a>
       </div>
 
@@ -332,11 +354,11 @@ document.addEventListener("DOMContentLoaded", function () {
     overviewChart = new Chart(ctxOverview, {
       type: "line",
       data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        labels: {{ chart_labels|safe }},
         datasets: [
           {
             label: "Completed",
-            data: [13, 17, 24, 21, 28, 30, 36],
+            data: {{ chart_completed|safe }},
             borderColor: "#22c55e",
             backgroundColor: "transparent",
             borderWidth: 2.2,
@@ -349,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           {
             label: "In Progress",
-            data: [7, 11, 14, 12, 17, 18, 22],
+            data: {{ chart_in_progress|safe }},
             borderColor: "#f59e0b",
             backgroundColor: "transparent",
             borderWidth: 2.2,
@@ -362,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           {
             label: "Overdue",
-            data: [3, 4, 4, 7, 6, 8, 9],
+            data: {{ chart_overdue|safe }},
             borderColor: "#ef4444",
             backgroundColor: "transparent",
             borderWidth: 2.2,
@@ -375,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           {
             label: "Assigned",
-            data: [0, 1, 1, 2, 2, 3, 3],
+            data: {{ chart_assigned|safe }},
             borderColor: "#94a3b8",
             backgroundColor: "transparent",
             borderWidth: 2.2,
@@ -416,9 +438,9 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           y: {
             min: 0,
-            max: 40,
+            max: {{ chart_max_y|default:40 }},
             ticks: {
-              stepSize: 10,
+              stepSize: {% if chart_max_y <= 10 %}2{% else %}10{% endif %},
               color: "#94a3b8",
               font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" }
             },
@@ -441,8 +463,8 @@ document.addEventListener("DOMContentLoaded", function () {
         labels: ["Completed", "In Progress", "Assigned", "Overdue"],
         datasets: [
           {
-            data: [64, 42, 10, 12],
-            backgroundColor: ["#22c55e", "#f59e0b", "#94a3b8", "#ef4444"],
+            data: [{% if total_tasks == 0 %}0, 0, 1, 0{% else %}{{ completed_tasks|default:0 }}, {{ in_progress_tasks|default:0 }}, {{ assigned_tasks|default:0 }}, {{ overdue_tasks|default:0 }}{% endif %}],
+            backgroundColor: [{% if total_tasks == 0 %}"#e2e8f0", "#e2e8f0", "#e2e8f0", "#e2e8f0"{% else %}"#22c55e", "#f59e0b", "#94a3b8", "#ef4444"{% endif %}],
             borderWidth: 2,
             borderColor: "#ffffff",
             hoverOffset: 4
@@ -469,7 +491,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 3. Team Workload Dropdown Interactive Filtering
+  // 3. Workload Interactive Filtering
   const workloadOpts = document.querySelectorAll(".workload-filter-opt");
   const workloadLabel = document.getElementById("workloadPeriodLabel");
   const workloadItems = document.querySelectorAll(".workload-item");
@@ -505,6 +527,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ]
   };
 
+  {% if is_admin_or_pm %}
   workloadOpts.forEach(opt => {
     opt.addEventListener("click", function (e) {
       e.preventDefault();
@@ -592,6 +615,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
+  {% endif %}
 });
 </script>
 {% endblock %}

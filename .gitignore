@@ -45,3 +45,5 @@ media/
 *.swo
 .DS_Store
 Thumbs.db
+.agents/
+

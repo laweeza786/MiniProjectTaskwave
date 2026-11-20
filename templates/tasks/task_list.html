@@ -6,32 +6,41 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-3">
     <div>
       <h1 class="dash-title">Tasks</h1>
       <p class="dash-subtitle">Create, assign, and track tasks across all projects.</p>
     </div>
+    {% if is_lead_or_above %}
     <div class="d-flex align-items-center gap-2">
-      <button class="btn-import-tw" type="button">
-        <i class="ri-upload-2-line"></i> Import
-      </button>
-      <a href="{% url 'tasks:task_create' %}" class="btn-new-entity">
+      <a href="{% url 'tasks:task_create' %}" class="btn-new-entity text-decoration-none shadow-sm d-flex align-items-center gap-1" style="background-color: #ea580c; color: white; border-radius: 8px; font-weight: 600; padding: 8px 16px;">
         <i class="ri-add-line"></i> New Task
       </a>
     </div>
+    {% endif %}
   </div>
 
+  <!-- Messages Alert -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2 px-3 mb-3" role="alert" style="font-size: 0.84rem; border-radius: 8px;">
+        <i class="ri-information-line me-1"></i> {{ message }}
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
   <!-- KPI Stat Cards Row (4 cards) -->
-  <div class="dash-kpi-grid">
+  <div class="dash-kpi-grid mb-4">
     <!-- Total Tasks -->
-    <a href="{% url 'tasks:task_list' %}" class="dash-kpi-card" title="View All Tasks">
+    <a href="{% url 'tasks:task_list' %}" class="dash-kpi-card text-decoration-none {% if not status_filter and not my_tasks %}border-primary{% endif %}" title="View All Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-file-text-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Tasks</span>
-          <span class="dash-kpi-value">{{ total_tasks }}</span>
+          <span class="dash-kpi-value text-dark">{{ total_tasks }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
             <span class="trend-vs">vs last month</span>
@@ -44,14 +53,14 @@
     </a>
 
     <!-- In Progress -->
-    <a href="{% url 'tasks:task_list' %}?status=In+Progress" class="dash-kpi-card" title="View In Progress Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=in_progress" class="dash-kpi-card text-decoration-none {% if status_filter == 'in_progress' %}border-warning{% endif %}" title="View In Progress Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-play-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">In Progress</span>
-          <span class="dash-kpi-value">{{ in_progress_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ in_progress_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
             <span class="trend-vs">vs last month</span>
@@ -64,14 +73,14 @@
     </a>
 
     <!-- Completed -->
-    <a href="{% url 'tasks:task_list' %}?status=Completed" class="dash-kpi-card" title="View Completed Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=completed" class="dash-kpi-card text-decoration-none {% if status_filter == 'completed' %}border-success{% endif %}" title="View Completed Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-check-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Completed</span>
-          <span class="dash-kpi-value">{{ completed_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ completed_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
             <span class="trend-vs">vs last month</span>
@@ -84,14 +93,14 @@
     </a>
 
     <!-- Overdue -->
-    <a href="{% url 'tasks:task_list' %}?status=Overdue" class="dash-kpi-card" title="View Overdue Tasks">
+    <a href="{% url 'tasks:task_list' %}?status=overdue" class="dash-kpi-card text-decoration-none {% if status_filter == 'overdue' %}border-danger{% endif %}" title="View Overdue Tasks">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-error-warning-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Overdue</span>
-          <span class="dash-kpi-value">{{ overdue_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ overdue_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-down"><i class="ri-arrow-down-line"></i> 5%</span>
             <span class="trend-vs">vs last month</span>
@@ -105,53 +114,87 @@
   </div>
 
   <!-- Filter Bar -->
-  <div class="dash-filter-bar">
-    <div class="filter-search-box">
+  <form method="GET" action="{% url 'tasks:task_list' %}" class="dash-filter-bar mb-3" id="taskFilterForm">
+    {% if my_tasks %}<input type="hidden" name="my_tasks" value="true">{% endif %}
+
+    <!-- Search Box -->
+    <div class="filter-search-box flex-grow-1">
       <i class="ri-search-line"></i>
-      <input type="text" placeholder="Search tasks..." value="{{ query }}">
+      <input type="text" name="q" placeholder="Search tasks..." value="{{ query }}">
     </div>
-    <div class="d-flex align-items-center gap-1">
-      <span class="text-muted small">Project</span>
-      <div class="dash-select-pill">
-        <span>All Projects</span>
-        <i class="ri-arrow-down-s-line"></i>
-      </div>
+
+    <!-- Project Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <i class="ri-folder-line text-muted me-1"></i>
+      <select name="project" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Projects</option>
+        {% for p in projects %}
+          <option value="{{ p.id }}" {% if project_filter == p.id|stringformat:"s" or project_filter == p.name %}selected{% endif %}>{{ p.name }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="d-flex align-items-center gap-1">
-      <span class="text-muted small">Assignee</span>
-      <div class="dash-select-pill">
-        <span>All Members</span>
-        <i class="ri-arrow-down-s-line"></i>
-      </div>
+
+    <!-- Assignee Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <i class="ri-user-line text-muted me-1"></i>
+      <select name="assignee" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Members</option>
+        {% for u in users %}
+          <option value="{{ u.id }}" {% if assignee_filter == u.id|stringformat:"s" or assignee_filter == u.get_full_name %}selected{% endif %}>{{ u.get_full_name|default:u.email }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="d-flex align-items-center gap-1">
-      <span class="text-muted small">Status</span>
-      <div class="dash-select-pill">
-        <span>{% if status_filter %}{{ status_filter }}{% else %}All Status{% endif %}</span>
-        <i class="ri-arrow-down-s-line"></i>
-      </div>
+
+    <!-- Status Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select name="status" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Status</option>
+        <option value="assigned" {% if status_filter == 'assigned' %}selected{% endif %}>To Do / Assigned</option>
+        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="under_review" {% if status_filter == 'under_review' %}selected{% endif %}>Under Review</option>
+        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+        <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>Overdue</option>
+      </select>
     </div>
-    <div class="d-flex align-items-center gap-1">
-      <span class="text-muted small">Priority</span>
-      <div class="dash-select-pill">
-        <span>All Priority</span>
-        <i class="ri-arrow-down-s-line"></i>
-      </div>
+
+    <!-- Priority Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select name="priority" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Priority</option>
+        <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High</option>
+        <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium</option>
+        <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low</option>
+        <option value="critical" {% if priority_filter == 'critical' %}selected{% endif %}>Critical</option>
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <i class="ri-calendar-line me-1 text-muted"></i>
-      <span>Start Date - End Date</span>
+
+    <!-- Start Date Picker -->
+    <div class="dash-select-pill d-inline-flex align-items-center gap-1 px-2" title="Filter by Due Date">
+      <i class="ri-calendar-line text-muted"></i>
+      <input type="date" name="start_date" value="{{ start_date }}" class="border-0 bg-transparent text-secondary" style="outline: none; font-size: 0.8rem; cursor: pointer;" onchange="this.form.submit()">
     </div>
-    <a href="{% url 'tasks:task_list' %}" class="dash-clear-btn text-decoration-none">Clear</a>
-  </div>
+
+    <!-- Clear Button -->
+    <a href="{% url 'tasks:task_list' %}" class="dash-clear-btn text-decoration-none d-inline-flex align-items-center justify-content-center">Clear</a>
+  </form>
 
   <!-- Tasks Tabs Row -->
-  <div class="tasks-tabs-nav mb-3">
-    <a href="{% url 'tasks:task_list' %}" class="tasks-tab-btn text-decoration-none {% if not status_filter %}active{% endif %}">All Tasks (128)</a>
-    <a href="{% url 'tasks:task_list' %}?my_tasks=true" class="tasks-tab-btn text-decoration-none">My Tasks (18)</a>
-    <a href="{% url 'tasks:task_list' %}?status=In+Progress" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'in progress' or status_filter|lower == 'in_progress' %}active{% endif %}">In Progress (42)</a>
-    <a href="{% url 'tasks:task_list' %}?status=Overdue" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'overdue' %}active{% endif %}">Overdue (12)</a>
-    <a href="{% url 'tasks:task_list' %}?status=Completed" class="tasks-tab-btn text-decoration-none {% if status_filter|lower == 'completed' %}active{% endif %}">Completed (64)</a>
+  <div class="tasks-tabs-nav mb-3 d-flex align-items-center gap-2 flex-wrap">
+    <a href="{% url 'tasks:task_list' %}" class="tasks-tab-btn text-decoration-none {% if not status_filter and not my_tasks %}active{% endif %}">
+      All Tasks ({{ total_tasks }})
+    </a>
+    <a href="{% url 'tasks:task_list' %}?my_tasks=true" class="tasks-tab-btn text-decoration-none {% if my_tasks %}active{% endif %}">
+      My Tasks ({{ my_tasks_count }})
+    </a>
+    <a href="{% url 'tasks:task_list' %}?status=in_progress" class="tasks-tab-btn text-decoration-none {% if status_filter == 'in_progress' %}active{% endif %}">
+      In Progress ({{ in_progress_count }})
+    </a>
+    <a href="{% url 'tasks:task_list' %}?status=overdue" class="tasks-tab-btn text-decoration-none {% if status_filter == 'overdue' %}active{% endif %}">
+      Overdue ({{ overdue_count }})
+    </a>
+    <a href="{% url 'tasks:task_list' %}?status=completed" class="tasks-tab-btn text-decoration-none {% if status_filter == 'completed' %}active{% endif %}">
+      Completed ({{ completed_count }})
+    </a>
   </div>
 
   <!-- Tasks Table Card -->
@@ -160,37 +203,47 @@
       <table class="dash-custom-table">
         <thead>
           <tr>
-            <th style="width: 32px;"><input type="checkbox" class="form-check-input"></th>
+            <th style="width: 32px;"><input type="checkbox" class="form-check-input" id="checkAllTasks"></th>
             <th style="width: 36px;">#</th>
             <th>Task Title</th>
             <th>Project</th>
             <th>Assignee</th>
             <th>Priority</th>
             <th>Status</th>
-            <th>Due Date <i class="ri-arrow-up-down-line small ms-1"></i></th>
+            <th>Due Date</th>
             <th>Progress</th>
             <th style="text-align: right;">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for t in sample_tasks %}
+          {% for t in page_obj %}
           <tr>
-            <td><input type="checkbox" class="form-check-input"></td>
+            <td><input type="checkbox" class="form-check-input task-row-checkbox" value="{{ t.id }}"></td>
             <td>{{ forloop.counter }}</td>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <span style="background-color: {{ t.icon_bg }}; color: {{ t.icon_color }}; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; flex-shrink: 0;"><i class="{{ t.icon_class }}"></i></span>
+                <span style="background-color: {{ t.icon_bg }}; color: {{ t.icon_color }}; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                  <i class="{{ t.icon_class }}"></i>
+                </span>
                 <div>
-                  <div class="fw-semibold text-dark">{{ t.title }}</div>
-                  <div class="small text-muted">{{ t.subtitle }}</div>
+                  <a href="{% url 'tasks:task_detail' t.id %}" class="fw-semibold text-dark text-decoration-none hover-primary">
+                    {{ t.title }}
+                  </a>
+                  <div class="small text-muted" style="font-size: 11px;">{{ t.subtitle }}</div>
                 </div>
               </div>
             </td>
             <td class="text-muted">{{ t.project }}</td>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <img src="{% static t.assignee_avatar %}" alt="{{ t.assignee }}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                <span class="text-dark">{{ t.assignee }}</span>
+                {% if t.assignee_avatar %}
+                  <img src="{{ t.assignee_avatar }}" alt="{{ t.assignee }}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                {% else %}
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">
+                    {{ t.assignee_initials }}
+                  </div>
+                {% endif %}
+                <span class="text-dark small">{{ t.assignee }}</span>
               </div>
             </td>
             <td>
@@ -199,17 +252,37 @@
             <td>
               <span class="priority-pill {{ t.status_class }}">{{ t.status }}</span>
             </td>
-            <td class="{% if t.status == 'Overdue' %}text-danger fw-semibold{% else %}text-muted{% endif %}">{{ t.due_date }}</td>
-            <td style="width: 120px;">
+            <td class="{% if t.status == 'Overdue' %}text-danger fw-semibold{% else %}text-muted{% endif %} small">
+              {{ t.due_date }}
+            </td>
+            <td style="width: 130px;">
               <div class="d-flex align-items-center gap-2">
-                <div class="project-box-progress-bar flex-grow-1" style="margin: 0;">
-                  <div class="project-box-progress-fill" style="width: {{ t.progress }}%; background-color: {{ t.bar_color }};"></div>
+                <div class="project-box-progress-bar flex-grow-1" style="margin: 0; height: 6px; background-color: #f1f5f9; border-radius: 9999px; overflow: hidden;">
+                  <div class="project-box-progress-fill" style="width: {{ t.progress }}%; background-color: {{ t.bar_color }}; height: 100%;"></div>
                 </div>
-                <span class="small text-muted fw-semibold" style="width: 32px;">{{ t.progress }}%</span>
+                <span class="small text-muted fw-semibold" style="width: 32px; font-size: 11px;">{{ t.progress }}%</span>
               </div>
             </td>
             <td style="text-align: right;">
-              <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+              <div class="dropdown d-inline-block">
+                <button class="dash-item-menu btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="ri-more-2-line fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border py-1" style="font-size: 0.8rem; border-color: #e2e8f0; border-radius: 8px;">
+                  <li><a class="dropdown-item py-1" href="{% url 'tasks:task_detail' t.id %}"><i class="ri-eye-line me-1 text-primary"></i> View Details</a></li>
+                  {% if is_lead_or_above %}
+                  <li><a class="dropdown-item py-1" href="{% url 'tasks:task_edit' t.id %}"><i class="ri-edit-line me-1 text-secondary"></i> Edit Task</a></li>
+                  {% endif %}
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="10" class="text-center py-5 text-muted">
+              <i class="ri-file-list-3-line d-block mb-2 fs-1 text-muted" style="opacity: 0.5;"></i>
+              <div class="fw-semibold text-dark fs-6 mb-1">No tasks found</div>
+              <div class="small text-muted">No tasks match your selected filter criteria. Try clearing filters.</div>
             </td>
           </tr>
           {% endfor %}
@@ -218,27 +291,69 @@
     </div>
 
     <!-- Pagination Footer -->
-    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-      <div class="small text-muted">Showing 1 to {{ sample_tasks|length }} {% if status_filter %}of {{ sample_tasks|length }} filtered{% else %}of 128{% endif %} tasks</div>
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top" style="border-color: #edf2f7 !important;">
+      <div class="small text-muted">
+        {% if page_obj.paginator.count > 0 %}
+          Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ total_tasks }} tasks
+        {% else %}
+          Showing 0 tasks
+        {% endif %}
+      </div>
       <div class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center gap-2">
           <span class="small text-muted">Rows per page</span>
-          <div class="dash-select-pill">
-            <span>12</span>
-            <i class="ri-arrow-down-s-line"></i>
-          </div>
+          <select class="form-select form-select-sm" id="tasksPerPageSelect" style="width: 70px; border-radius: 6px; font-size: 0.8rem;">
+            <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+            <option value="12" {% if per_page == 12 %}selected{% endif %}>12</option>
+            <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+            <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+          </select>
         </div>
-        <div class="dash-pagination-btns">
-          <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
-          <button class="dash-page-btn active" type="button">1</button>
-          <button class="dash-page-btn" type="button">2</button>
-          <button class="dash-page-btn" type="button">3</button>
-          <button class="dash-page-btn" type="button">4</button>
-          <button class="dash-page-btn" type="button">5</button>
-          <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
+
+        {% if page_obj.has_other_pages %}
+        <div class="dash-pagination-btns d-flex align-items-center gap-1">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&status={{ status_filter }}&priority={{ priority_filter }}&project={{ project_filter }}&assignee={{ assignee_filter }}&per_page={{ per_page }}{% if my_tasks %}&my_tasks=true{% endif %}" class="dash-page-btn text-decoration-none">
+              <i class="ri-arrow-left-s-line"></i>
+            </a>
+          {% else %}
+            <button class="dash-page-btn text-muted" disabled><i class="ri-arrow-left-s-line"></i></button>
+          {% endif %}
+
+          {% for p in page_obj.paginator.page_range %}
+            {% if p == page_obj.number %}
+              <button class="dash-page-btn active" type="button" style="background-color: #ea580c; border-color: #ea580c; color: white;">{{ p }}</button>
+            {% elif p >= page_obj.number|add:'-2' and p <= page_obj.number|add:'2' %}
+              <a href="?page={{ p }}&q={{ query }}&status={{ status_filter }}&priority={{ priority_filter }}&project={{ project_filter }}&assignee={{ assignee_filter }}&per_page={{ per_page }}{% if my_tasks %}&my_tasks=true{% endif %}" class="dash-page-btn text-decoration-none">{{ p }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&status={{ status_filter }}&priority={{ priority_filter }}&project={{ project_filter }}&assignee={{ assignee_filter }}&per_page={{ per_page }}{% if my_tasks %}&my_tasks=true{% endif %}" class="dash-page-btn text-decoration-none">
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
+          {% else %}
+            <button class="dash-page-btn text-muted" disabled><i class="ri-arrow-right-s-line"></i></button>
+          {% endif %}
         </div>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.getElementById('tasksPerPageSelect')?.addEventListener('change', function() {
+  const perPage = this.value;
+  const url = new URL(window.location.href);
+  url.searchParams.set('per_page', perPage);
+  url.searchParams.set('page', '1');
+  window.location.href = url.toString();
+});
+
+document.getElementById('checkAllTasks')?.addEventListener('change', function() {
+  const isChecked = this.checked;
+  document.querySelectorAll('.task-row-checkbox').forEach(cb => cb.checked = isChecked);
+});
+</script>
 {% endblock %}

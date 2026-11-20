@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Activity Logs - TaskWave{% endblock %}
+{% block title %}Activity / Audit Logs - TaskWave{% endblock %}
 
 {% block content %}
 <div class="dash-viewport">
@@ -19,124 +19,164 @@
     </div>
   </div>
 
-  <!-- 4 Stat KPI Cards Grid -->
+  <!-- Messages Alert -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2 px-3 mb-4" role="alert" style="font-size: 0.84rem; border-radius: 8px;">
+        <i class="ri-information-line me-1"></i> {{ message }}
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- 4 Stat KPI Cards Grid (Clickable Filters) -->
   <div class="dash-kpi-grid mb-4">
-    <div class="dash-kpi-card">
+    <!-- Total Events -->
+    <a href="{% url 'audit:logs' %}" class="dash-kpi-card text-decoration-none {% if selected_type == 'all' or not selected_type %}border-primary shadow-sm" style="border: 2px solid #0284c7 !important; background-color: #f0f9ff !important;{% endif %}" title="Show all activity logs">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
           <i class="ri-file-list-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Events</span>
-          <span class="dash-kpi-value">1,245</span>
+          <span class="dash-kpi-value text-dark" id="kpiTotalEvents">{{ total_events }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
             <span class="trend-vs">from last month</span>
           </div>
         </div>
       </div>
-    </div>
+    </a>
 
-    <div class="dash-kpi-card">
+    <!-- User Actions -->
+    <a href="{% url 'audit:logs' %}?type=user_actions" class="dash-kpi-card text-decoration-none {% if selected_type == 'user_actions' %}border-success shadow-sm" style="border: 2px solid #16a34a !important; background-color: #f0fdf4 !important;{% endif %}" title="Filter User Actions">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
           <i class="ri-user-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">User Actions</span>
-          <span class="dash-kpi-value">682</span>
+          <span class="dash-kpi-value text-dark" id="kpiUserActions">{{ user_actions_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
             <span class="trend-vs">from last month</span>
           </div>
         </div>
       </div>
-    </div>
+    </a>
 
-    <div class="dash-kpi-card">
+    <!-- System Changes -->
+    <a href="{% url 'audit:logs' %}?type=system_changes" class="dash-kpi-card text-decoration-none {% if selected_type == 'system_changes' %}shadow-sm" style="border: 2px solid #ea580c !important; background-color: #fff7ed !important;{% endif %}" title="Filter System Changes">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-orange">
           <i class="ri-settings-3-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">System Changes</span>
-          <span class="dash-kpi-value">421</span>
+          <span class="dash-kpi-value text-dark" id="kpiSystemChanges">{{ system_changes_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 15%</span>
             <span class="trend-vs">from last month</span>
           </div>
         </div>
       </div>
-    </div>
+    </a>
 
-    <div class="dash-kpi-card">
+    <!-- Security Events -->
+    <a href="{% url 'audit:logs' %}?type=security_events" class="dash-kpi-card text-decoration-none {% if selected_type == 'security_events' %}shadow-sm" style="border: 2px solid #ef4444 !important; background-color: #fef2f2 !important;{% endif %}" title="Filter Security Events">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-shield-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Security Events</span>
-          <span class="dash-kpi-value">142</span>
+          <span class="dash-kpi-value text-dark" id="kpiSecurityEvents">{{ security_events_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up" style="color: #ef4444;"><i class="ri-arrow-up-line"></i> 5%</span>
             <span class="trend-vs">from last month</span>
           </div>
         </div>
       </div>
-    </div>
+    </a>
   </div>
 
   <!-- Search & Filter Controls Bar -->
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-    <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white border rounded-3" style="border-color: #e2e8f0 !important; font-size: 0.82rem; color: #475569; height: 38px;">
+  <form method="GET" action="{% url 'audit:logs' %}" id="auditFilterForm" class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    {% if selected_type and selected_type != 'all' %}
+      <input type="hidden" name="type" value="{{ selected_type }}">
+    {% endif %}
+
+    <!-- Date Range Picker Controls -->
+    <div class="d-flex align-items-center gap-2 px-3 py-1 bg-white border rounded-3 shadow-sm" style="border-color: #e2e8f0 !important; font-size: 0.82rem; height: 38px;">
       <i class="ri-calendar-line text-muted"></i>
-      <span>01 Oct 2026 - 12 Oct 2026</span>
+      <input type="date" name="start_date" id="inputStartDate" value="{{ start_date }}" class="form-control form-control-sm border-0 p-0 text-secondary" style="width: 110px; font-size: 0.76rem; background: transparent;" title="Start Date" onchange="this.form.submit()">
+      <span class="text-muted">–</span>
+      <input type="date" name="end_date" id="inputEndDate" value="{{ end_date }}" class="form-control form-control-sm border-0 p-0 text-secondary" style="width: 110px; font-size: 0.76rem; background: transparent;" title="End Date" onchange="this.form.submit()">
     </div>
 
+    <!-- Filter Dropdowns & Actions Group -->
     <div class="d-flex align-items-center gap-2 flex-wrap">
-      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
-        <option>All Users</option>
-        <option>Rahul Kumar</option>
-        <option>Priya Singh</option>
-        <option>Aman Sharma</option>
+      <!-- All Users -->
+      <select name="user" class="form-select form-select-sm shadow-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;" onchange="this.form.submit()">
+        <option value="">All Users</option>
+        {% for u in users %}
+        <option value="{{ u.id }}" {% if selected_user == u.id|stringformat:'s' %}selected{% endif %}>
+          {{ u.get_full_name|default:u.email }}
+        </option>
+        {% endfor %}
       </select>
-      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
-        <option>All Modules</option>
-        <option>Project</option>
-        <option>Task</option>
-        <option>Member</option>
-        <option>Department</option>
-        <option>System</option>
+
+      <!-- All Modules -->
+      <select name="module" class="form-select form-select-sm shadow-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;" onchange="this.form.submit()">
+        <option value="">All Modules</option>
+        {% for m in modules %}
+        <option value="{{ m }}" {% if selected_module == m %}selected{% endif %}>{{ m }}</option>
+        {% endfor %}
       </select>
-      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
-        <option>All Actions</option>
-        <option>Created</option>
-        <option>Updated</option>
-        <option>Assigned</option>
-        <option>Deleted</option>
-        <option>Logged In</option>
+
+      <!-- All Actions -->
+      <select name="action" class="form-select form-select-sm shadow-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;" onchange="this.form.submit()">
+        <option value="">All Actions</option>
+        {% for a in actions %}
+        <option value="{{ a }}" {% if selected_action == a %}selected{% endif %}>{{ a|capfirst }}</option>
+        {% endfor %}
       </select>
-      <select class="form-select form-select-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;">
-        <option>All Status</option>
-        <option>Success</option>
-        <option>Failed</option>
+
+      <!-- All Status -->
+      <select name="status" class="form-select form-select-sm shadow-sm" style="width: auto; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.82rem; color: #475569; background-color: #fff;" onchange="this.form.submit()">
+        <option value="">All Status</option>
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if selected_status == s %}selected{% endif %}>{{ s|capfirst }}</option>
+        {% endfor %}
       </select>
-      <button class="btn btn-sm btn-white border px-3 py-2 bg-white text-secondary" style="border-radius: 8px; font-weight: 500; font-size: 0.84rem; border-color: #e2e8f0 !important; height: 38px;">
+
+      <!-- Reset Button -->
+      <a href="{% url 'audit:logs' %}" class="btn btn-sm btn-white border px-3 py-2 bg-white text-secondary shadow-sm" style="border-radius: 8px; font-weight: 500; font-size: 0.84rem; border-color: #e2e8f0 !important; height: 38px; display: inline-flex; align-items: center;" title="Reset all filters">
         Reset
-      </button>
-      <button class="btn-primary-tw" style="background-color: #ea580c; border: none; padding: 8px 16px; border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.84rem; display: flex; align-items: center; gap: 6px; height: 38px;">
+      </a>
+
+      <!-- Export Button -->
+      <a href="{% url 'audit:export_logs' %}?type={{ selected_type }}&user={{ selected_user }}&module={{ selected_module }}&action={{ selected_action }}&status={{ selected_status }}&start_date={{ start_date }}&end_date={{ end_date }}&q={{ q }}" class="btn text-white shadow-sm" style="background-color: #ea580c; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.84rem; display: flex; align-items: center; gap: 6px; height: 38px;" title="Export filtered logs to CSV">
         <i class="ri-download-2-line"></i> Export
-      </button>
+      </a>
     </div>
-  </div>
+  </form>
 
   <!-- Main Content Layout (Table Left + Log Details Drawer Right) -->
   <div class="row g-4">
     <!-- Left: Activity Logs Table -->
-    <div class="col-xl-9 col-lg-8">
+    <div class="col-xl-9 col-lg-8" id="auditTableContainer">
       <div class="bg-white border rounded-3 shadow-sm overflow-hidden" style="border-color: #edf2f7 !important;">
         <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="border-color: #edf2f7 !important;">
-          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Activity Logs</h6>
+          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">
+            Activity Logs
+            <span class="badge bg-light text-secondary border ms-2" style="font-size: 0.72rem; font-weight: 500;">{{ total_filtered_count }} records</span>
+          </h6>
+          {% if selected_type and selected_type != 'all' or selected_user or selected_module or selected_action or selected_status or start_date or end_date %}
+          <span class="badge bg-primary-subtle text-primary border" style="font-size: 0.72rem;">
+            Filtered View <a href="{% url 'audit:logs' %}" class="text-primary ms-1 text-decoration-none">✕</a>
+          </span>
+          {% endif %}
         </div>
         <div class="table-responsive">
           <table class="table align-middle mb-0" style="font-size: 0.84rem;">
@@ -153,230 +193,169 @@
                 <th style="width: 30px; text-align: center;"></th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Row 1 -->
-              <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fbfcfe;">
-                <td style="padding-left: 16px;" class="text-muted">1</td>
-                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026, 10:24 AM</td>
+            <tbody id="auditLogsTbody">
+              {% for log in page_obj %}
+              <tr class="audit-log-row {% if forloop.first %}selected-log-row{% endif %}"
+                  id="logRow-{{ log.id }}"
+                  data-id="{{ log.id }}"
+                  data-user-name="{% if log.user %}{{ log.user.get_full_name|default:log.user.email }}{% else %}System{% endif %}"
+                  data-user-role="{% if log.user and log.user.role %}{{ log.user.role.name }}{% else %}System Administrator{% endif %}"
+                  data-user-dept="{% if log.user and log.user.department %}{{ log.user.department.name }}{% else %}Core Infrastructure{% endif %}"
+                  data-user-avatar="{% if log.user and log.user.profile_picture %}{{ log.user.profile_picture.url }}{% endif %}"
+                  data-user-initials="{% if log.user %}{{ log.user.first_name|slice:':1' }}{{ log.user.last_name|slice:':1' }}{% else %}SY{% endif %}"
+                  data-action="{{ log.action|capfirst }}"
+                  data-module="{{ log.module }}"
+                  data-datetime="{{ log.timestamp|date:'d M Y, h:i A' }}"
+                  data-ip="{{ log.ip_address|default:'192.168.1.1' }}"
+                  data-status="{{ log.status|capfirst }}"
+                  data-details="{{ log.details|default:log.object_repr }}"
+                  data-object-type="{{ log.object_type|default:log.module }}"
+                  data-object-repr="{{ log.object_repr|default:log.details }}"
+                  style="border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background-color 0.15s ease; {% if forloop.first %}background-color: #fbfcfe;{% endif %}">
+                <td style="padding-left: 16px;" class="text-muted">{{ forloop.counter0|add:page_obj.start_index }}</td>
+                <td class="text-muted" style="white-space: nowrap;">{{ log.timestamp|date:'d M Y, h:i A' }}</td>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Rahul Kumar</span>
+                    {% if log.user and log.user.profile_picture %}
+                      <img src="{{ log.user.profile_picture.url }}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
+                    {% else %}
+                      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">
+                        {% if log.user %}{{ log.user.first_name|slice:':1' }}{{ log.user.last_name|slice:':1' }}{% else %}SY{% endif %}
+                      </div>
+                    {% endif %}
+                    <span class="fw-semibold text-dark">{{ log.user.get_full_name|default:"System" }}</span>
                   </div>
                 </td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Created</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-folder-line text-muted"></i> Project</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Created new project "TaskWave API"</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.10</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 2 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">2</td>
-                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026, 09:15 AM</td>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Priya Singh</span>
-                  </div>
+                  {% if log.action == 'created' %}
+                    <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Created</span>
+                  {% elif log.action == 'updated' %}
+                    <span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Updated</span>
+                  {% elif log.action == 'assigned' %}
+                    <span class="badge" style="background-color: #f3e8ff; color: #9333ea; font-weight: 500;">Assigned</span>
+                  {% elif log.action == 'deleted' %}
+                    <span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">Deleted</span>
+                  {% elif log.action == 'logged_in' %}
+                    <span class="badge" style="background-color: #f1f5f9; color: #475569; font-weight: 500;">Logged In</span>
+                  {% elif log.action == 'changed' %}
+                    <span class="badge" style="background-color: #ffedd5; color: #ea580c; font-weight: 500;">Changed</span>
+                  {% else %}
+                    <span class="badge bg-light text-secondary border font-weight-500">{{ log.action|capfirst }}</span>
+                  {% endif %}
                 </td>
-                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Updated</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-checkbox-line text-muted"></i> Task</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Updated task status to "Completed"</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.12</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 3 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">3</td>
-                <td class="text-muted" style="white-space: nowrap;">12 Oct 2026, 08:45 AM</td>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Aman Sharma</span>
-                  </div>
+                  <span class="text-secondary d-flex align-items-center gap-1">
+                    {% if log.module == 'Project' or log.module == 'Projects' %}<i class="ri-folder-line text-muted"></i>
+                    {% elif log.module == 'Task' or log.module == 'Tasks' %}<i class="ri-checkbox-line text-muted"></i>
+                    {% elif log.module == 'Member' or log.module == 'Members' or log.module == 'User' %}<i class="ri-group-line text-muted"></i>
+                    {% elif log.module == 'Department' or log.module == 'Departments' %}<i class="ri-node-tree text-muted"></i>
+                    {% elif log.module == 'Settings' or log.module == 'System Settings' %}<i class="ri-settings-3-line text-muted"></i>
+                    {% else %}<i class="ri-stack-line text-muted"></i>
+                    {% endif %}
+                    {{ log.module }}
+                  </span>
                 </td>
-                <td><span class="badge" style="background-color: #f3e8ff; color: #9333ea; font-weight: 500;">Assigned</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-checkbox-line text-muted"></i> Task</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Assigned task to Neha Tiwari</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.14</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 4 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">4</td>
-                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026, 06:30 PM</td>
+                <td class="text-secondary text-truncate" style="max-width: 220px;" title="{{ log.details|default:log.object_repr }}">
+                  {{ log.details|default:log.object_repr }}
+                </td>
+                <td class="text-muted font-monospace" style="font-size: 0.78rem;">{{ log.ip_address|default:"192.168.1.1" }}</td>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Neha Tiwari</span>
-                  </div>
+                  {% if log.status == 'success' %}
+                    <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span>
+                  {% elif log.status == 'failed' %}
+                    <span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">Failed</span>
+                  {% else %}
+                    <span class="badge" style="background-color: #fef3c7; color: #d97706; font-weight: 500;">{{ log.status|capfirst }}</span>
+                  {% endif %}
                 </td>
-                <td><span class="badge" style="background-color: #f1f5f9; color: #475569; font-weight: 500;">Logged In</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-settings-3-line text-muted"></i> System</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">User login successful</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.18</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 5 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">5</td>
-                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026, 04:20 PM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Vikram Singh</span>
-                  </div>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-link text-muted p-0" title="View Details">
+                    <i class="ri-more-2-fill"></i>
+                  </button>
                 </td>
-                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Updated</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-group-line text-muted"></i> Member</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Updated member profile</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.20</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
               </tr>
-
-              <!-- Row 6 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">6</td>
-                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026, 02:18 PM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Admin</span>
-                  </div>
-                </td>
-                <td><span class="badge" style="background-color: #ffedd5; color: #ea580c; font-weight: 500;">Changed</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-user-line text-muted"></i> User</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Changed user role (Employee → Team Lead)</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.5</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 7 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">7</td>
-                <td class="text-muted" style="white-space: nowrap;">11 Oct 2026, 01:05 PM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">KM</div>
-                    <span class="fw-semibold text-dark">Kiran Mehta</span>
-                  </div>
-                </td>
-                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">Deleted</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-folder-line text-muted"></i> Task</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Deleted task "Old UI Design"</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.22</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 8 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">8</td>
-                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026, 11:40 AM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Arjun Das</span>
-                  </div>
-                </td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Created</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-node-tree text-muted"></i> Department</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Created new department "QA"</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.16</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 9 -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td style="padding-left: 16px;" class="text-muted">9</td>
-                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026, 10:12 AM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="24" height="24" style="object-fit: cover;">
-                    <span class="fw-semibold text-dark">Pooja Reddy</span>
-                  </div>
-                </td>
-                <td><span class="badge" style="background-color: #e0f2fe; color: #0284c7; font-weight: 500;">Updated</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-settings-3-line text-muted"></i> Settings</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Updated notification settings</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.19</td>
-                <td><span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
-              </tr>
-
-              <!-- Row 10 -->
+              {% empty %}
               <tr>
-                <td style="padding-left: 16px;" class="text-muted">10</td>
-                <td class="text-muted" style="white-space: nowrap;">10 Oct 2026, 09:30 AM</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 24px; height: 24px; font-size: 0.65rem;">SP</div>
-                    <span class="fw-semibold text-dark">Saurabh Patel</span>
+                <td colspan="9" class="text-center py-5 text-muted" style="font-size: 0.85rem;">
+                  <i class="ri-inbox-line d-block mb-2" style="font-size: 2rem; color: #cbd5e1;"></i>
+                  No activity logs found matching the selected criteria.
+                  <div class="mt-2">
+                    <a href="{% url 'audit:logs' %}" class="btn btn-sm btn-outline-secondary">Reset Filters</a>
                   </div>
                 </td>
-                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">Failed</span></td>
-                <td><span class="text-secondary d-flex align-items-center gap-1"><i class="ri-settings-3-line text-muted"></i> System</span></td>
-                <td class="text-secondary text-truncate" style="max-width: 220px;">Failed login attempt (wrong password)</td>
-                <td class="text-muted font-monospace" style="font-size: 0.78rem;">192.168.1.25</td>
-                <td><span class="badge" style="background-color: #fee2e2; color: #ef4444; font-weight: 500;">Failed</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-link text-muted p-0"><i class="ri-more-2-fill"></i></button></td>
               </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
 
         <!-- Pagination Footer -->
-        <div class="d-flex align-items-center justify-content-between p-3 border-top" style="border-color: #edf2f7 !important; font-size: 0.82rem; color: #64748b;">
+        <div class="d-flex align-items-center justify-content-between p-3 border-top flex-wrap gap-2" style="border-color: #edf2f7 !important; font-size: 0.82rem; color: #64748b;">
           <div class="d-flex align-items-center gap-2">
             <span>Show</span>
-            <select class="form-select form-select-sm" style="width: auto; font-size: 0.8rem; border-color: #e2e8f0;">
-              <option selected>10</option>
-              <option>25</option>
-              <option>50</option>
+            <select class="form-select form-select-sm" id="selectPerPage" style="width: auto; font-size: 0.8rem; border-color: #e2e8f0;">
+              <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+              <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+              <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
             </select>
             <span>entries</span>
           </div>
-          <div>Showing 1 to 10 of 1,245 entries</div>
+
+          <div>
+            Showing {{ page_obj.start_index|default:0 }} to {{ page_obj.end_index|default:0 }} of {{ total_filtered_count }} entries
+          </div>
+
+          <!-- Page navigation buttons -->
           <div class="d-flex align-items-center gap-1">
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-left-s-line"></i></button>
-            <button class="btn btn-sm px-2 py-1 text-white" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">1</button>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">2</button>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">3</button>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">4</button>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">5</button>
-            <span class="px-1 text-muted">...</span>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">125</button>
-            <button class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;"><i class="ri-arrow-right-s-line"></i></button>
+            {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}&type={{ selected_type }}&user={{ selected_user }}&module={{ selected_module }}&action={{ selected_action }}&status={{ selected_status }}&start_date={{ start_date }}&end_date={{ end_date }}&per_page={{ per_page }}" class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">
+                <i class="ri-arrow-left-s-line"></i>
+              </a>
+            {% else %}
+              <button class="btn btn-sm btn-light border text-muted px-2 py-1" disabled style="border-radius: 6px;"><i class="ri-arrow-left-s-line"></i></button>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <button class="btn btn-sm px-2 py-1 text-white" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">{{ num }}</button>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}&type={{ selected_type }}&user={{ selected_user }}&module={{ selected_module }}&action={{ selected_action }}&status={{ selected_status }}&start_date={{ start_date }}&end_date={{ end_date }}&per_page={{ per_page }}" class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">
+                  {{ num }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}&type={{ selected_type }}&user={{ selected_user }}&module={{ selected_module }}&action={{ selected_action }}&status={{ selected_status }}&start_date={{ start_date }}&end_date={{ end_date }}&per_page={{ per_page }}" class="btn btn-sm btn-light border text-muted px-2 py-1" style="border-radius: 6px;">
+                <i class="ri-arrow-right-s-line"></i>
+              </a>
+            {% else %}
+              <button class="btn btn-sm btn-light border text-muted px-2 py-1" disabled style="border-radius: 6px;"><i class="ri-arrow-right-s-line"></i></button>
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
 
     <!-- Right: Log Details Drawer -->
-    <div class="col-xl-3 col-lg-4">
-      <div class="bg-white border rounded-3 p-3 shadow-sm" style="border-color: #edf2f7 !important;">
+    <div class="col-xl-3 col-lg-4" id="logDetailsDrawerCol">
+      <div class="bg-white border rounded-3 p-3 shadow-sm" id="logDetailsDrawer" style="border-color: #edf2f7 !important; position: sticky; top: 20px;">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Log Details</h6>
-          <button class="btn btn-sm btn-link text-muted p-0"><i class="ri-close-line" style="font-size: 1.1rem;"></i></button>
+          <button type="button" class="btn btn-sm btn-link text-muted p-0" id="btnCloseDetailsDrawer" title="Close Drawer">
+            <i class="ri-close-line" style="font-size: 1.1rem;"></i>
+          </button>
         </div>
 
+        <!-- User Information Header -->
         <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom" style="border-color: #edf2f7 !important;">
-          <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+          <img id="drawerUserAvatar" src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="40" height="40" style="object-fit: cover; display: none;">
+          <div id="drawerUserInitials" class="rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary border fw-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">
+            RK
+          </div>
           <div>
-            <div class="fw-bold text-dark" style="font-size: 0.9rem;">Rahul Kumar</div>
-            <div class="text-muted" style="font-size: 0.74rem;">Developer</div>
+            <div class="fw-bold text-dark" id="drawerUserName" style="font-size: 0.9rem;">Rahul Kumar</div>
+            <div class="text-muted" id="drawerUserRole" style="font-size: 0.74rem;">Developer</div>
           </div>
         </div>
 
@@ -384,27 +363,27 @@
         <div class="d-flex flex-column gap-2 pb-3 mb-3 border-bottom" style="font-size: 0.78rem; border-color: #edf2f7 !important;">
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Action</span>
-            <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Created</span>
+            <span class="badge" id="drawerActionBadge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Created</span>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Module</span>
-            <span class="text-dark fw-medium">Project</span>
+            <span class="text-dark fw-medium" id="drawerModule">Project</span>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Date & Time</span>
-            <span class="text-dark">12 Oct 2026, 10:24 AM</span>
+            <span class="text-dark" id="drawerDateTime">12 Oct 2026, 10:24 AM</span>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">IP Address</span>
-            <span class="text-dark font-monospace">192.168.1.10</span>
+            <span class="text-dark font-monospace" id="drawerIpAddress">192.168.1.10</span>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Status</span>
-            <span class="badge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span>
+            <span class="badge" id="drawerStatusBadge" style="background-color: #dcfce7; color: #16a34a; font-weight: 500;">Success</span>
           </div>
           <div class="mt-2">
             <span class="text-muted d-block mb-1">Details</span>
-            <div class="p-2 rounded bg-light text-secondary" style="font-size: 0.74rem; line-height: 1.4;">
+            <div class="p-2 rounded bg-light text-secondary" id="drawerDetailsText" style="font-size: 0.74rem; line-height: 1.4; word-break: break-word;">
               Created new project "TaskWave API" with project key TW-API and assigned to Development team.
             </div>
           </div>
@@ -414,24 +393,21 @@
         <h6 class="fw-bold mb-2 text-dark" style="font-size: 0.85rem;">Related Information</h6>
         <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
           <div class="d-flex justify-content-between">
-            <span class="text-muted">Project Name</span>
-            <span class="fw-medium text-dark">TaskWave API</span>
+            <span class="text-muted">Object Type</span>
+            <span class="fw-medium text-dark" id="drawerObjectType">Project</span>
           </div>
           <div class="d-flex justify-content-between">
-            <span class="text-muted">Project Key</span>
-            <span class="fw-medium text-dark font-monospace">TW-API</span>
+            <span class="text-muted">Object Key / Target</span>
+            <span class="fw-medium text-dark font-monospace" id="drawerObjectRepr">TW-API</span>
           </div>
           <div class="d-flex justify-content-between">
             <span class="text-muted">Department</span>
-            <span class="fw-medium text-dark">Development</span>
+            <span class="fw-medium text-dark" id="drawerDepartment">Development</span>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Assigned Members</span>
-            <div class="d-flex align-items-center">
-              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border border-white" width="20" height="20" style="object-fit: cover;">
-              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle border border-white" width="20" height="20" style="object-fit: cover; margin-left: -5px;">
-              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle border border-white" width="20" height="20" style="object-fit: cover; margin-left: -5px;">
-              <span class="badge rounded-circle bg-light text-muted border d-inline-flex align-items-center justify-content-center" style="width: 20px; height: 20px; margin-left: -5px; font-size: 0.65rem;">+3</span>
+            <div class="d-flex align-items-center" id="drawerMembersAvatars">
+              <span class="badge bg-light text-secondary border">Team Members</span>
             </div>
           </div>
           <div class="d-flex justify-content-between">
@@ -439,12 +415,147 @@
             <span class="badge bg-light text-secondary border">Internal</span>
           </div>
           <div class="d-flex justify-content-between">
-            <span class="text-muted">Created By</span>
-            <span class="fw-medium text-dark">Rahul Kumar</span>
+            <span class="text-muted">Created / Triggered By</span>
+            <span class="fw-medium text-dark" id="drawerCreatedBy">Rahul Kumar</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const auditRows = document.querySelectorAll('.audit-log-row');
+  const drawerCol = document.getElementById('logDetailsDrawerCol');
+  const drawer = document.getElementById('logDetailsDrawer');
+  const btnCloseDrawer = document.getElementById('btnCloseDrawer');
+
+  const drawerAvatar = document.getElementById('drawerUserAvatar');
+  const drawerInitials = document.getElementById('drawerUserInitials');
+  const drawerUserName = document.getElementById('drawerUserName');
+  const drawerUserRole = document.getElementById('drawerUserRole');
+  const drawerActionBadge = document.getElementById('drawerActionBadge');
+  const drawerModule = document.getElementById('drawerModule');
+  const drawerDateTime = document.getElementById('drawerDateTime');
+  const drawerIpAddress = document.getElementById('drawerIpAddress');
+  const drawerStatusBadge = document.getElementById('drawerStatusBadge');
+  const drawerDetailsText = document.getElementById('drawerDetailsText');
+  const drawerObjectType = document.getElementById('drawerObjectType');
+  const drawerObjectRepr = document.getElementById('drawerObjectRepr');
+  const drawerDepartment = document.getElementById('drawerDepartment');
+  const drawerCreatedBy = document.getElementById('drawerCreatedBy');
+
+  // Populate drawer with row data
+  function populateDrawer(row) {
+    if (!row) return;
+
+    auditRows.forEach(r => {
+      r.classList.remove('selected-log-row');
+      r.style.backgroundColor = '';
+    });
+    row.classList.add('selected-log-row');
+    row.style.backgroundColor = '#fbfcfe';
+
+    const d = row.dataset;
+
+    if (d.userAvatar) {
+      drawerAvatar.src = d.userAvatar;
+      drawerAvatar.style.display = 'block';
+      drawerInitials.style.display = 'none';
+    } else {
+      drawerAvatar.style.display = 'none';
+      drawerInitials.style.display = 'flex';
+      drawerInitials.textContent = d.userInitials || 'SY';
+    }
+
+    drawerUserName.textContent = d.userName || 'System';
+    drawerUserRole.textContent = d.userRole || 'System Administrator';
+
+    // Action badge colors
+    drawerActionBadge.textContent = d.action || 'Created';
+    const actionLower = (d.action || '').toLowerCase();
+    if (actionLower === 'created') {
+      drawerActionBadge.style.backgroundColor = '#dcfce7';
+      drawerActionBadge.style.color = '#16a34a';
+    } else if (actionLower === 'updated') {
+      drawerActionBadge.style.backgroundColor = '#e0f2fe';
+      drawerActionBadge.style.color = '#0284c7';
+    } else if (actionLower === 'assigned') {
+      drawerActionBadge.style.backgroundColor = '#f3e8ff';
+      drawerActionBadge.style.color = '#9333ea';
+    } else if (actionLower === 'deleted') {
+      drawerActionBadge.style.backgroundColor = '#fee2e2';
+      drawerActionBadge.style.color = '#ef4444';
+    } else if (actionLower === 'changed') {
+      drawerActionBadge.style.backgroundColor = '#ffedd5';
+      drawerActionBadge.style.color = '#ea580c';
+    } else {
+      drawerActionBadge.style.backgroundColor = '#f1f5f9';
+      drawerActionBadge.style.color = '#475569';
+    }
+
+    drawerModule.textContent = d.module || 'System';
+    drawerDateTime.textContent = d.datetime || '';
+    drawerIpAddress.textContent = d.ip || '127.0.0.1';
+
+    // Status badge colors
+    drawerStatusBadge.textContent = d.status || 'Success';
+    const statusLower = (d.status || '').toLowerCase();
+    if (statusLower === 'success') {
+      drawerStatusBadge.style.backgroundColor = '#dcfce7';
+      drawerStatusBadge.style.color = '#16a34a';
+    } else if (statusLower === 'failed') {
+      drawerStatusBadge.style.backgroundColor = '#fee2e2';
+      drawerStatusBadge.style.color = '#ef4444';
+    } else {
+      drawerStatusBadge.style.backgroundColor = '#fef3c7';
+      drawerStatusBadge.style.color = '#d97706';
+    }
+
+    drawerDetailsText.textContent = d.details || '';
+    drawerObjectType.textContent = d.objectType || d.module || 'Entity';
+    drawerObjectRepr.textContent = d.objectRepr || 'N/A';
+    drawerDepartment.textContent = d.userDept || 'Core Infrastructure';
+    drawerCreatedBy.textContent = d.userName || 'System';
+
+    if (drawerCol) drawerCol.style.display = 'block';
+  }
+
+  // Row click listener
+  auditRows.forEach(row => {
+    row.addEventListener('click', function() {
+      populateDrawer(this);
+    });
+  });
+
+  // Populate first row by default
+  const firstRow = document.querySelector('.audit-log-row');
+  if (firstRow) {
+    populateDrawer(firstRow);
+  }
+
+  // Close drawer
+  if (btnCloseDrawer) {
+    btnCloseDrawer.addEventListener('click', function() {
+      if (drawerCol) drawerCol.style.display = 'none';
+      const tableCol = document.getElementById('auditTableContainer');
+      if (tableCol) {
+        tableCol.className = 'col-12';
+      }
+    });
+  }
+
+  // Per page dropdown change
+  const selectPerPage = document.getElementById('selectPerPage');
+  if (selectPerPage) {
+    selectPerPage.addEventListener('change', function() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('per_page', this.value);
+      url.searchParams.set('page', '1');
+      window.location.href = url.toString();
+    });
+  }
+});
+</script>
 {% endblock %}

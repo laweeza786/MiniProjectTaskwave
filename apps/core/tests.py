@@ -9,7 +9,8 @@ import json
 class TaskWaveCoreWorkflowTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.role_admin = Role.objects.create(name='Administrator')
+        self.role_admin, _ = Role.objects.get_or_create(name='Administrator')
+
         self.admin_user = User.objects.create_superuser(
             email='testadmin@taskwave.io',
             password='TestPassword123!',
@@ -92,3 +93,53 @@ class TaskWaveCoreWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data['status'], 'in_progress')
+
+    def test_employee_dashboard_scoped_only_to_self(self):
+        role_emp, _ = Role.objects.get_or_create(name='Employee')
+        employee = User.objects.create_user(
+            email='testemployee@taskwave.io',
+            password='TestPassword123!',
+            first_name='Marcus',
+            last_name='Chen',
+            role=role_emp,
+            account_status='active'
+        )
+
+        emp_task = Task.objects.create(
+            title='Employee Specific Task Only',
+            project=self.project,
+            created_by=self.admin_user,
+            status='in_progress'
+        )
+        emp_task.assignees.add(employee)
+
+        self.client.force_login(employee)
+        response = self.client.get(reverse('core:dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'My Dashboard')
+        self.assertContains(response, 'My Tasks')
+        self.assertContains(response, 'Employee Specific Task Only')
+        self.assertNotContains(response, 'Test Core Deliverable')
+        self.assertNotContains(response, 'Team Workload')
+        self.assertContains(response, 'My Workload & Checklist')
+
+    def test_employee_cannot_access_admin_dashboard_or_audit(self):
+        role_emp, _ = Role.objects.get_or_create(name='Employee')
+        employee = User.objects.create_user(
+            email='testemployee2@taskwave.io',
+            password='TestPassword123!',
+            first_name='Marcus2',
+            last_name='Chen2',
+            role=role_emp,
+            account_status='active'
+        )
+        self.client.force_login(employee)
+
+        resp_admin_dash = self.client.get(reverse('core:admin_dashboard'))
+        self.assertEqual(resp_admin_dash.status_code, 302)
+
+        resp_audit = self.client.get(reverse('audit:logs'))
+        self.assertEqual(resp_audit.status_code, 302)
+
+        resp_roles = self.client.get(reverse('users:roles_list'))
+        self.assertEqual(resp_roles.status_code, 302)

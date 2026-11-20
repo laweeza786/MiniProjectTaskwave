@@ -16,185 +16,84 @@ from apps.audit.middleware import log_activity
 def project_list_view(request):
     user = request.user
     query = request.GET.get('q', '').strip()
-    status_filter = request.GET.get('status', '')
-    priority_filter = request.GET.get('priority', '')
-    department_filter = request.GET.get('department', '')
+    status_filter = request.GET.get('status', '').strip()
+    priority_filter = request.GET.get('priority', '').strip()
+    department_filter = request.GET.get('department', '').strip()
+    start_date_filter = request.GET.get('start_date', '').strip()
+    end_date_filter = request.GET.get('end_date', '').strip()
 
-    projects = Project.objects.all()
+    from apps.departments.models import Department
+    departments = Department.objects.all().order_by('name')
 
-    # Filter by user if not admin
+    # Base query according to user role
+    base_projects = Project.objects.select_related('department', 'manager').prefetch_related('members').all()
     if not (user.is_superuser or (user.role and user.role.name in ['Administrator', 'Project Manager'])):
-        projects = projects.filter(Q(members=user) | Q(manager=user) | Q(visibility='organization')).distinct()
+        base_projects = base_projects.filter(Q(members=user) | Q(manager=user) | Q(visibility='organization')).distinct()
 
+    # KPI counts from all accessible projects
+    total_projects = base_projects.count()
+    active_count = base_projects.filter(status__in=['active', 'in_progress']).count()
+    completed_count = base_projects.filter(status='completed').count()
+    on_hold_count = base_projects.filter(status='on_hold').count()
+
+    # Apply filters
+    projects = base_projects
     if query:
-        projects = projects.filter(Q(name__icontains=query) | Q(description__icontains=query) | Q(project_key__icontains=query))
+        projects = projects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(project_key__icontains=query) |
+            Q(department__name__icontains=query)
+        )
     if status_filter:
-        projects = projects.filter(status=status_filter)
+        if status_filter == 'active':
+            projects = projects.filter(status__in=['active', 'in_progress'])
+        else:
+            projects = projects.filter(status=status_filter)
     if priority_filter:
         projects = projects.filter(priority=priority_filter)
     if department_filter:
         projects = projects.filter(department_id=department_filter)
+    if start_date_filter:
+        projects = projects.filter(start_date__gte=start_date_filter)
+    if end_date_filter:
+        projects = projects.filter(end_date__lte=end_date_filter)
 
-    total_projects = 12
-    active_count = 8
-    completed_count = 3
-    on_hold_count = 1
-
-    sample_projects = [
-        {
-            'id': 1,
-            'name': 'TaskWave',
-            'is_starred': True,
-            'subtitle': 'Main Task Management System',
-            'icon': 'ri-macbook-line',
-            'icon_bg': '#e0f2fe',
-            'icon_color': '#0284c7',
-            'progress': 80,
-            'bar_color': '#22c55e',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'department': 'Development',
-            'start_date': '1 Aug 2026',
-            'end_date': '30 Nov 2026',
-            'date_range': '1 Aug 2026 - 30 Nov 2026',
-            'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/priya_singh.jpg', 'img/avatars/aman_sharma.jpg'],
-            'extra_count': 5
-        },
-        {
-            'id': 2,
-            'name': 'College Portal',
-            'is_starred': False,
-            'subtitle': 'Academic Management System',
-            'icon': 'ri-bank-line',
-            'icon_bg': '#f1f5f9',
-            'icon_color': '#475569',
-            'progress': 65,
-            'bar_color': '#f59e0b',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'department': 'Academic',
-            'start_date': '15 Jul 2026',
-            'end_date': '15 Oct 2026',
-            'date_range': '15 Jul 2026 - 15 Oct 2026',
-            'avatars': ['img/avatars/neha_tiwari.jpg', 'img/avatars/vikram_singh.jpg', 'img/avatars/sahil_khan.jpg'],
-            'extra_count': 3
-        },
-        {
-            'id': 3,
-            'name': 'Mobile App',
-            'is_starred': False,
-            'subtitle': 'Android Application',
-            'icon': 'ri-smartphone-line',
-            'icon_bg': '#fee2e2',
-            'icon_color': '#ef4444',
-            'progress': 40,
-            'bar_color': '#ea580c',
-            'status': 'On Hold',
-            'status_class': 'badge-on-hold',
-            'department': 'Development',
-            'start_date': '1 Sep 2026',
-            'end_date': '31 Dec 2026',
-            'date_range': '1 Sep 2026 - 31 Dec 2026',
-            'avatars': ['img/avatars/priya_singh.jpg', 'img/avatars/rahul_kumar.jpg'],
-            'extra_count': 2
-        },
-        {
-            'id': 4,
-            'name': 'Website Redesign',
-            'is_starred': False,
-            'subtitle': 'Marketing Website',
-            'icon': 'ri-global-line',
-            'icon_bg': '#dbeafe',
-            'icon_color': '#2563eb',
-            'progress': 100,
-            'bar_color': '#22c55e',
-            'status': 'Completed',
-            'status_class': 'badge-completed',
-            'department': 'Marketing',
-            'start_date': '1 Jun 2026',
-            'end_date': '31 Aug 2026',
-            'date_range': '1 Jun 2026 - 31 Aug 2026',
-            'avatars': ['img/avatars/aman_sharma.jpg', 'img/avatars/neha_tiwari.jpg', 'img/avatars/vikram_singh.jpg'],
-            'extra_count': 4
-        },
-        {
-            'id': 5,
-            'name': 'Database Optimization',
-            'is_starred': False,
-            'subtitle': 'System Performance',
-            'icon': 'ri-database-2-line',
-            'icon_bg': '#ffedd5',
-            'icon_color': '#ea580c',
-            'progress': 30,
-            'bar_color': '#ef4444',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'department': 'IT',
-            'start_date': '1 Oct 2026',
-            'end_date': '31 Dec 2026',
-            'date_range': '1 Oct 2026 - 31 Dec 2026',
-            'avatars': ['img/avatars/rahul_kumar.jpg', 'img/avatars/aman_sharma.jpg'],
-            'extra_count': 2
-        },
-        {
-            'id': 6,
-            'name': 'API Integration',
-            'is_starred': False,
-            'subtitle': 'Third Party Integrations',
-            'icon': 'ri-shield-check-line',
-            'icon_bg': '#fef2f2',
-            'icon_color': '#dc2626',
-            'progress': 50,
-            'bar_color': '#f59e0b',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'department': 'Development',
-            'start_date': '15 Aug 2026',
-            'end_date': '30 Nov 2026',
-            'date_range': '15 Aug 2026 - 30 Nov 2026',
-            'avatars': ['img/avatars/priya_singh.jpg', 'img/avatars/sahil_khan.jpg', 'img/avatars/neha_tiwari.jpg'],
-            'extra_count': 3
-        },
-        {
-            'id': 7,
-            'name': 'Documentation',
-            'is_starred': False,
-            'subtitle': 'Project Documentation',
-            'icon': 'ri-file-text-line',
-            'icon_bg': '#dcfce7',
-            'icon_color': '#16a34a',
-            'progress': 90,
-            'bar_color': '#22c55e',
-            'status': 'In Progress',
-            'status_class': 'badge-in-progress',
-            'department': 'Documentation',
-            'start_date': '1 Aug 2026',
-            'end_date': '31 Oct 2026',
-            'date_range': '1 Aug 2026 - 31 Oct 2026',
-            'avatars': ['img/avatars/vikram_singh.jpg', 'img/avatars/rahul_kumar.jpg'],
-            'extra_count': 1
-        },
-        {
-            'id': 8,
-            'name': 'Internal Tools',
-            'is_starred': False,
-            'subtitle': 'Company Internal Tools',
-            'icon': 'ri-tools-line',
-            'icon_bg': '#f1f5f9',
-            'icon_color': '#475569',
-            'progress': 20,
-            'bar_color': '#ef4444',
-            'status': 'Planning',
-            'status_class': 'badge-planning',
-            'department': 'Infrastructure',
-            'start_date': '1 Nov 2026',
-            'end_date': '31 Jan 2027',
-            'date_range': '1 Nov 2026 - 31 Jan 2027',
-            'avatars': ['img/avatars/arjun_patel.jpg', 'img/avatars/pooja_sharma.jpg'],
-            'extra_count': 2
-        }
+    sample_projects = []
+    icons = [
+        ('ri-macbook-line', '#e0f2fe', '#0284c7'),
+        ('ri-smartphone-line', '#fee2e2', '#ef4444'),
+        ('ri-bank-line', '#f1f5f9', '#475569'),
+        ('ri-tools-line', '#fef3c7', '#d97706'),
+        ('ri-window-line', '#dcfce7', '#16a34a'),
     ]
 
+    for idx, p in enumerate(projects):
+        p_tasks = p.tasks.all()
+        p_total = p_tasks.count()
+        p_done = p_tasks.filter(status='completed').count()
+        prog = int((p_done / p_total) * 100) if p_total > 0 else (p.get_progress() if hasattr(p, 'get_progress') else 0)
+        icon, icon_bg, icon_color = icons[idx % len(icons)]
+
+        sample_projects.append({
+            'id': p.id,
+            'name': p.name,
+            'is_starred': getattr(p, 'is_starred', False),
+            'subtitle': (p.description[:45] + '...') if p.description and len(p.description) > 45 else (p.description or 'Project deliverable'),
+            'icon': icon,
+            'icon_bg': icon_bg,
+            'icon_color': icon_color,
+            'progress': prog,
+            'bar_color': '#22c55e' if prog >= 75 else ('#f59e0b' if prog >= 30 else '#94a3b8'),
+            'status': p.get_status_display() if hasattr(p, 'get_status_display') else p.status.title(),
+            'status_class': f"badge-{p.status.replace('_', '-')}",
+            'department': p.department.name if p.department else 'General',
+            'start_date': p.start_date.strftime('%d %b %Y') if p.start_date else 'Active',
+            'end_date': p.end_date.strftime('%d %b %Y') if p.end_date else 'Ongoing',
+            'date_range': f"{p.start_date.strftime('%d %b %Y') if p.start_date else 'Active'} - {p.end_date.strftime('%d %b %Y') if p.end_date else 'Ongoing'}",
+            'avatars': ['img/avatars/rahul_kumar.jpg'],
+            'extra_count': max(0, p.members.count() - 1)
+        })
     context = {
         'projects': projects,
         'sample_projects': sample_projects,
@@ -204,7 +103,12 @@ def project_list_view(request):
         'on_hold_count': on_hold_count,
         'status_filter': status_filter,
         'priority_filter': priority_filter,
+        'department_filter': department_filter,
+        'start_date_filter': start_date_filter,
+        'end_date_filter': end_date_filter,
+        'departments': departments,
         'query': query,
+        'is_manager_or_above': user.is_superuser or bool(user.role and user.role.name in ['Administrator', 'Project Manager']),
     }
     return render(request, 'projects/project_list.html', context)
 
@@ -236,30 +140,186 @@ def project_detail_view(request, pk):
 
 @login_required
 def project_create_view(request):
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name in ['Administrator', 'Project Manager'])):
+        messages.error(request, 'Permission denied. Only Administrators and Project Managers can create projects.')
+        return redirect('projects:project_list')
+
+    from apps.departments.models import Department
+    departments = Department.objects.all().order_by('name')
+    team_members = User.objects.filter(is_active=True).select_related('department', 'role').order_by('first_name')
+
     if request.method == 'POST':
-        form = ProjectForm(request.POST)
+        post_data = request.POST.copy()
+
+        # Clean department
+        dept_val = post_data.get('department', '').strip()
+        if dept_val and not dept_val.isdigit():
+            # Check direct match
+            d_obj = Department.objects.filter(name__iexact=dept_val).first()
+            if not d_obj:
+                # Check alias mapping
+                dept_aliases = {
+                    'development': 'Engineering',
+                    'dev': 'Engineering',
+                    'qa': 'Quality Assurance',
+                    'design': 'UI/UX Design',
+                    'marketing': 'Marketing & Sales',
+                    'product': 'Product Management',
+                }
+                target_name = dept_aliases.get(dept_val.lower())
+                if target_name:
+                    d_obj = Department.objects.filter(name__iexact=target_name).first()
+            if not d_obj:
+                d_obj = Department.objects.filter(name__icontains=dept_val).first()
+            if not d_obj:
+                d_obj = Department.objects.first()
+
+            if d_obj:
+                post_data['department'] = d_obj.id
+
+        # Clean dates
+        for df in ['start_date', 'end_date']:
+            val = post_data.get(df, '').strip()
+            if val:
+                for fmt in ('%Y-%m-%d', '%d %b %Y', '%d %B %Y', '%d/%m/%Y', '%m/%d/%Y'):
+                    try:
+                        from datetime import datetime
+                        dt = datetime.strptime(val, fmt)
+                        post_data[df] = dt.strftime('%Y-%m-%d')
+                        break
+                    except ValueError:
+                        pass
+
+        # Clean priority
+        prio_val = post_data.get('priority', '').lower()
+        for p_opt in ['critical', 'high', 'medium', 'low']:
+            if p_opt in prio_val:
+                post_data['priority'] = p_opt
+                break
+
+        # Clean status
+        stat_val = post_data.get('status', '').lower()
+        for s_opt in ['planning', 'active', 'on_hold', 'completed', 'archived']:
+            if s_opt.replace('_', ' ') in stat_val or s_opt in stat_val:
+                post_data['status'] = s_opt
+                break
+
+        # Clean category
+        cat_val = post_data.get('category', '').lower()
+        if 'mobile' in cat_val:
+            post_data['category'] = 'mobile_app'
+        elif 'web' in cat_val:
+            post_data['category'] = 'web_application'
+        elif 'api' in cat_val:
+            post_data['category'] = 'api'
+        elif 'design' in cat_val:
+            post_data['category'] = 'design'
+        elif 'research' in cat_val:
+            post_data['category'] = 'research'
+        elif not post_data.get('category'):
+            post_data['category'] = 'other'
+
+        # Clean visibility
+        vis_val = post_data.get('visibility', '').lower()
+        if 'member' in vis_val:
+            post_data['visibility'] = 'project_members'
+        elif 'dep' in vis_val:
+            post_data['visibility'] = 'department'
+        elif 'org' in vis_val or 'public' in vis_val:
+            post_data['visibility'] = 'organization'
+
+        # Ensure project key uniqueness
+        pkey = post_data.get('project_key', '').strip()
+        if pkey:
+            if Project.objects.filter(project_key=pkey).exists():
+                import random
+                post_data['project_key'] = f"{pkey}-{random.randint(10, 99)}"
+        else:
+            pname = post_data.get('name', 'TW')
+            words = pname.split()
+            key_slug = ''.join([w[0].upper() for w in words[:3]]) or 'PRJ'
+            import random
+            post_data['project_key'] = f"TW-{key_slug}{random.randint(10, 99)}"
+
+        form = ProjectForm(post_data)
         if form.is_valid():
             project = form.save(commit=False)
             project.created_by = request.user
+            if not project.manager:
+                project.manager = request.user
             project.save()
 
-            # Add creator / manager as member
+            # Add selected members
+            member_ids = request.POST.getlist('members')
+            for mid in member_ids:
+                try:
+                    m_user = User.objects.get(id=mid)
+                    ProjectMember.objects.get_or_create(project=project, user=m_user, defaults={'role': 'member'})
+                except (User.DoesNotExist, ValueError):
+                    pass
+
+            # Always add manager and creator as members
             if project.manager:
                 ProjectMember.objects.get_or_create(project=project, user=project.manager, defaults={'role': 'manager'})
             ProjectMember.objects.get_or_create(project=project, user=request.user, defaults={'role': 'manager'})
 
+            # Save any milestones submitted
+            milestone_titles = request.POST.getlist('milestone_titles[]')
+            milestone_dates = request.POST.getlist('milestone_dates[]')
+            from apps.projects.models import ProjectMilestone
+            from datetime import datetime
+            for m_title, m_date in zip(milestone_titles, milestone_dates):
+                m_title = m_title.strip()
+                if m_title:
+                    m_due = None
+                    if m_date:
+                        for fmt in ('%Y-%m-%d', '%d %b %Y', '%d %B %Y'):
+                            try:
+                                m_due = datetime.strptime(m_date.strip(), fmt).date()
+                                break
+                            except ValueError:
+                                pass
+                    ProjectMilestone.objects.create(project=project, title=m_title, due_date=m_due)
+
             log_activity(request.user, 'created', 'Projects', object_type='Project', object_id=project.id, object_repr=project.name, request=request)
             messages.success(request, f'Project "{project.name}" has been created successfully!')
             return redirect('projects:project_detail', pk=project.pk)
+        else:
+            error_list = [f"{field}: {', '.join(errs)}" for field, errs in form.errors.items()]
+            messages.error(request, f"Please correct the errors: {'; '.join(error_list)}")
     else:
-        form = ProjectForm()
+        # Prepopulate with attractive defaults matching design
+        initial_dept = Department.objects.first()
+        form = ProjectForm(initial={
+            'name': 'TaskWave Mobile App Development',
+            'description': 'Develop a mobile application for TaskWave with core features including task management, notifications, team collaboration, and real-time updates.',
+            'department': initial_dept.id if initial_dept else None,
+            'category': 'mobile_app',
+            'project_key': 'TW-MOB2',
+            'priority': 'high',
+            'status': 'active',
+            'visibility': 'project_members',
+            'client': 'Internal Use',
+            'start_date': '2026-10-12',
+            'end_date': '2026-12-30',
+        })
 
-    return render(request, 'projects/project_form.html', {'form': form, 'title': 'Create New Project'})
+    context = {
+        'form': form,
+        'title': 'Create New Project',
+        'departments': departments,
+        'team_members': team_members,
+    }
+    return render(request, 'projects/project_form.html', context)
 
 
 @login_required
 def project_edit_view(request, pk):
     project = get_object_or_404(Project, pk=pk)
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name == 'Administrator') or project.manager == request.user or project.created_by == request.user):
+        messages.error(request, 'Permission denied. You cannot edit this project.')
+        return redirect('projects:project_detail', pk=project.pk)
+
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
@@ -276,6 +336,10 @@ def project_edit_view(request, pk):
 @login_required
 def project_delete_view(request, pk):
     project = get_object_or_404(Project, pk=pk)
+    if not (request.user.is_superuser or (request.user.role and request.user.role.name == 'Administrator') or project.manager == request.user):
+        messages.error(request, 'Permission denied. You cannot delete this project.')
+        return redirect('projects:project_detail', pk=project.pk)
+
     if request.method == 'POST':
         name = project.name
         log_activity(request.user, 'deleted', 'Projects', object_type='Project', object_id=project.id, object_repr=name, request=request)
@@ -283,6 +347,7 @@ def project_delete_view(request, pk):
         messages.success(request, f'Project "{name}" was successfully deleted.')
         return redirect('projects:project_list')
     return render(request, 'projects/project_confirm_delete.html', {'project': project})
+
 
 
 @login_required

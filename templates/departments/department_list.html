@@ -6,29 +6,31 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-4">
     <div>
       <h1 class="dash-title">Departments</h1>
       <p class="dash-subtitle">Organize your team into departments and manage department settings.</p>
     </div>
+    {% if is_admin %}
     <div>
-      <a href="{% url 'departments:department_create' %}" class="btn-new-entity">
+      <button class="btn text-white px-3 py-2 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#addDeptModal" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> Add Department
-      </a>
+      </button>
     </div>
+    {% endif %}
   </div>
 
   <!-- KPI Stat Cards Row (4 cards) -->
-  <div class="dash-kpi-grid">
+  <div class="dash-kpi-grid mb-4">
     <!-- Total Departments -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'departments:department_list' %}" class="dash-kpi-card text-decoration-none" title="All Departments">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #dbeafe; color: #2563eb;">
           <i class="ri-community-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Departments</span>
-          <span class="dash-kpi-value">6</span>
+          <span class="dash-kpi-value text-dark">{{ total_departments }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up" style="color: #64748b;"><i class="ri-arrow-up-line"></i> 0%</span>
             <span class="trend-vs">vs last month</span>
@@ -36,17 +38,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Total Members -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'users:member_list' %}" class="dash-kpi-card text-decoration-none" title="View Members">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-user-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Members</span>
-          <span class="dash-kpi-value">24</span>
+          <span class="dash-kpi-value text-dark">{{ total_members }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
             <span class="trend-vs">vs last month</span>
@@ -54,17 +56,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Total Projects -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'projects:project_list' %}" class="dash-kpi-card text-decoration-none" title="View Projects">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-file-text-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Projects</span>
-          <span class="dash-kpi-value">12</span>
+          <span class="dash-kpi-value text-dark">{{ total_projects }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 33%</span>
             <span class="trend-vs">vs last month</span>
@@ -72,17 +74,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Active Departments -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'departments:department_list' %}?status=active" class="dash-kpi-card text-decoration-none {% if selected_status == 'active' %}border-success{% endif %}" title="Filter Active">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-orange">
           <i class="ri-checkbox-circle-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Active Departments</span>
-          <span class="dash-kpi-value">6</span>
+          <span class="dash-kpi-value text-dark">{{ active_departments }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up" style="color: #64748b;"><i class="ri-arrow-up-line"></i> 0%</span>
             <span class="trend-vs">vs last month</span>
@@ -90,32 +92,38 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
   </div>
 
   <!-- Filter Bar -->
-  <div class="dash-filter-bar">
+  <div class="dash-filter-bar mb-4">
     <div class="filter-search-box">
       <i class="ri-search-line"></i>
-      <input type="text" placeholder="Search departments...">
+      <input type="text" id="deptSearchInput" placeholder="Search departments..." value="{{ query }}">
     </div>
-    <div class="dash-select-pill">
-      <span>All Status</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Status Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select id="deptStatusFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Status</option>
+        <option value="active" {% if selected_status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inactive</option>
+      </select>
     </div>
-    <button class="dash-clear-btn" type="button">Clear</button>
+
+    <button class="dash-clear-btn" type="button" id="btnDeptClear">Clear</button>
   </div>
 
   <!-- Top Split: Table Left, Details Right -->
   <div class="row g-4 mb-4">
     <!-- Left Table -->
     <div class="col-xl-8">
-      <div class="dash-card">
+      <div class="dash-card bg-white rounded-3 border shadow-sm p-0 overflow-hidden" style="border-color: #edf2f7 !important;">
         <div class="table-responsive">
-          <table class="dash-custom-table">
+          <table class="dash-custom-table mb-0 w-100" id="departmentsTable">
             <thead>
-              <tr>
-                <th style="width: 32px;"><input type="checkbox" class="form-check-input"></th>
+              <tr class="bg-light border-bottom">
+                <th style="width: 32px; padding: 12px 14px;"><input type="checkbox" id="selectAllDept" class="form-check-input"></th>
                 <th style="width: 36px;">#</th>
                 <th>Department Name</th>
                 <th>Description</th>
@@ -123,347 +131,532 @@
                 <th>Members</th>
                 <th>Projects</th>
                 <th>Status</th>
-                <th style="text-align: right;">Actions</th>
+                <th style="text-align: right; padding-right: 14px;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>1</td>
+              {% for d in departments %}
+              <tr class="dept-table-row {% if forloop.first %}selected-dept-row{% endif %}"
+                  id="dept-row-{{ d.id }}"
+                  data-dept-id="{{ d.id }}"
+                  data-name="{{ d.name }}"
+                  data-desc="{{ d.description }}"
+                  data-head-name="{{ d.head_name }}"
+                  data-head-email="{{ d.head_email }}"
+                  data-head-id="{{ d.head_id|default:'' }}"
+                  data-head-avatar="{{ d.head_avatar }}"
+                  data-members-count="{{ d.members_count }}"
+                  data-projects-count="{{ d.projects_count }}"
+                  data-status="{{ d.status }}"
+                  data-is-active="{{ d.is_active|yesno:'true,false' }}"
+                  data-icon="{{ d.icon }}"
+                  data-icon-bg="{{ d.icon_bg }}"
+                  data-icon-color="{{ d.icon_color }}"
+                  data-email="{{ d.email }}"
+                  data-phone="{{ d.phone }}"
+                  data-location="{{ d.location }}"
+                  data-created="{{ d.created_on }}"
+                  data-members-json='{{ d.members_list|safe|escapejs }}'
+                  style="cursor: pointer; transition: background-color 0.15s ease;">
+                
+                <td style="padding: 12px 14px;" onclick="event.stopPropagation();">
+                  <input type="checkbox" class="form-check-input dept-row-cb">
+                </td>
+                <td class="text-muted small">{{ forloop.counter }}</td>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #e0f2fe; color: #0284c7; border-radius: 6px;"><i class="ri-code-s-slash-line"></i></div>
-                    <span class="fw-semibold text-dark">Development</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: {{ d.icon_bg }}; color: {{ d.icon_color }}; flex-shrink: 0; font-size: 0.9rem;">
+                      <i class="{{ d.icon }}"></i>
+                    </div>
+                    <span class="fw-semibold text-dark dept-name-text" style="font-size: 0.85rem;">{{ d.name }}</span>
                   </div>
                 </td>
-                <td class="text-muted small" style="max-width: 220px;">Handles software development and technical implementation.</td>
+                <td class="text-muted small dept-desc-text" style="max-width: 200px;">
+                  <span class="d-inline-block text-truncate w-100">{{ d.description }}</span>
+                </td>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    {% if d.head_avatar %}
+                      <img src="{% if d.head_avatar|slice:':4' == 'img/' %}{% static d.head_avatar %}{% else %}{{ d.head_avatar }}{% endif %}" class="rounded-circle border" width="24" height="24" style="object-fit: cover;">
+                    {% else %}
+                      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light border text-secondary fw-semibold" style="width: 24px; height: 24px; font-size: 9px;">
+                        {{ d.head_name|slice:":1" }}
+                      </div>
+                    {% endif %}
                     <div>
-                      <div class="small fw-semibold text-dark">Aman Sharma</div>
-                      <div class="text-muted" style="font-size: 10px;">aman@taskwave.com</div>
+                      <div class="fw-semibold text-dark small" style="font-size: 0.78rem;">{{ d.head_name }}</div>
+                      <div class="text-muted" style="font-size: 10px;">{{ d.head_email }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="text-muted">6</td>
-                <td class="text-muted">4</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+                <td class="text-muted small">{{ d.members_count }}</td>
+                <td class="text-muted small">{{ d.projects_count }}</td>
+                <td>
+                  <span class="badge {% if d.is_active %}badge-low{% else %}badge-high{% endif %} dept-status-pill" style="font-size: 0.72rem; font-weight: 500; padding: 3px 8px; border-radius: 4px; {% if d.is_active %}background-color: #dcfce7; color: #16a34a;{% else %}background-color: #fee2e2; color: #ef4444;{% endif %}">
+                    {{ d.status }}
+                  </span>
+                </td>
+                <td style="text-align: right; padding-right: 14px;" onclick="event.stopPropagation();">
+                  <div class="dropdown d-inline-block">
+                    <button class="dash-item-menu border-0 bg-transparent text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                      <i class="ri-more-2-line"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="font-size: 0.8rem; border-radius: 8px;">
+                      <li><a class="dropdown-item" href="{% url 'departments:department_detail' pk=d.id %}"><i class="ri-eye-line me-2 text-primary"></i>View Full Detail</a></li>
+                      <li><button class="dropdown-item" type="button" onclick="openEditDeptModal({{ d.id }})"><i class="ri-edit-line me-2 text-warning"></i>Edit Department</button></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <form method="POST" action="{% url 'departments:department_delete' pk=d.id %}" onsubmit="return confirm('Are you sure you want to delete department {{ d.name }}?');">
+                          {% csrf_token %}
+                          <button type="submit" class="dropdown-item text-danger"><i class="ri-delete-bin-line me-2"></i>Delete</button>
+                        </form>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
               </tr>
+              {% empty %}
               <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>2</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #fee2e2; color: #dc2626; border-radius: 6px;"><i class="ri-palette-line"></i></div>
-                    <span class="fw-semibold text-dark">Design</span>
-                  </div>
-                </td>
-                <td class="text-muted small">UI/UX design, graphics and product design.</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="small fw-semibold text-dark">Neha Tiwari</div>
-                      <div class="text-muted" style="font-size: 10px;">neha@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-muted">4</td>
-                <td class="text-muted">2</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+                <td colspan="9" class="text-center py-5 text-muted">No departments found.</td>
               </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>3</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #ede9fe; color: #7c3aed; border-radius: 6px;"><i class="ri-shield-check-line"></i></div>
-                    <span class="fw-semibold text-dark">Quality Assurance</span>
-                  </div>
-                </td>
-                <td class="text-muted small">Testing, bug tracking and quality control.</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="small fw-semibold text-dark">Vikram Singh</div>
-                      <div class="text-muted" style="font-size: 10px;">vikram@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-muted">3</td>
-                <td class="text-muted">2</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>4</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #ffedd5; color: #ea580c; border-radius: 6px;"><i class="ri-megaphone-line"></i></div>
-                    <span class="fw-semibold text-dark">Marketing</span>
-                  </div>
-                </td>
-                <td class="text-muted small">Product marketing, content and brand management.</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/sneha_gupta.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="small fw-semibold text-dark">Sneha Gupta</div>
-                      <div class="text-muted" style="font-size: 10px;">sneha@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-muted">4</td>
-                <td class="text-muted">2</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>5</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #dcfce7; color: #16a34a; border-radius: 6px;"><i class="ri-team-line"></i></div>
-                    <span class="fw-semibold text-dark">Human Resources</span>
-                  </div>
-                </td>
-                <td class="text-muted small">Recruitment, employee management and training.</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="small fw-semibold text-dark">Pooja Sharma</div>
-                      <div class="text-muted" style="font-size: 10px;">pooja@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-muted">3</td>
-                <td class="text-muted">1</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>6</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="team-avatar-mini" style="background-color: #e0f2fe; color: #0284c7; border-radius: 6px;"><i class="ri-headphone-line"></i></div>
-                    <span class="fw-semibold text-dark">Customer Support</span>
-                  </div>
-                </td>
-                <td class="text-muted small">Client support and issue resolution.</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/rohan_das.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="small fw-semibold text-dark">Rohan Das</div>
-                      <div class="text-muted" style="font-size: 10px;">rohan@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-muted">4</td>
-                <td class="text-muted">1</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-          <div class="small text-muted">Showing 1 to 6 of 6 departments</div>
-          <div class="d-flex align-items-center gap-3">
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-muted">Rows per page</span>
-              <div class="dash-select-pill"><span>10</span><i class="ri-arrow-down-s-line"></i></div>
-            </div>
-            <div class="dash-pagination-btns">
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
-              <button class="dash-page-btn active" type="button">1</button>
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
-            </div>
+        <!-- Footer Count -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" style="font-size: 0.8rem;">
+          <div class="text-muted" id="deptTableCount">Showing 1 to {{ departments|length }} of {{ total_departments }} departments</div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted">TaskWave Organization</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Right Department Details -->
+    <!-- Right Drawer: Department Detail -->
     <div class="col-xl-4">
-      <div class="dash-card">
+      <div class="dash-card bg-white p-4 rounded-3 border shadow-sm" style="border-color: #edf2f7 !important;">
+        <!-- Header with Icon & Name -->
         <div class="d-flex justify-content-between align-items-start mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="p-2 rounded-2" style="background-color: #e0f2fe; color: #0284c7; font-size: 1.2rem;">
-              <i class="ri-code-s-slash-line"></i>
+          <div class="d-flex align-items-center gap-3">
+            <div id="drawerDeptIconBox" class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background-color: #e0f2fe; color: #0284c7; font-size: 1.3rem;">
+              <i id="drawerDeptIcon" class="ri-code-s-slash-line"></i>
             </div>
             <div>
-              <h3 class="fs-6 fw-bold text-dark mb-0">Development</h3>
-              <span class="priority-pill badge-low mt-1">Active</span>
+              <h3 class="fs-6 fw-bold text-dark mb-0" id="drawerDeptName">Development</h3>
+              <span class="badge badge-low mt-1" id="drawerDeptStatus" style="background-color: #dcfce7; color: #16a34a; font-size: 0.72rem;">Active</span>
             </div>
           </div>
-          <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          <div class="dropdown">
+            <button class="dash-item-menu border-0 bg-transparent text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+              <i class="ri-more-2-line"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 0.8rem;">
+              <li><a class="dropdown-item" id="drawerDetailLink" href="#"><i class="ri-eye-line me-2"></i>Full Details</a></li>
+              <li><button class="dropdown-item" type="button" id="drawerQuickEditBtn"><i class="ri-edit-line me-2"></i>Edit Department</button></li>
+            </ul>
+          </div>
         </div>
 
-        <div class="d-flex flex-column gap-2 mb-3 small">
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-user-line me-2"></i>Head</span><span class="text-dark fw-medium">Aman Sharma</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-group-line me-2"></i>Members</span><span class="text-dark fw-medium">6</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-folder-line me-2"></i>Projects</span><span class="text-dark fw-medium">4</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-calendar-line me-2"></i>Created On</span><span class="text-dark fw-medium">1 Aug 2026</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-file-text-line me-2"></i>Description</span><span class="text-dark fw-medium text-end" style="max-width: 180px;">Handles software development, backend, frontend and technical implementation.</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-mail-line me-2"></i>Email</span><span class="text-dark fw-medium">development@taskwave.com</span></div>
-          <div class="d-flex justify-content-between"><span class="text-muted"><i class="ri-map-pin-line me-2"></i>Location</span><span class="text-dark fw-medium">Main Office, 2nd Floor</span></div>
+        <!-- Details List -->
+        <div class="d-flex flex-column gap-2 mb-4 small">
+          <div class="d-flex justify-content-between">
+            <span class="text-muted"><i class="ri-user-line me-2"></i>Head</span>
+            <span class="text-dark fw-medium" id="drawerHeadName">Aman Sharma</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted"><i class="ri-group-line me-2"></i>Members</span>
+            <span class="text-dark fw-medium" id="drawerMembersCount">6</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted"><i class="ri-file-text-line me-2"></i>Projects</span>
+            <span class="text-dark fw-medium" id="drawerProjectsCount">4</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted"><i class="ri-calendar-line me-2"></i>Created On</span>
+            <span class="text-dark fw-medium" id="drawerCreatedOn">1 Aug 2026</span>
+          </div>
+          <div class="d-flex flex-column gap-1 mt-2 pt-2 border-top">
+            <span class="text-muted"><i class="ri-align-left me-2"></i>Description</span>
+            <p class="text-secondary small mb-0" id="drawerDescription">Handles software development, backend, frontend and technical implementation.</p>
+          </div>
+          <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+            <span class="text-muted"><i class="ri-mail-line me-2"></i>Email</span>
+            <span class="text-dark fw-medium" id="drawerEmail">development@taskwave.com</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted"><i class="ri-map-pin-line me-2"></i>Location</span>
+            <span class="text-dark fw-medium" id="drawerLocation">Main Office, 2nd Floor</span>
+          </div>
         </div>
 
-        <button class="btn-import-tw w-100 mb-3" type="button">Edit Department</button>
+        <button class="btn btn-sm btn-white border w-100 py-2 mb-4 text-dark fw-medium shadow-xs" type="button" id="drawerEditBtn" style="border-radius: 8px; font-size: 0.84rem;">
+          Edit Department
+        </button>
 
+        <!-- Department Members List -->
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 class="small fw-bold text-dark mb-0">Department Members (6)</h4>
-          <a href="#" class="small text-orange text-decoration-none fw-semibold">View All</a>
+          <h4 class="small fw-bold text-dark mb-0" id="drawerMembersTitle">Department Members (6)</h4>
+          <a href="{% url 'users:member_list' %}" class="small text-decoration-none fw-semibold" id="drawerViewAllMembers" style="color: #ea580c;">View All</a>
         </div>
-        <div class="d-flex flex-column gap-2">
-          <!-- Member 1 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Aman Sharma</div><div class="text-muted" style="font-size: 10px;">Department Head</div></div>
-            </div>
-            <span class="priority-pill badge-low" style="background-color: #dcfce7; color: #16a34a;">Admin</span>
-          </div>
-          <!-- Member 2 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Rahul Kumar</div><div class="text-muted" style="font-size: 10px;">Senior Developer</div></div>
-            </div>
-            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
-          </div>
-          <!-- Member 3 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/anjali_verma.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Anjali Verma</div><div class="text-muted" style="font-size: 10px;">Frontend Developer</div></div>
-            </div>
-            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
-          </div>
-          <!-- Member 4 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/sahil_khan.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Sahil Khan</div><div class="text-muted" style="font-size: 10px;">Backend Developer</div></div>
-            </div>
-            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
-          </div>
-          <!-- Member 5 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Arjun Patel</div><div class="text-muted" style="font-size: 10px;">DevOps Engineer</div></div>
-            </div>
-            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
-          </div>
-          <!-- Member 6 -->
-          <div class="d-flex justify-content-between align-items-center p-2 border rounded-2">
-            <div class="d-flex align-items-center gap-2">
-              <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
-              <div><div class="small fw-semibold text-dark">Priya Singh</div><div class="text-muted" style="font-size: 10px;">Junior Developer</div></div>
-            </div>
-            <span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Member</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Bottom Charts Row -->
-  <div class="row g-4">
-    <div class="col-md-6">
-      <div class="dash-card">
-        <h3 class="dash-card-title mb-3">Department Project Distribution</h3>
-        <div class="donut-chart-container">
-          <div class="donut-canvas-box" style="width: 150px; height: 150px;">
-            <canvas id="deptProjectChart"></canvas>
-            <div class="donut-center-text">
-              <div class="donut-number">12</div>
-              <div class="donut-label">Projects</div>
-            </div>
-          </div>
-          <div class="donut-legend-list">
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #3b82f6;"></span><div class="donut-legend-info"><span>Development</span><span>33% (4)</span></div></div>
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #ec4899;"></span><div class="donut-legend-info"><span>Design</span><span>17% (2)</span></div></div>
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #a855f7;"></span><div class="donut-legend-info"><span>Quality Assurance</span><span>17% (2)</span></div></div>
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #f59e0b;"></span><div class="donut-legend-info"><span>Marketing</span><span>17% (2)</span></div></div>
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #ef4444;"></span><div class="donut-legend-info"><span>Human Resources</span><span>8% (1)</span></div></div>
-            <div class="donut-legend-item"><span class="legend-dot" style="background-color: #06b6d4;"></span><div class="donut-legend-info"><span>Customer Support</span><span>8% (1)</span></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="dash-card">
-        <h3 class="dash-card-title mb-3">Department Member Distribution</h3>
-        <div style="height: 180px; width: 100%;">
-          <canvas id="deptMemberChart"></canvas>
+        <div class="d-flex flex-column gap-2" id="drawerMembersList">
+          <!-- Populated dynamically -->
         </div>
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- ================= ADD DEPARTMENT MODAL ================= -->
+<div class="modal fade" id="addDeptModal" tabindex="-1" aria-labelledby="addDeptModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <form method="POST" action="{% url 'departments:department_create' %}">
+        {% csrf_token %}
+        <div class="modal-header border-bottom pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fff7ed; color: #ea580c;">
+              <i class="ri-community-line"></i>
+            </div>
+            <h5 class="modal-title fw-bold text-dark fs-6" id="addDeptModalLabel">Add New Department</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Department Name *</label>
+            <input type="text" name="name" class="form-control form-control-sm" placeholder="e.g. Operations, Artificial Intelligence" required style="border-radius: 6px;">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Description</label>
+            <textarea name="description" class="form-control form-control-sm" rows="2" placeholder="Mission, scope, and responsibilities..." style="border-radius: 6px;"></textarea>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department Head</label>
+              <select name="head" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="">Select Team Member</option>
+                {% for u in all_users %}
+                  <option value="{{ u.id }}">{{ u.get_full_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Status</label>
+              <select name="status" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department Email</label>
+              <input type="email" name="email" class="form-control form-control-sm" placeholder="dept@taskwave.com" style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Location</label>
+              <input type="text" name="location" class="form-control form-control-sm" placeholder="e.g. Floor 3, West Wing" style="border-radius: 6px;">
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label text-dark fw-medium small mb-1">Remix Icon Name</label>
+            <input type="text" name="icon" class="form-control form-control-sm" placeholder="ri-code-s-slash-line, ri-palette-line, ri-shield-check-line" value="ri-building-line" style="border-radius: 6px;">
+          </div>
+        </div>
+
+        <div class="modal-footer border-top p-3 bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Create Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EDIT DEPARTMENT MODAL ================= -->
+<div class="modal fade" id="editDeptModal" tabindex="-1" aria-labelledby="editDeptModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <form method="POST" id="editDeptForm">
+        {% csrf_token %}
+        <div class="modal-header border-bottom pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fff7ed; color: #ea580c;">
+              <i class="ri-edit-line"></i>
+            </div>
+            <h5 class="modal-title fw-bold text-dark fs-6" id="editDeptModalLabel">Edit Department</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Department Name *</label>
+            <input type="text" name="name" id="editDeptName" class="form-control form-control-sm" required style="border-radius: 6px;">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Description</label>
+            <textarea name="description" id="editDeptDesc" class="form-control form-control-sm" rows="2" style="border-radius: 6px;"></textarea>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department Head</label>
+              <select name="head" id="editDeptHead" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="">Select Team Member</option>
+                {% for u in all_users %}
+                  <option value="{{ u.id }}">{{ u.get_full_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Status</label>
+              <select name="status" id="editDeptStatus" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department Email</label>
+              <input type="email" name="email" id="editDeptEmail" class="form-control form-control-sm" style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Location</label>
+              <input type="text" name="location" id="editDeptLocation" class="form-control form-control-sm" style="border-radius: 6px;">
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label text-dark fw-medium small mb-1">Remix Icon Name</label>
+            <input type="text" name="icon" id="editDeptIcon" class="form-control form-control-sm" style="border-radius: 6px;">
+          </div>
+        </div>
+
+        <div class="modal-footer border-top p-3 bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.selected-dept-row {
+  background-color: #fff7ed !important;
+}
+.dept-table-row:hover {
+  background-color: #f8fafc;
+}
+</style>
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const pCtx = document.getElementById("deptProjectChart");
-  if (pCtx) {
-    new Chart(pCtx, {
-      type: "doughnut",
-      data: {
-        labels: ["Development", "Design", "Quality Assurance", "Marketing", "Human Resources", "Customer Support"],
-        datasets: [{
-          data: [4, 2, 2, 2, 1, 1],
-          backgroundColor: ["#3b82f6", "#ec4899", "#a855f7", "#f59e0b", "#ef4444", "#06b6d4"],
-          borderWidth: 2,
-          borderColor: "#ffffff"
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: "68%",
-        plugins: { legend: { display: false } }
-      }
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('deptSearchInput');
+  const statusFilter = document.getElementById('deptStatusFilter');
+  const btnClear = document.getElementById('btnDeptClear');
+
+  const tableRows = document.querySelectorAll('.dept-table-row');
+  const tableCountSpan = document.getElementById('deptTableCount');
+  const selectAllDept = document.getElementById('selectAllDept');
+
+  let activeDeptId = null;
+
+  // 1. Select All Checkbox
+  if (selectAllDept) {
+    selectAllDept.addEventListener('change', function() {
+      const isChecked = this.checked;
+      document.querySelectorAll('.dept-row-cb').forEach(cb => cb.checked = isChecked);
     });
   }
 
-  const mCtx = document.getElementById("deptMemberChart");
-  if (mCtx) {
-    new Chart(mCtx, {
-      type: "bar",
-      data: {
-        labels: ["Development", "Design", "Quality Assurance", "Marketing", "Human Resources", "Customer Support"],
-        datasets: [{
-          data: [6, 4, 3, 4, 3, 4],
-          backgroundColor: ["#3b82f6", "#f87171", "#a855f7", "#fbbf24", "#34d399", "#38bdf8"],
-          borderRadius: 4,
-          barThickness: 28
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-          y: { min: 0, max: 8, ticks: { stepSize: 2 } }
-        }
+  // 2. Client-side Live Filtering
+  function applyFilters() {
+    const q = (searchInput.value || '').toLowerCase().trim();
+    const status = (statusFilter.value || '').toLowerCase().trim();
+
+    let visibleCount = 0;
+
+    tableRows.forEach(row => {
+      const name = (row.dataset.name || '').toLowerCase();
+      const desc = (row.dataset.desc || '').toLowerCase();
+      const head = (row.dataset.headName || '').toLowerCase();
+      const rStatus = (row.dataset.status || '').toLowerCase();
+
+      let match = true;
+
+      if (q && !name.includes(q) && !desc.includes(q) && !head.includes(q)) match = false;
+      if (match && status && !rStatus.includes(status)) match = false;
+
+      if (match) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
       }
     });
+
+    if (tableCountSpan) {
+      tableCountSpan.textContent = `Showing ${visibleCount} of ${tableRows.length} departments`;
+    }
   }
+
+  searchInput.addEventListener('input', applyFilters);
+  statusFilter.addEventListener('change', applyFilters);
+
+  btnClear.addEventListener('click', function() {
+    searchInput.value = '';
+    statusFilter.value = '';
+    applyFilters();
+  });
+
+  // 3. Row Selection & Right Drawer Update
+  function selectDeptRow(row) {
+    tableRows.forEach(r => r.classList.remove('selected-dept-row'));
+    row.classList.add('selected-dept-row');
+
+    const dId = row.dataset.deptId;
+    activeDeptId = dId;
+
+    const name = row.dataset.name;
+    const desc = row.dataset.desc;
+    const headName = row.dataset.headName;
+    const mCount = row.dataset.membersCount;
+    const pCount = row.dataset.projectsCount;
+    const status = row.dataset.status;
+    const isActive = row.dataset.isActive === 'true';
+    const icon = row.dataset.icon;
+    const iconBg = row.dataset.iconBg;
+    const iconColor = row.dataset.iconColor;
+    const email = row.dataset.email;
+    const location = row.dataset.location;
+    const created = row.dataset.created;
+
+    let membersList = [];
+    try {
+      membersList = JSON.parse(row.dataset.membersJson || '[]');
+    } catch (e) {}
+
+    // Populate drawer elements
+    document.getElementById('drawerDeptName').textContent = name;
+    document.getElementById('drawerHeadName').textContent = headName;
+    document.getElementById('drawerMembersCount').textContent = mCount;
+    document.getElementById('drawerProjectsCount').textContent = pCount;
+    document.getElementById('drawerCreatedOn').textContent = created;
+    document.getElementById('drawerDescription').textContent = desc;
+    document.getElementById('drawerEmail').textContent = email;
+    document.getElementById('drawerLocation').textContent = location;
+
+    const iconBox = document.getElementById('drawerDeptIconBox');
+    iconBox.style.backgroundColor = iconBg;
+    iconBox.style.color = iconColor;
+    document.getElementById('drawerDeptIcon').className = icon;
+
+    const statusBadge = document.getElementById('drawerDeptStatus');
+    statusBadge.textContent = status;
+    if (isActive) {
+      statusBadge.style.backgroundColor = '#dcfce7';
+      statusBadge.style.color = '#16a34a';
+    } else {
+      statusBadge.style.backgroundColor = '#fee2e2';
+      statusBadge.style.color = '#ef4444';
+    }
+
+    // Populate members list in drawer
+    const listContainer = document.getElementById('drawerMembersList');
+    listContainer.innerHTML = '';
+    document.getElementById('drawerMembersTitle').textContent = `Department Members (${mCount})`;
+    document.getElementById('drawerViewAllMembers').href = `/members/?department=${encodeURIComponent(name)}`;
+
+    if (membersList.length === 0) {
+      listContainer.innerHTML = '<div class="text-muted small py-2">No members assigned yet</div>';
+    } else {
+      membersList.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-center justify-content-between p-2 border rounded-2 bg-light';
+        div.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            ${m.avatar ? `<img src="${m.avatar.startsWith('img/') ? '/static/' + m.avatar : m.avatar}" class="rounded-circle border" width="24" height="24" style="object-fit: cover;">` : `<div class="rounded-circle d-flex align-items-center justify-content-center bg-white border text-secondary fw-semibold" style="width: 24px; height: 24px; font-size: 9px;">${m.name.slice(0, 1)}</div>`}
+            <div>
+              <div class="fw-semibold text-dark" style="font-size: 0.78rem;">${m.name}</div>
+              <div class="text-muted" style="font-size: 10px;">${m.role}</div>
+            </div>
+          </div>
+          <span class="badge bg-white text-secondary border" style="font-size: 10px;">Member</span>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    document.getElementById('drawerDetailLink').href = `/departments/${dId}/`;
+  }
+
+  tableRows.forEach(row => {
+    row.addEventListener('click', function() {
+      selectDeptRow(this);
+    });
+  });
+
+  // Select first row by default
+  if (tableRows.length > 0) {
+    selectDeptRow(tableRows[0]);
+  }
+
+  // 4. Edit Department Modal Handling
+  const editDeptModal = new bootstrap.Modal(document.getElementById('editDeptModal'));
+  const editDeptForm = document.getElementById('editDeptForm');
+
+  window.openEditDeptModal = function(dId) {
+    const row = document.getElementById(`dept-row-${dId}`);
+    if (!row) return;
+
+    editDeptForm.action = `/departments/${dId}/edit/`;
+
+    document.getElementById('editDeptName').value = row.dataset.name || '';
+    document.getElementById('editDeptDesc').value = row.dataset.desc || '';
+    document.getElementById('editDeptEmail').value = row.dataset.email || '';
+    document.getElementById('editDeptLocation').value = row.dataset.location || '';
+    document.getElementById('editDeptIcon').value = row.dataset.icon || 'ri-building-line';
+
+    const headId = row.dataset.headId;
+    const headSelect = document.getElementById('editDeptHead');
+    for (let opt of headSelect.options) {
+      if (opt.value === headId) {
+        opt.selected = true;
+        break;
+      }
+    }
+
+    const statusVal = (row.dataset.status || '').toLowerCase();
+    const statusSelect = document.getElementById('editDeptStatus');
+    for (let opt of statusSelect.options) {
+      if (opt.value.toLowerCase() === statusVal) {
+        opt.selected = true;
+        break;
+      }
+    }
+
+    editDeptModal.show();
+  };
+
+  document.getElementById('drawerEditBtn').addEventListener('click', () => {
+    if (activeDeptId) openEditDeptModal(activeDeptId);
+  });
+  document.getElementById('drawerQuickEditBtn').addEventListener('click', () => {
+    if (activeDeptId) openEditDeptModal(activeDeptId);
+  });
 });
 </script>
 {% endblock %}

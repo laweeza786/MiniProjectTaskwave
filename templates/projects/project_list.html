@@ -11,24 +11,26 @@
       <h1 class="dash-title">Projects</h1>
       <p class="dash-subtitle">Manage all projects, view progress, and track team performance.</p>
     </div>
+    {% if is_manager_or_above %}
     <div>
-      <a href="{% url 'projects:project_create' %}" class="btn-new-entity">
+      <a href="{% url 'projects:project_create' %}" class="btn text-white px-3 py-2 text-decoration-none shadow-sm d-flex align-items-center gap-1" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> New Project
       </a>
     </div>
+    {% endif %}
   </div>
 
   <!-- KPI Stat Cards Row (4 cards) -->
   <div class="dash-kpi-grid">
     <!-- Total Projects -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'projects:project_list' %}" class="dash-kpi-card text-decoration-none {% if not status_filter %}border-primary{% endif %}" title="View All Projects">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-amber">
           <i class="ri-folder-2-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Projects</span>
-          <span class="dash-kpi-value">{{ total_projects }}</span>
+          <span class="dash-kpi-value text-dark">{{ total_projects }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
             <span class="trend-vs">vs last month</span>
@@ -38,17 +40,17 @@
       <button class="dash-card-menu-btn" type="button" aria-label="Menu">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Active Projects -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'projects:project_list' %}?status=active" class="dash-kpi-card text-decoration-none {% if status_filter == 'active' %}border-success{% endif %}" title="Filter by Active Projects">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-play-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Active Projects</span>
-          <span class="dash-kpi-value">{{ active_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ active_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 33%</span>
             <span class="trend-vs">vs last month</span>
@@ -58,17 +60,17 @@
       <button class="dash-card-menu-btn" type="button" aria-label="Menu">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- Completed Projects -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'projects:project_list' %}?status=completed" class="dash-kpi-card text-decoration-none {% if status_filter == 'completed' %}border-success{% endif %}" title="Filter by Completed Projects">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-check-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Completed Projects</span>
-          <span class="dash-kpi-value">{{ completed_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ completed_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 50%</span>
             <span class="trend-vs">vs last month</span>
@@ -78,17 +80,17 @@
       <button class="dash-card-menu-btn" type="button" aria-label="Menu">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
 
     <!-- On Hold -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'projects:project_list' %}?status=on_hold" class="dash-kpi-card text-decoration-none {% if status_filter == 'on_hold' %}border-danger{% endif %}" title="Filter by On Hold Projects">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-time-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">On Hold</span>
-          <span class="dash-kpi-value">{{ on_hold_count }}</span>
+          <span class="dash-kpi-value text-dark">{{ on_hold_count }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-down"><i class="ri-arrow-down-line"></i> 50%</span>
             <span class="trend-vs">vs last month</span>
@@ -98,36 +100,57 @@
       <button class="dash-card-menu-btn" type="button" aria-label="Menu">
         <i class="ri-more-2-line"></i>
       </button>
-    </div>
+    </a>
   </div>
 
   <!-- Filter Bar -->
-  <div class="dash-filter-bar">
+  <form method="GET" action="{% url 'projects:project_list' %}" class="dash-filter-bar mb-4" id="projectFilterForm">
+    <!-- Search Box -->
     <div class="filter-search-box">
       <i class="ri-search-line"></i>
-      <input type="text" placeholder="Search projects..." value="{{ query }}">
+      <input type="text" name="q" placeholder="Search projects..." value="{{ query }}">
     </div>
-    <div class="dash-select-pill">
-      <span>All Status</span>
-      <i class="ri-arrow-down-s-line"></i>
-    </div>
-    <div class="dash-select-pill">
-      <span>All Departments</span>
-      <i class="ri-arrow-down-s-line"></i>
-    </div>
-    <div class="dash-select-pill">
-      <i class="ri-calendar-line me-1 text-muted"></i>
-      <span>Start Date</span>
-      <i class="ri-arrow-down-s-line"></i>
-    </div>
-    <div class="dash-select-pill">
-      <i class="ri-calendar-line me-1 text-muted"></i>
-      <span>End Date</span>
-      <i class="ri-arrow-down-s-line"></i>
-    </div>
-    <button class="dash-clear-btn" type="button">Clear</button>
-  </div>
 
+    <!-- Status Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center">
+      <select name="status" class="border-0 bg-transparent px-3 py-1" style="outline: none; font-size: 0.82rem; color: #475569; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Status</option>
+        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+        <option value="planning" {% if status_filter == 'planning' %}selected{% endif %}>Planning</option>
+        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="on_hold" {% if status_filter == 'on_hold' %}selected{% endif %}>On Hold</option>
+        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+        <option value="archived" {% if status_filter == 'archived' %}selected{% endif %}>Archived</option>
+      </select>
+    </div>
+
+    <!-- Department Dropdown -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center">
+      <select name="department" class="border-0 bg-transparent px-3 py-1" style="outline: none; font-size: 0.82rem; color: #475569; cursor: pointer;" onchange="this.form.submit()">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.id }}" {% if department_filter == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Start Date Picker -->
+    <div class="dash-select-pill d-inline-flex align-items-center gap-1 px-2" title="Filter by Start Date">
+      <i class="ri-calendar-line text-muted"></i>
+      <input type="date" name="start_date" value="{{ start_date_filter }}" class="border-0 bg-transparent text-secondary" style="outline: none; font-size: 0.8rem; cursor: pointer;" onchange="this.form.submit()">
+    </div>
+
+    <!-- End Date Picker -->
+    <div class="dash-select-pill d-inline-flex align-items-center gap-1 px-2" title="Filter by End Date">
+      <i class="ri-calendar-line text-muted"></i>
+      <input type="date" name="end_date" value="{{ end_date_filter }}" class="border-0 bg-transparent text-secondary" style="outline: none; font-size: 0.8rem; cursor: pointer;" onchange="this.form.submit()">
+    </div>
+
+    <!-- Clear Button -->
+    <a href="{% url 'projects:project_list' %}" class="dash-clear-btn text-decoration-none d-inline-flex align-items-center justify-content-center">Clear</a>
+  </form>
+
+  {% if sample_projects %}
   <!-- 8 Project Cards Grid -->
   <div class="projects-grid-8 mb-4">
     {% for p in sample_projects %}
@@ -140,13 +163,15 @@
           </div>
           <div>
             <div class="project-box-title">
-              {{ p.name }}
+              <a href="{% url 'projects:project_detail' p.id %}" class="text-dark text-decoration-none hover-primary">
+                {{ p.name }}
+              </a>
               {% if p.is_starred %}<i class="ri-star-fill text-warning ms-1" style="font-size: 0.85rem;"></i>{% endif %}
             </div>
             <div class="project-box-sub">{{ p.subtitle }}</div>
           </div>
         </div>
-        <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+        <a href="{% url 'projects:project_detail' p.id %}" class="dash-item-menu text-decoration-none" title="View details"><i class="ri-arrow-right-up-line"></i></a>
       </div>
 
       <!-- Percentage & Progress Bar -->
@@ -180,7 +205,7 @@
   <!-- All Projects Table -->
   <div class="dash-card">
     <div class="dash-card-header">
-      <h2 class="dash-card-title">All Projects</h2>
+      <h2 class="dash-card-title">All Projects ({{ sample_projects|length }})</h2>
     </div>
     <div class="table-responsive">
       <table class="dash-custom-table">
@@ -198,10 +223,14 @@
           </tr>
         </thead>
         <tbody>
-          {% for p in sample_projects|slice:":6" %}
+          {% for p in sample_projects %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td class="fw-semibold text-dark">{{ p.name }}</td>
+            <td class="fw-semibold text-dark">
+              <a href="{% url 'projects:project_detail' p.id %}" class="text-dark text-decoration-none hover-primary">
+                {{ p.name }}
+              </a>
+            </td>
             <td class="text-muted">{{ p.department }}</td>
             <td class="text-muted">{{ p.start_date }}</td>
             <td class="text-muted">{{ p.end_date }}</td>
@@ -225,7 +254,9 @@
               </div>
             </td>
             <td>
-              <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+              <a href="{% url 'projects:project_detail' p.id %}" class="btn btn-sm btn-light border px-2 py-1" title="View Project">
+                <i class="ri-eye-line"></i>
+              </a>
             </td>
           </tr>
           {% endfor %}
@@ -233,5 +264,18 @@
       </table>
     </div>
   </div>
+  {% else %}
+  <!-- Empty State When No Projects Match Filter -->
+  <div class="bg-white border rounded-3 p-5 text-center mb-4 shadow-sm" style="border-color: #edf2f7 !important;">
+    <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center text-muted" style="width: 64px; height: 64px; background-color: #f8fafc; font-size: 2rem;">
+      <i class="ri-folder-search-line"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">No Projects Found</h5>
+    <p class="text-muted small mb-3">No projects matched your search query or selected filter criteria.</p>
+    <a href="{% url 'projects:project_list' %}" class="btn btn-sm btn-outline-secondary px-3">
+      <i class="ri-filter-off-line me-1"></i> Clear All Filters
+    </a>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

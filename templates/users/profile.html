@@ -12,7 +12,7 @@
       <div class="dash-subtitle">View and manage your personal information, tasks, and account settings.</div>
     </div>
     <div>
-      <button class="btn text-white px-3 py-2" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.86rem; display: flex; align-items: center; gap: 6px;">
+      <button class="btn text-white px-3 py-2" data-bs-toggle="modal" data-bs-target="#editProfileModal" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.86rem; display: flex; align-items: center; gap: 6px;">
         <i class="ri-edit-line"></i> Edit Profile
       </button>
     </div>
@@ -23,465 +23,858 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
       <div class="d-flex align-items-center gap-4">
         <div class="position-relative">
-          <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="84" height="84" style="object-fit: cover;">
-          <div class="position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 26px; height: 26px; background-color: #0f172a; border: 2px solid #fff; font-size: 0.75rem; cursor: pointer;">
+          {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="84" height="84" style="object-fit: cover;">
+          {% else %}
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 84px; height: 84px; background: linear-gradient(135deg, #ea580c, #f59e0b); font-size: 2rem;">
+            {{ user.get_initials }}
+          </div>
+          {% endif %}
+          <div class="position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center text-white" data-bs-toggle="modal" data-bs-target="#editProfileModal" style="width: 26px; height: 26px; background-color: #0f172a; border: 2px solid #fff; font-size: 0.75rem; cursor: pointer;" title="Change Photo">
             <i class="ri-camera-line"></i>
           </div>
         </div>
         <div>
           <div class="d-flex align-items-center gap-3 mb-1">
-            <h4 class="fw-bold text-dark mb-0" style="font-size: 1.35rem;">Rahul Kumar</h4>
+            <h4 class="fw-bold text-dark mb-0" style="font-size: 1.35rem;">{{ user.get_full_name|default:user.email }}</h4>
             <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #dcfce7; color: #16a34a; font-weight: 500; font-size: 0.72rem; padding: 4px 8px; border-radius: 9999px;">
-              <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #16a34a;"></span> Active
+              <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #16a34a;"></span>
+              {{ user.get_account_status_display|default:'Active' }}
             </span>
           </div>
-          <div class="text-secondary fw-medium mb-2" style="font-size: 0.88rem;">Software Developer</div>
+          <div class="text-secondary fw-medium mb-2" style="font-size: 0.88rem;">{{ user.role.name|default:'Team Member' }}</div>
           <div class="d-flex flex-wrap align-items-center gap-3 text-secondary" style="font-size: 0.78rem;">
-            <span class="d-flex align-items-center gap-1"><i class="ri-building-line text-muted"></i> Development Department</span>
-            <span class="d-flex align-items-center gap-1"><i class="ri-mail-line text-muted"></i> rahul@taskwave.com</span>
-            <span class="d-flex align-items-center gap-1"><i class="ri-phone-line text-muted"></i> +91 98765 43210</span>
-            <span class="d-flex align-items-center gap-1"><i class="ri-map-pin-line text-muted"></i> Jamshedpur, Jharkhand, India</span>
+            <span class="d-flex align-items-center gap-1"><i class="ri-building-line text-muted"></i> {{ user.department.name|default:'General Department' }}</span>
+            <span class="d-flex align-items-center gap-1"><i class="ri-mail-line text-muted"></i> {{ user.email }}</span>
+            {% if user.phone %}
+            <span class="d-flex align-items-center gap-1"><i class="ri-phone-line text-muted"></i> {{ user.phone }}</span>
+            {% endif %}
+            {% if user.address %}
+            <span class="d-flex align-items-center gap-1"><i class="ri-map-pin-line text-muted"></i> {{ user.address }}</span>
+            {% endif %}
           </div>
         </div>
       </div>
 
-      <div class="fst-italic text-secondary" style="font-size: 0.85rem; max-width: 220px; text-align: right;">
-        "Good teamwork turns ideas into reality."
-      </div>
-    </div>
-  </div>
-
-  <!-- Navigation Tabs -->
-  <div class="d-flex align-items-center gap-4 border-bottom mb-4 overflow-x-auto pb-1" style="border-color: #edf2f7 !important;">
-    <a href="#" class="pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.84rem;">
-      <i class="ri-dashboard-line"></i> Overview
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-user-line"></i> Personal Information
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-briefcase-line"></i> Work Details
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-code-s-slash-line"></i> Skills
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-folder-line"></i> Assigned Projects
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-history-line"></i> Task History
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-pulse-line"></i> Activity
-    </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
-      <i class="ri-settings-3-line"></i> Settings
-    </a>
-  </div>
-
-  <!-- 4 Stat KPI Cards Grid -->
-  <div class="dash-kpi-grid mb-4">
-    <div class="dash-kpi-card">
-      <div class="kpi-left-group">
-        <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
-          <i class="ri-checkbox-line"></i>
-        </div>
-        <div class="dash-kpi-info">
-          <span class="dash-kpi-label">Total Tasks</span>
-          <span class="dash-kpi-value">28</span>
-          <div class="dash-kpi-trend">
-            <span class="trend-up"><i class="ri-arrow-up-line"></i> 12%</span>
-            <span class="trend-vs">vs last month</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dash-kpi-card">
-      <div class="kpi-left-group">
-        <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
-          <i class="ri-checkbox-circle-line"></i>
-        </div>
-        <div class="dash-kpi-info">
-          <span class="dash-kpi-label">Completed Tasks</span>
-          <span class="dash-kpi-value">26</span>
-          <div class="dash-kpi-trend">
-            <span class="trend-up"><i class="ri-arrow-up-line"></i> 8%</span>
-            <span class="trend-vs">vs last month</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dash-kpi-card">
-      <div class="kpi-left-group">
-        <div class="dash-kpi-icon icon-amber">
-          <i class="ri-time-line"></i>
-        </div>
-        <div class="dash-kpi-info">
-          <span class="dash-kpi-label">Pending Tasks</span>
-          <span class="dash-kpi-value">2</span>
-          <div class="dash-kpi-trend">
-            <span class="trend-down"><i class="ri-arrow-down-line"></i> 33%</span>
-            <span class="trend-vs">vs last month</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dash-kpi-card">
-      <div class="kpi-left-group">
-        <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
-          <i class="ri-focus-3-line"></i>
-        </div>
-        <div class="dash-kpi-info">
-          <span class="dash-kpi-label">Completion Rate</span>
-          <span class="dash-kpi-value">93%</span>
-          <div class="dash-kpi-trend">
-            <span class="trend-up"><i class="ri-arrow-up-line"></i> 5%</span>
-            <span class="trend-vs">vs last month</span>
-          </div>
-        </div>
+      <div class="fst-italic text-secondary" style="font-size: 0.85rem; max-width: 240px; text-align: right;">
+        "{{ user.bio|default:'Dedicated team member delivering high quality results and driving team goals.' }}"
       </div>
     </div>
   </div>
 
-  <!-- 3-Column Layout -->
-  <div class="row g-4">
-    <!-- Col 1: Personal Info & Skills -->
-    <div class="col-xl-4 col-lg-4">
-      <div class="d-flex flex-column gap-4">
-        <!-- Personal Information Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="ri-user-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Personal Information</h6>
-            </div>
-            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">Edit</a>
-          </div>
+  <!-- Navigation Tabs (Bootstrap 5 Tab List) -->
+  <ul class="nav nav-tabs profile-nav-tabs border-bottom mb-4 flex-nowrap overflow-x-auto pb-1" id="profileTabs" role="tablist" style="border-color: #edf2f7 !important;">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active pb-2 border-0 bg-transparent fw-semibold d-flex align-items-center gap-2 flex-shrink-0" id="tab-overview-btn" data-bs-toggle="tab" data-bs-target="#overview-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-dashboard-line"></i> Overview
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-personal-btn" data-bs-toggle="tab" data-bs-target="#personal-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-user-line"></i> Personal Information
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-work-btn" data-bs-toggle="tab" data-bs-target="#work-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-briefcase-line"></i> Work Details
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-skills-btn" data-bs-toggle="tab" data-bs-target="#skills-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-code-s-slash-line"></i> Skills
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-projects-btn" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-folder-line"></i> Assigned Projects ({{ assigned_projects|length }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-tasks-btn" data-bs-toggle="tab" data-bs-target="#tasks-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-history-line"></i> Task History ({{ stats.total }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-activity-btn" data-bs-toggle="tab" data-bs-target="#activity-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-pulse-line"></i> Activity
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link pb-2 border-0 bg-transparent text-muted d-flex align-items-center gap-2 flex-shrink-0" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#settings-pane" type="button" role="tab" style="font-size: 0.84rem;">
+        <i class="ri-settings-3-line"></i> Settings
+      </button>
+    </li>
+  </ul>
 
-          <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Full Name</span>
-              <span class="fw-semibold text-dark">Rahul Kumar</span>
+  <!-- Tab Panes Content -->
+  <div class="tab-content" id="profileTabContent">
+
+    <!-- ==================== TAB 1: OVERVIEW ==================== -->
+    <div class="tab-pane fade show active" id="overview-pane" role="tabpanel">
+      <!-- 4 Stat KPI Cards Grid -->
+      <div class="dash-kpi-grid mb-4">
+        <div class="dash-kpi-card">
+          <div class="kpi-left-group">
+            <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
+              <i class="ri-checkbox-line"></i>
             </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Email</span>
-              <span class="text-secondary">rahul@taskwave.com</span>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Phone</span>
-              <span class="text-secondary">+91 98765 43210</span>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Date of Birth</span>
-              <span class="text-secondary">15 March 2002</span>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Address</span>
-              <span class="text-secondary text-end" style="max-width: 170px;">Jamshedpur, Jharkhand, India</span>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Joined Date</span>
-              <span class="text-secondary">10 Jan 2026</span>
-            </div>
-            <div class="d-flex justify-content-between py-1">
-              <span class="text-muted">Employee ID</span>
-              <span class="text-secondary font-monospace">TW-EMP-001</span>
-            </div>
-            <div class="py-1">
-              <span class="text-muted d-block mb-1">Bio</span>
-              <span class="text-secondary" style="line-height: 1.4;">Passionate about building efficient solutions and working with great teams.</span>
+            <div class="dash-kpi-info">
+              <span class="dash-kpi-label">Total Tasks</span>
+              <span class="dash-kpi-value">{{ stats.total }}</span>
+              <div class="dash-kpi-trend">
+                <span class="trend-up"><i class="ri-arrow-up-line"></i> Active</span>
+                <span class="trend-vs">all-time</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Skills Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="ri-bar-chart-box-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Skills</h6>
+        <div class="dash-kpi-card">
+          <div class="kpi-left-group">
+            <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
+              <i class="ri-checkbox-circle-line"></i>
             </div>
-            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">Edit</a>
+            <div class="dash-kpi-info">
+              <span class="dash-kpi-label">Completed Tasks</span>
+              <span class="dash-kpi-value">{{ stats.completed }}</span>
+              <div class="dash-kpi-trend">
+                <span class="trend-up"><i class="ri-check-line"></i> Done</span>
+                <span class="trend-vs">delivered</span>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div class="d-flex flex-wrap gap-2">
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Python</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Django</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">JavaScript</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">MySQL</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">HTML</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">CSS</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Bootstrap</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Git</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">API Development</span>
-            <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">Problem Solving</span>
+        <div class="dash-kpi-card">
+          <div class="kpi-left-group">
+            <div class="dash-kpi-icon icon-amber">
+              <i class="ri-time-line"></i>
+            </div>
+            <div class="dash-kpi-info">
+              <span class="dash-kpi-label">Pending Tasks</span>
+              <span class="dash-kpi-value">{{ stats.pending }}</span>
+              <div class="dash-kpi-trend">
+                <span class="{% if stats.overdue > 0 %}trend-down text-danger{% else %}trend-up{% endif %}">
+                  {{ stats.overdue }} overdue
+                </span>
+                <span class="trend-vs">remaining</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-kpi-card">
+          <div class="kpi-left-group">
+            <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
+              <i class="ri-focus-3-line"></i>
+            </div>
+            <div class="dash-kpi-info">
+              <span class="dash-kpi-label">Completion Rate</span>
+              <span class="dash-kpi-value">{{ stats.completion_rate }}%</span>
+              <div class="dash-kpi-trend">
+                <span class="trend-up"><i class="ri-percent-line"></i> Score</span>
+                <span class="trend-vs">efficiency</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Column Overview Row -->
+      <div class="row g-4">
+        <!-- Col 1: Personal Info & Skills -->
+        <div class="col-xl-4 col-lg-4">
+          <div class="d-flex flex-column gap-4">
+            <!-- Personal Information Summary Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-user-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Personal Information</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-personal-btn')">View All</button>
+              </div>
+
+              <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Full Name</span>
+                  <span class="fw-semibold text-dark">{{ user.get_full_name|default:user.email }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Email</span>
+                  <span class="text-secondary">{{ user.email }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Phone</span>
+                  <span class="text-secondary">{{ user.phone|default:'Not specified' }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Date of Birth</span>
+                  <span class="text-secondary">{{ user.date_of_birth|date:'d M Y'|default:'Not specified' }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Address</span>
+                  <span class="text-secondary text-end" style="max-width: 170px;">{{ user.address|default:'Not specified' }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                  <span class="text-muted">Employee ID</span>
+                  <span class="text-secondary font-monospace">{{ user.employee_id|default:'TW-EMP-001' }}</span>
+                </div>
+                <div class="py-1">
+                  <span class="text-muted d-block mb-1">Bio</span>
+                  <span class="text-secondary" style="line-height: 1.4;">{{ user.bio|default:'Passionate about building efficient solutions and working with great teams.' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills Summary Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-bar-chart-box-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Skills</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-skills-btn')">Manage</button>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2">
+                {% if skills_list %}
+                  {% for s in skills_list %}
+                  <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.76rem; font-weight: 500;">{{ s }}</span>
+                  {% endfor %}
+                {% else %}
+                  <span class="badge bg-light text-secondary border px-2 py-1">Python</span>
+                  <span class="badge bg-light text-secondary border px-2 py-1">Django</span>
+                  <span class="badge bg-light text-secondary border px-2 py-1">JavaScript</span>
+                  <span class="badge bg-light text-secondary border px-2 py-1">MySQL</span>
+                  <span class="badge bg-light text-secondary border px-2 py-1">HTML/CSS</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 2: Assigned Projects & Task Overview -->
+        <div class="col-xl-4 col-lg-4">
+          <div class="d-flex flex-column gap-4">
+            <!-- Assigned Projects Summary Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-folder-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Assigned Projects</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-projects-btn')">View All</button>
+              </div>
+
+              <div class="d-flex flex-column gap-3">
+                {% if assigned_projects %}
+                  {% for item in assigned_projects|slice:":5" %}
+                  <div>
+                    <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
+                      <a href="{% url 'projects:project_detail' item.project.id %}" class="d-flex align-items-center gap-2 text-dark fw-medium text-decoration-none">
+                        <i class="ri-folder-2-line text-muted"></i> {{ item.project.name }}
+                      </a>
+                      <span class="text-muted">{{ item.progress }}%</span>
+                    </div>
+                    <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
+                      <div class="progress-bar" style="width: {{ item.progress }}%; background-color: {% if item.progress >= 75 %}#10b981{% elif item.progress >= 40 %}#3b82f6{% else %}#ea580c{% endif %}; border-radius: 9999px;"></div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-3 text-muted small">No assigned projects yet.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Task Overview Donut Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-checkbox-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Task Overview</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-tasks-btn')">History</button>
+              </div>
+
+              <div class="d-flex align-items-center gap-3">
+                <div style="width: 130px; height: 130px; position: relative; flex-shrink: 0;">
+                  <canvas id="profileTaskDonutChart"></canvas>
+                  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div class="fw-bold text-dark" style="font-size: 1.3rem; line-height: 1;">{{ stats.total }}</div>
+                    <div class="text-muted" style="font-size: 0.65rem;">Total Tasks</div>
+                  </div>
+                </div>
+                <div class="d-flex flex-column gap-2 flex-grow-1" style="font-size: 0.76rem;">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981;"></span> Completed</span>
+                    <span class="text-muted">{{ stats.completed }} <span class="ms-1" style="font-size: 0.7rem;">({{ stats.completion_rate }}%)</span></span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #f59e0b;"></span> In Progress</span>
+                    <span class="text-muted">{{ stats.in_progress }}</span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8;"></span> To Do</span>
+                    <span class="text-muted">{{ stats.to_do }}</span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></span> Overdue</span>
+                    <span class="text-muted">{{ stats.overdue }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 3: Recent Activity & Account Settings -->
+        <div class="col-xl-4 col-lg-4">
+          <div class="d-flex flex-column gap-4">
+            <!-- Recent Activity Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-time-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Activity</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-activity-btn')">View All</button>
+              </div>
+
+              <div class="d-flex flex-column gap-3">
+                {% if recent_activities %}
+                  {% for log in recent_activities|slice:":6" %}
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
+                        <i class="ri-record-circle-line"></i>
+                      </div>
+                      <div>
+                        <div class="fw-semibold text-dark" style="font-size: 0.78rem;">{{ log.action|title }}: {{ log.module }}</div>
+                        <div class="text-muted text-truncate" style="font-size: 0.7rem; max-width: 160px;">{{ log.object_repr|default:'Action performed' }}</div>
+                      </div>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.7rem;">{{ log.timestamp|timesince }} ago</span>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center py-3 text-muted small">No recent activity logged.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Account Settings Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="ri-settings-3-line text-dark" style="font-size: 1.1rem;"></i>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Account Settings</h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;" onclick="activateTab('tab-settings-btn')">Configure</button>
+              </div>
+
+              <div class="d-flex flex-column gap-3">
+                <a href="{% url 'accounts:change_password' %}" class="d-flex align-items-center justify-content-between text-decoration-none text-dark">
+                  <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                    <i class="ri-lock-line text-muted"></i> Change Password
+                  </span>
+                  <i class="ri-arrow-right-s-line text-muted"></i>
+                </a>
+                <a href="{% url 'notifications:preferences' %}" class="d-flex align-items-center justify-content-between text-decoration-none text-dark" style="font-size: 0.8rem;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="ri-notification-3-line text-muted"></i> Notification Preferences
+                  </span>
+                  <i class="ri-arrow-right-s-line text-muted"></i>
+                </a>
+                <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                  <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
+                    <i class="ri-user-settings-line text-muted"></i> Edit Profile Details
+                  </span>
+                  <i class="ri-arrow-right-s-line text-muted"></i>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Col 2: Assigned Projects & Task Overview -->
-    <div class="col-xl-4 col-lg-4">
-      <div class="d-flex flex-column gap-4">
-        <!-- Assigned Projects Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="ri-folder-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Assigned Projects</h6>
-            </div>
-            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
+    <!-- ==================== TAB 2: PERSONAL INFORMATION ==================== -->
+    <div class="tab-pane fade" id="personal-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Personal Information</h5>
+            <p class="text-muted mb-0 small">Manage your contact details, bio, and personal identification.</p>
           </div>
+          <button class="btn btn-sm text-white px-3" data-bs-toggle="modal" data-bs-target="#editProfileModal" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">
+            <i class="ri-edit-line me-1"></i> Edit Information
+          </button>
+        </div>
 
-          <div class="d-flex flex-column gap-3">
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
-                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-computer-line text-muted"></i> TaskWave (Main System)</span>
-                <span class="text-muted">80%</span>
-              </div>
-              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
-                <div class="progress-bar" style="width: 80%; background-color: #10b981; border-radius: 9999px;"></div>
-              </div>
-            </div>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">First Name</label>
+            <div class="form-control bg-light text-dark fw-medium">{{ user.first_name|default:'Not specified' }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Last Name</label>
+            <div class="form-control bg-light text-dark fw-medium">{{ user.last_name|default:'Not specified' }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Email Address</label>
+            <div class="form-control bg-light text-dark font-monospace">{{ user.email }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Phone Number</label>
+            <div class="form-control bg-light text-dark">{{ user.phone|default:'Not specified' }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Date of Birth</label>
+            <div class="form-control bg-light text-dark">{{ user.date_of_birth|date:'F d, Y'|default:'Not specified' }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Employee ID</label>
+            <div class="form-control bg-light text-dark font-monospace">{{ user.employee_id|default:'TW-EMP-001' }}</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Residential Address</label>
+            <div class="form-control bg-light text-dark">{{ user.address|default:'Not specified' }}</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Bio & Statement</label>
+            <div class="form-control bg-light text-dark" style="min-height: 80px;">{{ user.bio|default:'Passionate about building efficient solutions and working with great teams.' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
-                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-bank-line text-muted"></i> College Portal</span>
-                <span class="text-muted">65%</span>
-              </div>
-              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
-                <div class="progress-bar" style="width: 65%; background-color: #3b82f6; border-radius: 9999px;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
-                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-smartphone-line text-muted"></i> Mobile App</span>
-                <span class="text-muted">40%</span>
-              </div>
-              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
-                <div class="progress-bar" style="width: 40%; background-color: #ea580c; border-radius: 9999px;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
-                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-tools-line text-muted"></i> Internal Tools</span>
-                <span class="text-muted">90%</span>
-              </div>
-              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
-                <div class="progress-bar" style="width: 90%; background-color: #8b5cf6; border-radius: 9999px;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 0.78rem;">
-                <span class="d-flex align-items-center gap-2 text-dark fw-medium"><i class="ri-global-line text-muted"></i> Website Redesign</span>
-                <span class="text-muted">25%</span>
-              </div>
-              <div class="progress" style="height: 6px; background-color: #f1f5f9; border-radius: 9999px;">
-                <div class="progress-bar" style="width: 25%; background-color: #ef4444; border-radius: 9999px;"></div>
-              </div>
-            </div>
+    <!-- ==================== TAB 3: WORK DETAILS ==================== -->
+    <div class="tab-pane fade" id="work-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Work & Organizational Details</h5>
+            <p class="text-muted mb-0 small">Corporate department assignments, role tiers, and permissions.</p>
           </div>
         </div>
 
-        <!-- Task Overview Donut Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="ri-checkbox-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Task Overview</h6>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Assigned Department</span>
+              <h6 class="fw-bold text-dark mb-1"><i class="ri-building-line text-primary me-2"></i>{{ user.department.name|default:'General Staff' }}</h6>
+              <p class="text-muted mb-0 small">{{ user.department.description|default:'Core enterprise operational department' }}</p>
             </div>
-            <select class="form-select form-select-sm" style="width: auto; font-size: 0.76rem; border-color: #e2e8f0;">
-              <option selected>This Month</option>
-              <option>Last Month</option>
-            </select>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light">
+              <span class="text-muted small text-uppercase fw-semibold d-block mb-1">System Role & Permissions</span>
+              <h6 class="fw-bold text-dark mb-1"><i class="ri-shield-user-line text-warning me-2"></i>{{ user.role.name|default:'Employee' }}</h6>
+              <p class="text-muted mb-0 small">{{ user.role.description|default:'Standard organizational access tier' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Joined Date</label>
+            <div class="form-control bg-light text-dark">{{ user.joined_date|date:'F d, Y'|default:user.created_at|date:'F d, Y' }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Account Status</label>
+            <div class="form-control bg-light text-success fw-bold">{{ user.get_account_status_display|default:'Active' }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-muted small fw-semibold text-uppercase">Staff Privilege</label>
+            <div class="form-control bg-light text-dark">{% if user.is_staff or user.is_superuser %}Granted (Staff/Admin){% else %}Standard Member{% endif %}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: SKILLS ==================== -->
+    <div class="tab-pane fade" id="skills-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Professional Skills & Competencies</h5>
+            <p class="text-muted mb-0 small">Skills and domain expertise used for task assignments and team matching.</p>
+          </div>
+          <button class="btn btn-sm text-white px-3" data-bs-toggle="modal" data-bs-target="#editProfileModal" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">
+            <i class="ri-add-line me-1"></i> Update Skills
+          </button>
+        </div>
+
+        <div class="row g-3">
+          {% if skills_list %}
+            {% for s in skills_list %}
+            <div class="col-md-3 col-sm-6">
+              <div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between">
+                <span class="fw-semibold text-dark"><i class="ri-checkbox-circle-fill text-success me-2"></i>{{ s }}</span>
+                <span class="badge bg-white text-muted border">Verified</span>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="col-md-3 col-sm-6"><div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between"><span class="fw-semibold text-dark"><i class="ri-checkbox-circle-fill text-success me-2"></i>Python</span><span class="badge bg-white text-muted border">Core</span></div></div>
+            <div class="col-md-3 col-sm-6"><div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between"><span class="fw-semibold text-dark"><i class="ri-checkbox-circle-fill text-success me-2"></i>Django</span><span class="badge bg-white text-muted border">Core</span></div></div>
+            <div class="col-md-3 col-sm-6"><div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between"><span class="fw-semibold text-dark"><i class="ri-checkbox-circle-fill text-success me-2"></i>JavaScript</span><span class="badge bg-white text-muted border">Frontend</span></div></div>
+            <div class="col-md-3 col-sm-6"><div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between"><span class="fw-semibold text-dark"><i class="ri-checkbox-circle-fill text-success me-2"></i>MySQL</span><span class="badge bg-white text-muted border">Database</span></div></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: ASSIGNED PROJECTS ==================== -->
+    <div class="tab-pane fade" id="projects-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Assigned Projects</h5>
+            <p class="text-muted mb-0 small">Active and historical projects you are participating in.</p>
+          </div>
+          <a href="{% url 'projects:project_list' %}" class="btn btn-sm btn-outline-secondary px-3">
+            Browse All Projects
+          </a>
+        </div>
+
+        {% if assigned_projects %}
+        <div class="row g-4">
+          {% for item in assigned_projects %}
+          <div class="col-md-6 col-lg-4">
+            <div class="border rounded-3 p-3 bg-white h-100 d-flex flex-column justify-content-between shadow-sm">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="badge bg-light text-dark border font-monospace">{{ item.project.project_key|default:'TW' }}</span>
+                  <span class="badge badge-{{ item.project.status|default:'active' }}">{{ item.project.get_status_display|default:item.project.status|title }}</span>
+                </div>
+                <h6 class="fw-bold mb-1">
+                  <a href="{% url 'projects:project_detail' item.project.id %}" class="text-dark text-decoration-none hover-primary">
+                    {{ item.project.name }}
+                  </a>
+                </h6>
+                <p class="text-muted small mb-3 text-truncate-2" style="font-size: 0.8rem;">
+                  {{ item.project.description|default:'No project description provided.' }}
+                </p>
+              </div>
+
+              <div>
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                  <span>Progress</span>
+                  <span class="fw-semibold text-dark">{{ item.progress }}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 6px;">
+                  <div class="progress-bar" style="width: {{ item.progress }}%; background-color: {% if item.progress >= 75 %}#10b981{% elif item.progress >= 40 %}#3b82f6{% else %}#ea580c{% endif %};"></div>
+                </div>
+                <div class="d-flex justify-content-between small text-muted">
+                  <span><i class="ri-checkbox-line me-1"></i>{{ item.completed_tasks }}/{{ item.total_tasks }} Tasks</span>
+                  <span>{{ item.project.end_date|date:'M d, Y'|default:'Ongoing' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="ri-folder-open-line text-muted" style="font-size: 3rem;"></i>
+          <h6 class="fw-semibold mt-3">No Projects Assigned</h6>
+          <p class="text-muted small">You are not currently enrolled in any project rosters.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: TASK HISTORY ==================== -->
+    <div class="tab-pane fade" id="tasks-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Task History & Deliverables</h5>
+            <p class="text-muted mb-0 small">All tasks assigned to you across projects.</p>
+          </div>
+          <a href="{% url 'kanban:board' %}" class="btn btn-sm btn-outline-secondary px-3">
+            <i class="ri-layout-column-line me-1"></i> Open Kanban
+          </a>
+        </div>
+
+        {% if my_tasks %}
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" style="font-size: 0.85rem;">
+            <thead class="table-light text-uppercase text-muted" style="font-size: 0.75rem;">
+              <tr>
+                <th>Task Title</th>
+                <th>Project</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in my_tasks %}
+              <tr>
+                <td>
+                  <a href="{% url 'tasks:task_detail' t.id %}" class="fw-semibold text-dark text-decoration-none">
+                    {{ t.title }}
+                  </a>
+                </td>
+                <td class="text-secondary">{{ t.project.name|default:'General' }}</td>
+                <td>
+                  <span class="badge badge-{{ t.priority }}">{{ t.get_priority_display|default:t.priority|title }}</span>
+                </td>
+                <td>
+                  <span class="badge badge-{{ t.status }}">{{ t.get_status_display|default:t.status|title }}</span>
+                </td>
+                <td class="text-muted">{{ t.due_date|date:'M d, Y'|default:'No due date' }}</td>
+                <td class="text-end">
+                  <a href="{% url 'tasks:task_detail' t.id %}" class="btn btn-sm btn-light border px-2 py-1">
+                    View
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="ri-checkbox-circle-line text-muted" style="font-size: 3rem;"></i>
+          <h6 class="fw-semibold mt-3">No Tasks Assigned</h6>
+          <p class="text-muted small">You currently have no tasks assigned in the system.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: ACTIVITY ==================== -->
+    <div class="tab-pane fade" id="activity-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">User Activity Audit Stream</h5>
+            <p class="text-muted mb-0 small">Audit trail of actions and mutations performed by your account.</p>
+          </div>
+        </div>
+
+        {% if recent_activities %}
+        <div class="d-flex flex-column gap-3">
+          {% for log in recent_activities %}
+          <div class="p-3 border rounded-3 bg-light d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #0284c7;">
+                <i class="ri-history-line"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark">{{ log.action|upper }}</span>
+                <span class="text-muted ms-1">in {{ log.module }}</span>
+                <div class="text-secondary small">{{ log.object_repr|default:'No description' }}</div>
+              </div>
+            </div>
+            <div class="text-muted small text-end">
+              <div>{{ log.timestamp|date:'M d, Y H:i' }}</div>
+              <div style="font-size: 0.7rem;">IP: {{ log.ip_address|default:'127.0.0.1' }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="ri-pulse-line text-muted" style="font-size: 3rem;"></i>
+          <h6 class="fw-semibold mt-3">No Activity Recorded</h6>
+          <p class="text-muted small">Your account has no recent activity recorded in the audit log.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ==================== TAB 8: SETTINGS ==================== -->
+    <div class="tab-pane fade" id="settings-pane" role="tabpanel">
+      <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">Account & Security Settings</h5>
+            <p class="text-muted mb-0 small">Manage your account credentials, notifications, and active sessions.</p>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="p-4 border rounded-3 bg-light h-100">
+              <h6 class="fw-bold text-dark mb-2"><i class="ri-lock-password-line text-primary me-2"></i>Password & Authentication</h6>
+              <p class="text-muted small mb-3">Ensure your account is protected with a strong corporate password.</p>
+              <a href="{% url 'accounts:change_password' %}" class="btn btn-sm btn-outline-primary">
+                Change Password
+              </a>
+            </div>
           </div>
 
-          <div class="d-flex align-items-center gap-3">
-            <div style="width: 130px; height: 130px; position: relative; flex-shrink: 0;">
-              <canvas id="profileTaskDonutChart"></canvas>
-              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
-                <div class="fw-bold text-dark" style="font-size: 1.3rem; line-height: 1;">28</div>
-                <div class="text-muted" style="font-size: 0.65rem;">Total Tasks</div>
-              </div>
+          <div class="col-md-6">
+            <div class="p-4 border rounded-3 bg-light h-100">
+              <h6 class="fw-bold text-dark mb-2"><i class="ri-notification-3-line text-success me-2"></i>Notifications</h6>
+              <p class="text-muted small mb-3">Customize email and in-app alerts for task updates and reviews.</p>
+              <a href="{% url 'notifications:preferences' %}" class="btn btn-sm btn-outline-success">
+                Manage Preferences
+              </a>
             </div>
-            <div class="d-flex flex-column gap-2 flex-grow-1" style="font-size: 0.76rem;">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981;"></span> Completed</span>
-                <span class="text-muted">26 <span class="ms-1" style="font-size: 0.7rem;">(93%)</span></span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #f59e0b;"></span> In Progress</span>
-                <span class="text-muted">1 <span class="ms-1" style="font-size: 0.7rem;">(4%)</span></span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8;"></span> To Do</span>
-                <span class="text-muted">1 <span class="ms-1" style="font-size: 0.7rem;">(4%)</span></span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></span> Overdue</span>
-                <span class="text-muted">0 <span class="ms-1" style="font-size: 0.7rem;">(0%)</span></span>
-              </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-4 border rounded-3 bg-light h-100">
+              <h6 class="fw-bold text-dark mb-2"><i class="ri-edit-line text-warning me-2"></i>Profile Details</h6>
+              <p class="text-muted small mb-3">Update your name, phone number, bio, address, or profile picture.</p>
+              <button class="btn btn-sm text-white" data-bs-toggle="modal" data-bs-target="#editProfileModal" style="background-color: #ea580c;">
+                Edit Profile Information
+              </button>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-4 border rounded-3 bg-light h-100">
+              <h6 class="fw-bold text-dark mb-2"><i class="ri-logout-box-r-line text-danger me-2"></i>Sign Out</h6>
+              <p class="text-muted small mb-3">Sign out from your active session on this device.</p>
+              <a href="{% url 'accounts:logout' %}" class="btn btn-sm btn-outline-danger">
+                Sign Out
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Col 3: Recent Activity & Account Settings -->
-    <div class="col-xl-4 col-lg-4">
-      <div class="d-flex flex-column gap-4">
-        <!-- Recent Activity Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="ri-time-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Recent Activity</h6>
-            </div>
-            <a href="#" class="text-decoration-none fw-semibold" style="color: #ea580c; font-size: 0.78rem;">View All</a>
-          </div>
+  </div>
+</div>
 
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #dcfce7; color: #16a34a; font-size: 0.85rem;">
-                  <i class="ri-checkbox-circle-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Completed a task</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">UI Design Review</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">2 hours ago</span>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
-                  <i class="ri-chat-3-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Commented on a task</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">API Documentation</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">4 hours ago</span>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #f3e8ff; color: #9333ea; font-size: 0.85rem;">
-                  <i class="ri-file-upload-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Uploaded a file</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">design_mockup.png</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">1 day ago</span>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #ffedd5; color: #ea580c; font-size: 0.85rem;">
-                  <i class="ri-video-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Joined a meeting</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Development Team Sync</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">1 day ago</span>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #fee2e2; color: #ef4444; font-size: 0.85rem;">
-                  <i class="ri-task-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Task assigned</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Database Optimization</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">2 days ago</span>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
-                  <i class="ri-edit-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.78rem;">Updated task status</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Changed to In Progress</div>
-                </div>
-              </div>
-              <span class="text-muted" style="font-size: 0.7rem;">2 days ago</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Account Settings Card -->
-        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="ri-settings-3-line text-dark" style="font-size: 1.1rem;"></i>
-            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Account Settings</h6>
-          </div>
-
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
-              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
-                <i class="ri-lock-line text-muted"></i> Change Password
-              </span>
-              <i class="ri-arrow-right-s-line text-muted"></i>
-            </div>
-            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
-              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
-                <i class="ri-shield-check-line text-muted"></i> Two-Factor Authentication
-              </span>
-              <i class="ri-arrow-right-s-line text-muted"></i>
-            </div>
-            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
-              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
-                <i class="ri-computer-line text-muted"></i> Login Sessions
-              </span>
-              <i class="ri-arrow-right-s-line text-muted"></i>
-            </div>
-            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
-              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
-                <i class="ri-eye-line text-muted"></i> Privacy Settings
-              </span>
-              <i class="ri-arrow-right-s-line text-muted"></i>
-            </div>
-            <div class="d-flex align-items-center justify-content-between" style="cursor: pointer;">
-              <span class="d-flex align-items-center gap-2 text-dark" style="font-size: 0.8rem;">
-                <i class="ri-notification-3-line text-muted"></i> Notification Preferences
-              </span>
-              <i class="ri-arrow-right-s-line text-muted"></i>
-            </div>
-          </div>
-        </div>
+<!-- ==================== EDIT PROFILE MODAL ==================== -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title fw-bold text-dark" id="editProfileModalLabel">
+          <i class="ri-edit-line me-2 text-primary"></i>Edit Profile Information
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <form method="POST" action="{% url 'users:profile' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body p-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">First Name</label>
+              {{ form.first_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Last Name</label>
+              {{ form.last_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Phone Number</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Date of Birth</label>
+              {{ form.date_of_birth }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Skills (Comma-separated)</label>
+              {{ form.skills }}
+              <div class="form-text small">e.g. Python, Django, React, MySQL, UI Design</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Residential Address</label>
+              {{ form.address }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Bio</label>
+              {{ form.bio }}
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Profile Picture</label>
+              {{ form.profile_picture }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light">
+          <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn text-white px-4 fw-semibold" style="background-color: #ea580c;">
+            Save Changes
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
+<style>
+.profile-nav-tabs .nav-link {
+  color: #64748b;
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.profile-nav-tabs .nav-link:hover {
+  color: #ea580c !important;
+}
+.profile-nav-tabs .nav-link.active {
+  color: #ea580c !important;
+  border-bottom: 2px solid #ea580c !important;
+  font-weight: 600;
+}
+</style>
+
 <script>
+function activateTab(tabBtnId) {
+  const btn = document.getElementById(tabBtnId);
+  if (btn) {
+    const tabInstance = new bootstrap.Tab(btn);
+    tabInstance.show();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  // Hash-based URL routing for tabs
+  const tabMap = {
+    '#overview': 'tab-overview-btn',
+    '#personal-info': 'tab-personal-btn',
+    '#personal': 'tab-personal-btn',
+    '#work-details': 'tab-work-btn',
+    '#work': 'tab-work-btn',
+    '#skills': 'tab-skills-btn',
+    '#assigned-projects': 'tab-projects-btn',
+    '#projects': 'tab-projects-btn',
+    '#task-history': 'tab-tasks-btn',
+    '#tasks': 'tab-tasks-btn',
+    '#activity': 'tab-activity-btn',
+    '#settings': 'tab-settings-btn'
+  };
+
+  const hash = window.location.hash.toLowerCase();
+  if (hash && tabMap[hash]) {
+    activateTab(tabMap[hash]);
+  }
+
+  // Sync tab clicks with URL hash
+  const tabButtons = document.querySelectorAll('#profileTabs button[data-bs-toggle="tab"]');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('shown.bs.tab', function(event) {
+      const targetId = event.target.getAttribute('data-bs-target').replace('-pane', '');
+      history.replaceState(null, null, targetId);
+    });
+  });
+
+  // Chart.js Donut initialization with real numbers
   const ctxDonut = document.getElementById('profileTaskDonutChart');
   if (ctxDonut) {
+    const completedVal = {{ stats.completed|default:0 }};
+    const inProgressVal = {{ stats.in_progress|default:0 }};
+    const todoVal = {{ stats.to_do|default:0 }};
+    const overdueVal = {{ stats.overdue|default:0 }};
+
     new Chart(ctxDonut, {
       type: 'doughnut',
       data: {
         labels: ['Completed', 'In Progress', 'To Do', 'Overdue'],
         datasets: [{
-          data: [26, 1, 1, 0],
+          data: [completedVal, inProgressVal, todoVal, overdueVal],
           backgroundColor: ['#10b981', '#f59e0b', '#94a3b8', '#ef4444'],
           borderWidth: 2,
           borderColor: '#ffffff',

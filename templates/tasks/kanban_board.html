@@ -6,110 +6,529 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-3">
     <div>
       <h1 class="dash-title">Kanban Board</h1>
       <p class="dash-subtitle">Visualize and manage tasks across different stages.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
-      <button class="btn-import-tw" type="button">
-        <i class="ri-layout-grid-line"></i> View <i class="ri-arrow-down-s-line ms-1"></i>
-      </button>
-      <a href="{% url 'tasks:task_create' %}" class="btn-new-entity">
+      <!-- View Switcher Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-white border px-3 py-2 bg-white text-dark dropdown-toggle d-flex align-items-center gap-2 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px; font-size: 0.84rem; font-weight: 500; border-color: #e2e8f0 !important;">
+          <i class="ri-layout-grid-line text-muted"></i>
+          <span>View</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="font-size: 0.84rem; border-color: #edf2f7; border-radius: 8px;">
+          <li>
+            <a class="dropdown-item active d-flex align-items-center gap-2" href="{% url 'kanban:board' %}" style="background-color: #fff7ed; color: #ea580c; font-weight: 600;">
+              <i class="ri-kanban-view"></i> Kanban Board
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 text-dark" href="{% url 'tasks:task_list' %}">
+              <i class="ri-list-check-2 text-muted"></i> Task List
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <a href="{% url 'tasks:task_create' %}" class="btn text-white px-3 py-2 text-decoration-none shadow-sm d-flex align-items-center gap-1" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> New Task
       </a>
     </div>
   </div>
 
   <!-- Filter Bar -->
-  <div class="dash-filter-bar">
-    <div class="dash-select-pill">
-      <i class="ri-folder-line me-1 text-muted"></i>
-      <span>TaskWave</span>
-      <i class="ri-arrow-down-s-line"></i>
+  <div class="dash-filter-bar mb-4">
+    <!-- Project Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Project">
+      <i class="ri-folder-line text-muted me-1"></i>
+      <select id="kanbanProjectFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Projects</option>
+        {% for proj in all_projects %}
+          <option value="{{ proj }}" {% if selected_project == proj %}selected{% endif %}>{{ proj }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <i class="ri-user-line me-1 text-muted"></i>
-      <span>All Assignees</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Assignee Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Assignee">
+      <i class="ri-user-line text-muted me-1"></i>
+      <select id="kanbanAssigneeFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Assignees</option>
+        {% for person in all_assignees %}
+          <option value="{{ person }}" {% if selected_assignee == person %}selected{% endif %}>{{ person }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <span>All Priority</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Priority Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Priority">
+      <select id="kanbanPriorityFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Priority</option>
+        <option value="critical" {% if selected_priority == 'critical' %}selected{% endif %}>Critical</option>
+        <option value="high" {% if selected_priority == 'high' %}selected{% endif %}>High</option>
+        <option value="medium" {% if selected_priority == 'medium' %}selected{% endif %}>Medium</option>
+        <option value="low" {% if selected_priority == 'low' %}selected{% endif %}>Low</option>
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <span>All Status</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Status Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2" title="Filter by Status">
+      <select id="kanbanStatusFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Status</option>
+        <option value="todo" {% if selected_status == 'todo' %}selected{% endif %}>To Do</option>
+        <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+        <option value="review" {% if selected_status == 'review' %}selected{% endif %}>Review</option>
+        <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Completed</option>
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <i class="ri-calendar-line me-1 text-muted"></i>
-      <span>Start Date - End Date</span>
+
+    <!-- Date Range Dropdown -->
+    <div class="dropdown">
+      <button class="dash-select-pill border-0 dropdown-toggle text-start d-inline-flex align-items-center gap-1 px-3" type="button" id="dateFilterBtn" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside" style="border: 1px solid #e2e8f0 !important; background: #fff; height: 38px; border-radius: 8px;">
+        <i class="ri-calendar-line text-muted"></i>
+        <span id="dateFilterLabel" style="font-size: 0.82rem; color: #475569; font-weight: 500;">Start Date - End Date</span>
+      </button>
+      <div class="dropdown-menu p-3 shadow border" style="min-width: 270px; font-size: 0.82rem; border-color: #edf2f7; border-radius: 8px;">
+        <div class="mb-2 fw-semibold text-dark">Filter by Due Date</div>
+        <div class="mb-2">
+          <label class="form-label text-muted small mb-1">Start Date</label>
+          <input type="date" id="kanbanStartDate" class="form-control form-control-sm" value="{{ start_date }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-muted small mb-1">End Date</label>
+          <input type="date" id="kanbanEndDate" class="form-control form-control-sm" value="{{ end_date }}">
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <button type="button" class="btn btn-sm btn-link text-muted p-0 text-decoration-none" id="btnResetDates">Reset</button>
+          <button type="button" class="btn btn-sm text-white px-3" id="btnApplyDates" style="background-color: #ea580c; border-radius: 6px; font-weight: 500;">Apply</button>
+        </div>
+      </div>
     </div>
+
+    <!-- Search Box -->
     <div class="filter-search-box ms-auto">
       <i class="ri-search-line"></i>
-      <input type="text" placeholder="Search tasks...">
+      <input type="text" id="kanbanSearchInput" placeholder="Search tasks..." value="{{ query }}">
     </div>
-    <button class="dash-clear-btn" type="button">Clear</button>
+
+    <!-- Clear Button -->
+    <button class="dash-clear-btn" type="button" id="btnKanbanClear">Clear</button>
   </div>
 
   <!-- Kanban 4 Columns Grid -->
-  <div class="kanban-4cols-grid">
+  <div class="kanban-4cols-grid" id="kanbanBoardGrid">
     {% for col in columns %}
-    <div class="kanban-column-box col-{{ col.id }}">
+    <div class="kanban-column-box col-{{ col.id }}" data-column-id="{{ col.id }}" data-status-val="{{ col.status_value }}">
       <!-- Column Header -->
       <div class="kanban-col-header">
         <div class="d-flex align-items-center gap-2">
-          <span class="legend-dot" style="background-color: {{ col.dot_color }};"></span>
+          <span class="legend-dot" style="background-color: {{ col.dot_color }}; width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
           <span class="fw-bold text-dark fs-6">{{ col.title }}</span>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <span class="kanban-count-badge">{{ col.count }}</span>
-          <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          <span class="kanban-count-badge col-counter-badge" id="badge-{{ col.id }}">{{ col.count }}</span>
+          <div class="dropdown">
+            <button class="dash-item-menu border-0 bg-transparent text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+              <i class="ri-more-2-line"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 0.8rem;">
+              <li><a class="dropdown-item" href="{% url 'tasks:task_create' %}?status={{ col.status_value }}"><i class="ri-add-line me-2"></i>Add Task</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'tasks:task_list' %}"><i class="ri-list-check me-2"></i>View in List</a></li>
+            </ul>
+          </div>
         </div>
       </div>
 
       <!-- Column Cards List -->
-      <div class="kanban-cards-stack">
+      <div class="kanban-cards-stack kanban-drop-zone" data-column-id="{{ col.id }}">
         {% for task in col.tasks %}
-        <div class="kanban-task-card">
+        <div class="kanban-task-card kanban-draggable-card"
+             draggable="true"
+             data-task-id="{{ task.id }}"
+             data-is-real="{{ task.is_real|yesno:'true,false' }}"
+             data-project="{{ task.project|lower }}"
+             data-assignees="{{ task.assignee_names|lower }}"
+             data-priority="{{ task.priority|lower }}"
+             data-status="{{ col.id }}"
+             data-date="{{ task.date_iso }}"
+             data-text="{{ task.title|lower }} {{ task.desc|lower }} {{ task.project|lower }} {{ task.assignee_names|lower }} {% for tg in task.tags %}{{ tg|lower }} {% endfor %}"
+             style="cursor: grab;">
+          
           <div class="d-flex justify-content-between align-items-start mb-1">
-            <h4 class="kanban-card-title">{{ task.title }}</h4>
-            <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+            <h4 class="kanban-card-title mb-0">
+              {% if task.is_real %}
+                <a href="{% url 'tasks:task_detail' pk=task.id %}" class="text-dark text-decoration-none hover-primary">{{ task.title }}</a>
+              {% else %}
+                <span class="text-dark">{{ task.title }}</span>
+              {% endif %}
+            </h4>
+            <div class="dropdown">
+              <button class="dash-item-menu border-0 bg-transparent text-muted p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                <i class="ri-more-2-line"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 0.78rem;">
+                {% if task.is_real %}
+                  <li><a class="dropdown-item" href="{% url 'tasks:task_detail' pk=task.id %}"><i class="ri-eye-line me-2 text-primary"></i>View Details</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tasks:task_edit' pk=task.id %}"><i class="ri-edit-line me-2 text-warning"></i>Edit Task</a></li>
+                {% endif %}
+                <li><h6 class="dropdown-header" style="font-size: 0.7rem;">Move Status</h6></li>
+                <li><button class="dropdown-item move-status-btn" type="button" data-target="todo">To Do</button></li>
+                <li><button class="dropdown-item move-status-btn" type="button" data-target="in_progress">In Progress</button></li>
+                <li><button class="dropdown-item move-status-btn" type="button" data-target="review">Review</button></li>
+                <li><button class="dropdown-item move-status-btn" type="button" data-target="completed">Completed</button></li>
+              </ul>
+            </div>
           </div>
-          <p class="kanban-card-desc">{{ task.desc }}</p>
+          <p class="kanban-card-desc mb-2">{{ task.desc }}</p>
 
           <!-- Tags -->
           <div class="d-flex align-items-center gap-1 mb-3 flex-wrap">
             {% for tg in task.tags %}
-            <span class="tag-pill {% if forloop.first %}tag-pill-project{% else %}tag-pill-category{% endif %}">{{ tg }}</span>
+            <span class="tag-pill {% if forloop.first %}tag-pill-project{% else %}tag-pill-category{% endif %}" style="font-size: 0.68rem; padding: 2px 8px; border-radius: 4px; font-weight: 500; background-color: {% if forloop.first %}#e0f2fe; color: #0284c7;{% else %}#f3e8ff; color: #9333ea;{% endif %}">
+              {{ tg }}
+            </span>
             {% endfor %}
           </div>
 
           <!-- Bottom Meta -->
-          <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+          <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: #f1f5f9 !important;">
             <div class="d-flex align-items-center gap-2">
-              <span class="priority-pill {{ task.priority_class }}">{{ task.priority }}</span>
-              <span class="small text-muted"><i class="ri-calendar-line me-1"></i>{{ task.date }}</span>
+              <span class="badge {{ task.priority_class }}" style="font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; {% if 'high' in task.priority_class %}background-color: #fee2e2; color: #ef4444;{% elif 'medium' in task.priority_class %}background-color: #fef3c7; color: #d97706;{% elif 'low' in task.priority_class %}background-color: #dcfce7; color: #16a34a;{% else %}background-color: #e2e8f0; color: #475569;{% endif %}">
+                {{ task.priority }}
+              </span>
+              <span class="text-muted" style="font-size: 0.73rem;"><i class="ri-calendar-line me-1"></i>{{ task.date }}</span>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center" title="{{ task.assignee_names }}">
               {% for av in task.avatars %}
-              <img src="{% static av %}" class="rounded-circle border border-white" width="24" height="24" style="object-fit: cover; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+                {% if '/' in av %}
+                  <img src="{% if av|slice:':4' == 'img/' %}{% static av %}{% else %}{{ av }}{% endif %}" class="rounded-circle border border-white" width="22" height="22" style="object-fit: cover; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+                {% else %}
+                  <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light border text-secondary fw-semibold" style="width: 22px; height: 22px; font-size: 9px; margin-left: {% if forloop.first %}0{% else %}-6px{% endif %};">
+                    {{ av }}
+                  </span>
+                {% endif %}
               {% endfor %}
               {% if task.extra > 0 %}
-              <span class="small text-muted ms-1 fw-bold" style="font-size: 0.7rem;">+{{ task.extra }}</span>
+                <span class="text-muted ms-1 fw-bold" style="font-size: 0.68rem;">+{{ task.extra }}</span>
               {% endif %}
             </div>
           </div>
         </div>
         {% endfor %}
 
+        <!-- Empty state placeholder (hidden unless 0 cards match) -->
+        <div class="empty-col-placeholder text-center text-muted py-4 d-none" style="font-size: 0.78rem;">
+          <i class="ri-inbox-line fs-4 d-block mb-1 text-secondary opacity-50"></i>
+          <span>No matching tasks</span>
+        </div>
+
         <!-- + Add Task Button -->
-        <button class="kanban-add-task-btn" type="button">
+        <a href="{% url 'tasks:task_create' %}?status={{ col.status_value }}" class="kanban-add-task-btn text-decoration-none mt-1">
           <i class="ri-add-line"></i> Add Task
-        </button>
+        </a>
       </div>
     </div>
     {% endfor %}
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const projectFilter = document.getElementById('kanbanProjectFilter');
+  const assigneeFilter = document.getElementById('kanbanAssigneeFilter');
+  const priorityFilter = document.getElementById('kanbanPriorityFilter');
+  const statusFilter = document.getElementById('kanbanStatusFilter');
+  const searchInput = document.getElementById('kanbanSearchInput');
+  const btnClear = document.getElementById('btnKanbanClear');
+  
+  const startDateInput = document.getElementById('kanbanStartDate');
+  const endDateInput = document.getElementById('kanbanEndDate');
+  const btnApplyDates = document.getElementById('btnApplyDates');
+  const btnResetDates = document.getElementById('btnResetDates');
+  const dateFilterLabel = document.getElementById('dateFilterLabel');
+
+  const allCards = document.querySelectorAll('.kanban-draggable-card');
+  const columns = document.querySelectorAll('.kanban-column-box');
+
+  function applyFilters() {
+    const projVal = (projectFilter.value || '').toLowerCase().trim();
+    const assigneeVal = (assigneeFilter.value || '').toLowerCase().trim();
+    const prioVal = (priorityFilter.value || '').toLowerCase().trim();
+    const statusVal = (statusFilter.value || '').toLowerCase().trim();
+    const q = (searchInput.value || '').toLowerCase().trim();
+    const sDate = startDateInput.value ? new Date(startDateInput.value) : null;
+    const eDate = endDateInput.value ? new Date(endDateInput.value) : null;
+
+    let colCounts = { 'todo': 0, 'in_progress': 0, 'review': 0, 'completed': 0 };
+
+    allCards.forEach(card => {
+      const cardProj = card.dataset.project || '';
+      const cardAssignees = card.dataset.assignees || '';
+      const cardPrio = card.dataset.priority || '';
+      const cardStatus = card.dataset.status || '';
+      const cardText = card.dataset.text || '';
+      const cardDateStr = card.dataset.date || '';
+
+      let matches = true;
+
+      // Project filter
+      if (projVal && !cardProj.includes(projVal)) {
+        matches = false;
+      }
+
+      // Assignee filter
+      if (matches && assigneeVal && !cardAssignees.includes(assigneeVal)) {
+        matches = false;
+      }
+
+      // Priority filter
+      if (matches && prioVal && !cardPrio.includes(prioVal)) {
+        matches = false;
+      }
+
+      // Status filter
+      if (matches && statusVal && cardStatus !== statusVal) {
+        matches = false;
+      }
+
+      // Search text filter
+      if (matches && q && !cardText.includes(q)) {
+        matches = false;
+      }
+
+      // Date range filter
+      if (matches && cardDateStr && (sDate || eDate)) {
+        const cardDate = new Date(cardDateStr);
+        if (sDate && cardDate < sDate) matches = false;
+        if (eDate && cardDate > eDate) matches = false;
+      }
+
+      if (matches) {
+        card.style.display = 'block';
+        if (colCounts[cardStatus] !== undefined) {
+          colCounts[cardStatus]++;
+        }
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update column count badges and empty placeholders
+    columns.forEach(col => {
+      const colId = col.dataset.columnId;
+      const count = colCounts[colId] || 0;
+      const badge = col.querySelector('.col-counter-badge');
+      if (badge) badge.textContent = count;
+
+      const emptyPh = col.querySelector('.empty-col-placeholder');
+      if (emptyPh) {
+        if (count === 0) {
+          emptyPh.classList.remove('d-none');
+        } else {
+          emptyPh.classList.add('d-none');
+        }
+      }
+    });
+  }
+
+  // Event Listeners for Instant Filtering
+  [projectFilter, assigneeFilter, priorityFilter, statusFilter].forEach(el => {
+    el.addEventListener('change', applyFilters);
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+
+  if (btnApplyDates) {
+    btnApplyDates.addEventListener('click', function() {
+      const s = startDateInput.value;
+      const e = endDateInput.value;
+      if (s && e) {
+        dateFilterLabel.textContent = `${s} - ${e}`;
+      } else if (s) {
+        dateFilterLabel.textContent = `From ${s}`;
+      } else if (e) {
+        dateFilterLabel.textContent = `Until ${e}`;
+      } else {
+        dateFilterLabel.textContent = 'Start Date - End Date';
+      }
+      applyFilters();
+      // Close dropdown
+      const dd = bootstrap.Dropdown.getInstance(document.getElementById('dateFilterBtn'));
+      if (dd) dd.hide();
+    });
+  }
+
+  if (btnResetDates) {
+    btnResetDates.addEventListener('click', function() {
+      startDateInput.value = '';
+      endDateInput.value = '';
+      dateFilterLabel.textContent = 'Start Date - End Date';
+      applyFilters();
+    });
+  }
+
+  // Clear button
+  btnClear.addEventListener('click', function() {
+    projectFilter.value = '';
+    assigneeFilter.value = '';
+    priorityFilter.value = '';
+    statusFilter.value = '';
+    searchInput.value = '';
+    startDateInput.value = '';
+    endDateInput.value = '';
+    dateFilterLabel.textContent = 'Start Date - End Date';
+    applyFilters();
+  });
+
+  // Run initial filter check (if GET params were supplied)
+  applyFilters();
+
+  // Drag and Drop implementation
+  let draggedCard = null;
+
+  allCards.forEach(card => {
+    card.addEventListener('dragstart', function(e) {
+      draggedCard = card;
+      card.classList.add('opacity-50');
+      card.style.transform = 'scale(0.98)';
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.taskId);
+    });
+
+    card.addEventListener('dragend', function() {
+      card.classList.remove('opacity-50');
+      card.style.transform = '';
+      draggedCard = null;
+      document.querySelectorAll('.kanban-column-box').forEach(c => c.style.borderColor = '');
+      applyFilters();
+    });
+  });
+
+  const dropZones = document.querySelectorAll('.kanban-drop-zone');
+  dropZones.forEach(zone => {
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const colBox = zone.closest('.kanban-column-box');
+      if (colBox) colBox.style.borderColor = '#ea580c';
+    });
+
+    zone.addEventListener('dragleave', function(e) {
+      const colBox = zone.closest('.kanban-column-box');
+      if (colBox) colBox.style.borderColor = '';
+    });
+
+    zone.addEventListener('drop', async function(e) {
+      e.preventDefault();
+      const colBox = zone.closest('.kanban-column-box');
+      if (colBox) colBox.style.borderColor = '';
+
+      if (draggedCard) {
+        const targetColId = zone.dataset.columnId;
+        const addBtn = zone.querySelector('.kanban-add-task-btn');
+        if (addBtn) {
+          zone.insertBefore(draggedCard, addBtn);
+        } else {
+          zone.appendChild(draggedCard);
+        }
+
+        // Update card's status attribute
+        draggedCard.dataset.status = targetColId;
+        
+        // If it's a real task, sync to backend
+        const taskId = draggedCard.dataset.taskId;
+        const isReal = draggedCard.dataset.isReal === 'true';
+        const statusMap = {
+          'todo': 'assigned',
+          'in_progress': 'in_progress',
+          'review': 'submitted',
+          'completed': 'completed'
+        };
+        const backendStatus = statusMap[targetColId] || targetColId;
+
+        if (isReal && taskId) {
+          try {
+            await fetch(`/api/tasks/${taskId}/update-status/`, {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ status: backendStatus })
+            });
+          } catch (err) {
+            console.error('Failed to update status:', err);
+          }
+        }
+
+        applyFilters();
+      }
+    });
+  });
+
+  // Manual Move Status via 3-dots card menu
+  document.querySelectorAll('.move-status-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const targetColId = this.dataset.target;
+      const card = this.closest('.kanban-draggable-card');
+      const targetZone = document.querySelector(`.kanban-drop-zone[data-column-id="${targetColId}"]`);
+
+      if (card && targetZone) {
+        const addBtn = targetZone.querySelector('.kanban-add-task-btn');
+        if (addBtn) {
+          targetZone.insertBefore(card, addBtn);
+        } else {
+          targetZone.appendChild(card);
+        }
+        card.dataset.status = targetColId;
+
+        const taskId = card.dataset.taskId;
+        const isReal = card.dataset.isReal === 'true';
+        const statusMap = {
+          'todo': 'assigned',
+          'in_progress': 'in_progress',
+          'review': 'submitted',
+          'completed': 'completed'
+        };
+        const backendStatus = statusMap[targetColId] || targetColId;
+
+        if (isReal && taskId) {
+          try {
+            await fetch(`/api/tasks/${taskId}/update-status/`, {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ status: backendStatus })
+            });
+          } catch (err) {
+            console.error('Failed to update status:', err);
+          }
+        }
+
+        applyFilters();
+      }
+    });
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+});
+</script>
 {% endblock %}

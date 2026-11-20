@@ -7,4 +7,6 @@ urlpatterns = [
     path('', views.reports_overview_view, name='overview'),
     path('export/tasks/', views.export_tasks_csv, name='export_tasks'),
     path('export/projects/', views.export_projects_csv, name='export_projects'),
+    path('export/members/', views.export_members_csv, name='export_members'),
+    path('export/overtime/', views.export_overtime_csv, name='export_overtime'),
 ]

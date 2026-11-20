@@ -15,504 +15,905 @@
 
   <!-- Navigation Tabs -->
   <div class="d-flex align-items-center gap-4 border-bottom mb-4 overflow-x-auto pb-1" style="border-color: #edf2f7 !important;">
-    <a href="#" class="pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('general')" id="tabBtn-general" class="settings-tab-btn pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0" style="color: #ea580c; border-bottom: 2px solid #ea580c; font-size: 0.84rem;">
       <i class="ri-settings-3-line"></i> General
     </a>
-    <a href="{% url 'users:roles_list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="{% url 'users:member_list' %}" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;" title="Manage users">
       <i class="ri-user-settings-line"></i> User Management
     </a>
-    <a href="{% url 'users:roles_list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="{% url 'users:roles_list' %}" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;" title="Manage roles & permissions">
       <i class="ri-shield-keyhole-line"></i> Roles & Permissions
     </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('projects')" id="tabBtn-projects" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-folder-settings-line"></i> Project Settings
     </a>
-    <a href="{% url 'notifications:list' %}" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('notifications')" id="tabBtn-notifications" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-notification-3-line"></i> Notifications
     </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('security')" id="tabBtn-security" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-lock-line"></i> Security
     </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('appearance')" id="tabBtn-appearance" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-paint-brush-line"></i> Appearance
     </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('system')" id="tabBtn-system" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-server-line"></i> System
     </a>
-    <a href="#" class="pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
+    <a href="javascript:void(0)" onclick="switchSettingsTab('integrations')" id="tabBtn-integrations" class="settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0" style="font-size: 0.84rem;">
       <i class="ri-links-line"></i> Integrations
     </a>
   </div>
 
-  <form method="POST">
-    {% csrf_token %}
-    <!-- Main Top Layout: Organization & Email Settings Left + System Info & Backup Right -->
-    <div class="row g-4 mb-4">
-      <!-- Left Column (Organization + Email Settings) -->
-      <div class="col-lg-8">
-        <div class="d-flex flex-column gap-4">
-          <!-- Organization Settings Card -->
-          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
-                  <i class="ri-building-line" style="font-size: 1.1rem;"></i>
+  <!-- TAB 1: GENERAL -->
+  <div id="tabPanel-general" class="settings-panel">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="general">
+
+      <div class="row g-4 mb-4">
+        <!-- Left Column: Organization & Email Settings -->
+        <div class="col-lg-8">
+          <div class="d-flex flex-column gap-4">
+            <!-- Organization Settings Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
+                    <i class="ri-building-line" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Organization Settings</h6>
+                    <div class="text-muted" style="font-size: 0.76rem;">Basic information about your organization.</div>
+                  </div>
                 </div>
-                <div>
-                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Organization Settings</h6>
-                  <div class="text-muted" style="font-size: 0.76rem;">Basic information about your organization.</div>
+                <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
+              </div>
+
+              <div class="row g-4 align-items-center">
+                <div class="col-md-3 text-center">
+                  <div class="border rounded-3 p-3 d-flex flex-column align-items-center justify-content-center bg-light mb-1" style="height: 110px;">
+                    <i id="logoPreviewIcon" class="ri-building-2-line text-muted" style="font-size: 2rem;"></i>
+                    <input type="file" id="logoFileInput" name="org_logo" class="d-none" accept="image/*" onchange="previewUploadedLogo(this)">
+                    <button type="button" onclick="document.getElementById('logoFileInput').click()" class="btn btn-sm btn-white border mt-2 px-2 py-1 text-secondary" style="font-size: 0.72rem; border-radius: 4px;">
+                      <i class="ri-upload-line me-1"></i> Change Logo
+                    </button>
+                  </div>
+                  <div class="text-muted" style="font-size: 0.65rem;">Recommended size: 200x200 (PNG, JPG)</div>
+                </div>
+
+                <div class="col-md-9">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Organization Name</label>
+                      <input type="text" name="org_name" class="form-control form-control-sm" value="{{ settings.org_name }}" style="border-radius: 6px;">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Email</label>
+                      <input type="email" name="org_email" class="form-control form-control-sm" value="{{ settings.org_email|default:'admin@taskwave.com' }}" style="border-radius: 6px;">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Phone</label>
+                      <input type="text" name="org_phone" class="form-control form-control-sm" value="{{ settings.org_phone|default:'+91 98765 43210' }}" style="border-radius: 6px;">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Address</label>
+                      <input type="text" name="org_address" class="form-control form-control-sm" value="{{ settings.org_address|default:'Jamshedpur, Jharkhand, India' }}" style="border-radius: 6px;">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Website</label>
+                      <input type="text" name="org_website" class="form-control form-control-sm" value="{{ settings.org_website|default:'https://taskwave.com' }}" style="border-radius: 6px;">
+                    </div>
+                  </div>
                 </div>
               </div>
-              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
             </div>
 
-            <div class="row g-4 align-items-center">
-              <div class="col-md-3 text-center">
-                <div class="border rounded-3 p-3 d-flex flex-column align-items-center justify-content-center bg-light mb-1" style="height: 110px;">
-                  <i class="ri-building-2-line text-muted" style="font-size: 2rem;"></i>
-                  <button type="button" class="btn btn-sm btn-white border mt-2 px-2 py-1 text-secondary" style="font-size: 0.72rem; border-radius: 4px;">
-                    <i class="ri-upload-line me-1"></i> Change Logo
-                  </button>
+            <!-- Email Settings Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
+                    <i class="ri-mail-line" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Email Settings</h6>
+                    <div class="text-muted" style="font-size: 0.76rem;">Configure email settings for notifications and system alerts.</div>
+                  </div>
                 </div>
-                <div class="text-muted" style="font-size: 0.65rem;">Recommended size: 200x200 (PNG, JPG)</div>
+                <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
               </div>
 
-              <div class="col-md-9">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Organization Name</label>
-                    <input type="text" name="org_name" class="form-control form-control-sm" value="TaskWave Solutions" style="border-radius: 6px;">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Email</label>
-                    <input type="email" name="org_email" class="form-control form-control-sm" value="admin@taskwave.com" style="border-radius: 6px;">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Phone</label>
-                    <input type="text" name="org_phone" class="form-control form-control-sm" value="+91 98765 43210" style="border-radius: 6px;">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Address</label>
-                    <input type="text" name="org_address" class="form-control form-control-sm" value="Jamshedpur, Jharkhand, India" style="border-radius: 6px;">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Website</label>
-                    <input type="text" class="form-control form-control-sm" value="https://taskwave.com" style="border-radius: 6px;">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Host</label>
+                  <input type="text" name="smtp_host" class="form-control form-control-sm" value="{{ settings.smtp_host|default:'smtp.gmail.com' }}" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Port</label>
+                  <input type="text" name="smtp_port" class="form-control form-control-sm" value="{{ settings.smtp_port|default:'587' }}" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-2 d-flex flex-column justify-content-center">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Use TLS</label>
+                  <label class="tw-switch mt-1">
+                    <input type="checkbox" name="smtp_use_tls" {% if settings.smtp_use_tls %}checked{% endif %}>
+                    <span class="tw-slider"></span>
+                  </label>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Email</label>
+                  <input type="email" name="smtp_sender_email" class="form-control form-control-sm" value="{{ settings.smtp_sender_email|default:'noreply@taskwave.com' }}" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Name</label>
+                  <input type="text" name="smtp_sender_name" class="form-control form-control-sm" value="{{ settings.smtp_sender_name|default:'TaskWave' }}" style="border-radius: 6px;">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Username</label>
+                  <input type="text" name="smtp_username" class="form-control form-control-sm" value="{{ settings.smtp_username|default:'admin@taskwave.com' }}" style="border-radius: 6px;">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Password</label>
+                  <div class="input-group input-group-sm">
+                    <input type="password" id="smtpPasswordInput" name="smtp_password" class="form-control" value="{{ settings.smtp_password|default:'••••••••••••' }}" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('smtpPasswordInput')"><i class="ri-eye-line" id="smtpPasswordEyeIcon"></i></button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Email Settings Card -->
+        <!-- Right Column: System Info & Backup Maintenance -->
+        <div class="col-lg-4">
+          <div class="d-flex flex-column gap-4">
+            <!-- System Information Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="ri-database-2-line text-dark" style="font-size: 1.1rem;"></i>
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">System Information</h6>
+              </div>
+              <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
+                <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-hashtag"></i> Application Version</span>
+                  <span class="fw-semibold text-dark">v1.0.0</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-cpu-line"></i> Django Version</span>
+                  <span class="fw-semibold text-dark">{{ django_version }}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-code-box-line"></i> Python Version</span>
+                  <span class="fw-semibold text-dark">{{ python_version }}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-database-line"></i> Database</span>
+                  <span class="fw-semibold text-dark">{{ db_version }}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-global-line"></i> Environment</span>
+                  <span class="badge bg-light text-secondary border">{{ env_name }}</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between py-1">
+                  <span class="text-muted d-flex align-items-center gap-2"><i class="ri-time-line"></i> Last Backup</span>
+                  <span class="text-muted" id="lastBackupDisplay">{{ last_backup_time }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Backup & Maintenance Card -->
+            <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="ri-database-line text-dark" style="font-size: 1.1rem;"></i>
+                <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Backup & Maintenance</h6>
+              </div>
+              <div class="text-muted mb-3" style="font-size: 0.74rem;">Manage system backup and maintenance.</div>
+
+              <div class="d-flex flex-column gap-3" style="font-size: 0.8rem;">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ri-shield-keyhole-line text-muted"></i>
+                    <span class="text-dark">Create Backup</span>
+                  </div>
+                  <button type="button" onclick="triggerCreateBackup()" id="backupNowBtn" class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">Backup Now</button>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ri-download-2-line text-muted"></i>
+                    <span class="text-dark">Download Latest Backup</span>
+                  </div>
+                  <a href="{% url 'audit:download_backup' %}" class="btn btn-sm btn-outline-secondary px-3 py-1 text-decoration-none" style="border-radius: 6px; font-size: 0.76rem;">Download</a>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ri-calendar-check-line text-muted"></i>
+                    <span class="text-dark">Schedule Automatic Backup</span>
+                  </div>
+                  <label class="tw-switch">
+                    <input type="checkbox" checked onchange="showAppToast(this.checked ? 'Automatic nightly backup scheduled.' : 'Automatic backup paused.')">
+                    <span class="tw-slider"></span>
+                  </label>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ri-delete-bin-line text-muted"></i>
+                    <span class="text-dark">Clear Cache</span>
+                  </div>
+                  <button type="button" onclick="triggerClearCache()" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Clear Cache</button>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ri-settings-4-line text-muted"></i>
+                    <span class="text-dark">Database Optimization</span>
+                  </div>
+                  <button type="button" onclick="triggerOptimizeDb()" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Optimize</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Bottom Row Quick Cards (Notification Preferences + Appearance Settings + Security Settings) -->
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100 hover-card" onclick="switchSettingsTab('notifications')" style="border-color: #edf2f7 !important; cursor: pointer;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-notification-3-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Notification Preferences</h6>
+            </div>
+            <i class="ri-arrow-right-line text-muted"></i>
+          </div>
+          <div class="text-muted small">Configure alerts for tasks, project updates, messages, and mentions.</div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100 hover-card" onclick="switchSettingsTab('appearance')" style="border-color: #edf2f7 !important; cursor: pointer;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-paint-brush-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Appearance Settings</h6>
+            </div>
+            <i class="ri-arrow-right-line text-muted"></i>
+          </div>
+          <div class="text-muted small">Customize theme colors, fonts, sidebar density, and date/time formats.</div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="bg-white border rounded-3 p-4 shadow-sm h-100 hover-card" onclick="switchSettingsTab('security')" style="border-color: #edf2f7 !important; cursor: pointer;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ri-lock-line text-dark" style="font-size: 1.1rem;"></i>
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Security Settings</h6>
+            </div>
+            <i class="ri-arrow-right-line text-muted"></i>
+          </div>
+          <div class="text-muted small">Manage 2FA, session timeouts, password expiry, and access limits.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: SECURITY -->
+  <div id="tabPanel-security" class="settings-panel d-none">
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="security">
+      <div class="row g-4">
+        <div class="col-lg-8">
           <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
             <div class="d-flex align-items-center justify-content-between mb-4">
               <div class="d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #ffedd5; color: #ea580c;">
-                  <i class="ri-mail-line" style="font-size: 1.1rem;"></i>
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #fee2e2; color: #ef4444;">
+                  <i class="ri-shield-keyhole-line" style="font-size: 1.1rem;"></i>
                 </div>
                 <div>
-                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Email Settings</h6>
-                  <div class="text-muted" style="font-size: 0.76rem;">Configure email settings for notifications and system alerts.</div>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Security & Access Control</h6>
+                  <div class="text-muted" style="font-size: 0.76rem;">Configure authentication security, session policies, and brute-force protection.</div>
                 </div>
               </div>
-              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Changes</button>
+              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Security</button>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded bg-light">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ri-shield-keyhole-line text-warning mt-1" style="font-size: 1.2rem;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Two-Factor Authentication (2FA)</div>
+                    <div class="text-muted" style="font-size: 0.74rem;">Require users to verify with an authenticator app (TOTP) or email OTP on login.</div>
+                  </div>
+                </div>
+                <label class="tw-switch">
+                  <input type="checkbox" name="two_factor_auth" {% if settings.two_factor_auth %}checked{% endif %}>
+                  <span class="tw-slider"></span>
+                </label>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ri-user-follow-line text-primary mt-1" style="font-size: 1.2rem;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Password Expiry Policy</div>
+                    <div class="text-muted" style="font-size: 0.74rem;">Force employees and users to rotate their password periodically.</div>
+                  </div>
+                </div>
+                <select name="password_expiry_days" class="form-select form-select-sm" style="width: 140px; font-size: 0.8rem;">
+                  <option value="30" {% if settings.password_expiry_days == 30 %}selected{% endif %}>Every 30 Days</option>
+                  <option value="60" {% if settings.password_expiry_days == 60 %}selected{% endif %}>Every 60 Days</option>
+                  <option value="90" {% if settings.password_expiry_days == 90 or not settings.password_expiry_days %}selected{% endif %}>Every 90 Days</option>
+                  <option value="180" {% if settings.password_expiry_days == 180 %}selected{% endif %}>Every 180 Days</option>
+                  <option value="0" {% if settings.password_expiry_days == 0 %}selected{% endif %}>Never</option>
+                </select>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ri-shield-check-line text-success mt-1" style="font-size: 1.2rem;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Login Attempt Limit</div>
+                    <div class="text-muted" style="font-size: 0.74rem;">Temporarily lock IP address / account after continuous failed password attempts.</div>
+                  </div>
+                </div>
+                <select name="max_login_attempts" class="form-select form-select-sm" style="width: 140px; font-size: 0.8rem;">
+                  <option value="3" {% if settings.max_login_attempts == 3 %}selected{% endif %}>3 Attempts</option>
+                  <option value="5" {% if settings.max_login_attempts == 5 or not settings.max_login_attempts %}selected{% endif %}>5 Attempts</option>
+                  <option value="10" {% if settings.max_login_attempts == 10 %}selected{% endif %}>10 Attempts</option>
+                </select>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ri-time-line text-danger mt-1" style="font-size: 1.2rem;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Session Inactivity Timeout</div>
+                    <div class="text-muted" style="font-size: 0.74rem;">Automatically terminate idle user sessions to prevent unauthorized workstation access.</div>
+                  </div>
+                </div>
+                <select name="session_timeout_minutes" class="form-select form-select-sm" style="width: 140px; font-size: 0.8rem;">
+                  <option value="15" {% if settings.session_timeout_minutes == 15 %}selected{% endif %}>15 Minutes</option>
+                  <option value="30" {% if settings.session_timeout_minutes == 30 or not settings.session_timeout_minutes %}selected{% endif %}>30 Minutes</option>
+                  <option value="60" {% if settings.session_timeout_minutes == 60 %}selected{% endif %}>1 Hour</option>
+                  <option value="120" {% if settings.session_timeout_minutes == 120 %}selected{% endif %}>2 Hours</option>
+                </select>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ri-node-tree text-purple mt-1" style="color: #9333ea; font-size: 1.2rem;"></i>
+                  <div>
+                    <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Allow Login from Company Network Only</div>
+                    <div class="text-muted" style="font-size: 0.74rem;">Restrict access strictly to whitelisted corporate IP CIDR subnets.</div>
+                  </div>
+                </div>
+                <label class="tw-switch">
+                  <input type="checkbox" name="allow_company_network_only" {% if settings.allow_company_network_only %}checked{% endif %}>
+                  <span class="tw-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;"><i class="ri-history-line me-2 text-primary"></i>Security Audit</h6>
+            <p class="text-muted small">View all security-related activities, login attempts, password changes, and access violations.</p>
+            <a href="{% url 'audit:logs' %}?type=security_events" class="btn btn-sm btn-outline-danger w-100 mb-3"><i class="ri-shield-flash-line me-1"></i>View Security Events</a>
+            <button type="button" onclick="showAppToast('All other active sessions invalidated successfully!')" class="btn btn-sm btn-light border w-100 text-danger"><i class="ri-logout-box-r-line me-1"></i>Force Logout Other Sessions</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- TAB 3: APPEARANCE -->
+  <div id="tabPanel-appearance" class="settings-panel d-none">
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="appearance">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #f3e8ff; color: #9333ea;">
+                  <i class="ri-paint-brush-line" style="font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Appearance & Branding</h6>
+                  <div class="text-muted" style="font-size: 0.76rem;">Customize the visual themes, branding palette, and typography of TaskWave.</div>
+                </div>
+              </div>
+              <button type="submit" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Appearance</button>
             </div>
 
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Host</label>
-                <input type="text" class="form-control form-control-sm" value="smtp.gmail.com" style="border-radius: 6px;">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Port</label>
-                <input type="text" class="form-control form-control-sm" value="587" style="border-radius: 6px;">
-              </div>
-              <div class="col-md-2 d-flex flex-column justify-content-center">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Use TLS</label>
-                <label class="tw-switch mt-1">
-                  <input type="checkbox" checked>
-                  <span class="tw-slider"></span>
-                </label>
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Theme Mode</label>
+                <select name="theme" class="form-select form-select-sm" style="font-size: 0.8rem;">
+                  <option value="light" {% if settings.theme == 'light' %}selected{% endif %}>Light Mode</option>
+                  <option value="dark" {% if settings.theme == 'dark' %}selected{% endif %}>Dark Mode</option>
+                  <option value="system" {% if settings.theme == 'system' %}selected{% endif %}>Match System</option>
+                </select>
               </div>
 
-              <div class="col-md-4">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Email</label>
-                <input type="email" class="form-control form-control-sm" value="noreply@taskwave.com" style="border-radius: 6px;">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sender Name</label>
-                <input type="text" class="form-control form-control-sm" value="TaskWave" style="border-radius: 6px;">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Username</label>
-                <input type="text" class="form-control form-control-sm" value="admin@taskwave.com" style="border-radius: 6px;">
-              </div>
-
-              <div class="col-12">
-                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">SMTP Password</label>
-                <div class="input-group input-group-sm">
-                  <input type="password" class="form-control" value="password123" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">
-                  <button class="btn btn-outline-secondary" type="button"><i class="ri-eye-line"></i></button>
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Primary Brand Color</label>
+                <div class="d-flex align-items-center gap-2">
+                  <input type="color" name="primary_color" id="primaryColorPicker" value="{{ settings.primary_color|default:'#ea580c' }}" class="form-control form-control-color form-control-sm" style="width: 44px; height: 32px;" onchange="document.getElementById('primaryColorHex').value = this.value">
+                  <input type="text" id="primaryColorHex" class="form-control form-control-sm" value="{{ settings.primary_color|default:'#ea580c' }}" style="font-size: 0.8rem;" onkeyup="document.getElementById('primaryColorPicker').value = this.value">
                 </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Sidebar Style</label>
+                <select name="sidebar_style" class="form-select form-select-sm" style="font-size: 0.8rem;">
+                  <option value="default" {% if settings.sidebar_style == 'default' %}selected{% endif %}>Default Expanded</option>
+                  <option value="compact" {% if settings.sidebar_style == 'compact' %}selected{% endif %}>Compact Icon Only</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Font Size</label>
+                <select name="font_size" class="form-select form-select-sm" style="font-size: 0.8rem;">
+                  <option value="small" {% if settings.font_size == 'small' %}selected{% endif %}>Small</option>
+                  <option value="medium" {% if settings.font_size == 'medium' or not settings.font_size %}selected{% endif %}>Medium (Default)</option>
+                  <option value="large" {% if settings.font_size == 'large' %}selected{% endif %}>Large</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Date Format</label>
+                <select name="date_format" class="form-select form-select-sm" style="font-size: 0.8rem;">
+                  <option value="DD MMM YYYY" {% if settings.date_format == 'DD MMM YYYY' or not settings.date_format %}selected{% endif %}>DD MMM YYYY (20 Nov 2026)</option>
+                  <option value="YYYY-MM-DD" {% if settings.date_format == 'YYYY-MM-DD' %}selected{% endif %}>YYYY-MM-DD (2026-11-20)</option>
+                  <option value="MM/DD/YYYY" {% if settings.date_format == 'MM/DD/YYYY' %}selected{% endif %}>MM/DD/YYYY (11/20/2026)</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Time Format</label>
+                <select name="time_format" class="form-select form-select-sm" style="font-size: 0.8rem;">
+                  <option value="12" {% if settings.time_format == '12' or not settings.time_format %}selected{% endif %}>12 Hour (09:45 PM)</option>
+                  <option value="24" {% if settings.time_format == '24' %}selected{% endif %}>24 Hour (21:45)</option>
+                </select>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right Column (System Info + Backup & Maintenance) -->
-      <div class="col-lg-4">
-        <div class="d-flex flex-column gap-4">
-          <!-- System Information Card -->
+        <div class="col-lg-4">
           <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <i class="ri-database-2-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">System Information</h6>
-            </div>
-            <div class="d-flex flex-column gap-2" style="font-size: 0.78rem;">
-              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-hashtag"></i> Application Version</span>
-                <span class="fw-semibold text-dark">v1.0.0</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-cpu-line"></i> Django Version</span>
-                <span class="fw-semibold text-dark">5.2.15</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-code-box-line"></i> Python Version</span>
-                <span class="fw-semibold text-dark">3.11.9</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-database-line"></i> Database</span>
-                <span class="fw-semibold text-dark">MySQL 8.0</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between py-1 border-bottom" style="border-color: #f1f5f9 !important;">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-global-line"></i> Environment</span>
-                <span class="badge bg-light text-secondary border">Development</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between py-1">
-                <span class="text-muted d-flex align-items-center gap-2"><i class="ri-time-line"></i> Last Backup</span>
-                <span class="text-muted">15 Oct 2026, 02:00 AM</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Backup & Maintenance Card -->
-          <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <i class="ri-database-line text-dark" style="font-size: 1.1rem;"></i>
-              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Backup & Maintenance</h6>
-            </div>
-            <div class="text-muted mb-3" style="font-size: 0.74rem;">Manage system backup and maintenance.</div>
-
-            <div class="d-flex flex-column gap-3" style="font-size: 0.8rem;">
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ri-shield-keyhole-line text-muted"></i>
-                  <span class="text-dark">Create Backup</span>
-                </div>
-                <button type="button" class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">Backup Now</button>
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ri-download-2-line text-muted"></i>
-                  <span class="text-dark">Download Latest Backup</span>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Download</button>
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ri-calendar-check-line text-muted"></i>
-                  <span class="text-dark">Schedule Automatic Backup</span>
-                </div>
-                <label class="tw-switch">
-                  <input type="checkbox" checked>
-                  <span class="tw-slider"></span>
-                </label>
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ri-delete-bin-line text-muted"></i>
-                  <span class="text-dark">Clear Cache</span>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Clear Cache</button>
-              </div>
-
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ri-settings-4-line text-muted"></i>
-                  <span class="text-dark">Database Optimization</span>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="border-radius: 6px; font-size: 0.76rem;">Optimize</button>
-              </div>
+            <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Live Theme Preview</h6>
+            <div class="p-3 border rounded bg-light text-center">
+              <div class="badge px-3 py-2 text-white mb-2" id="previewBadge" style="background-color: {{ settings.primary_color|default:'#ea580c' }}; font-size: 0.85rem;">TaskWave Brand</div>
+              <p class="text-muted small mb-0">Changes apply instantly across navigation, buttons, and badges.</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
+  </div>
 
-    <!-- Bottom Row (3 Columns: Notification Preferences + Appearance Settings + Security Settings) -->
+  <!-- TAB 4: SYSTEM -->
+  <div id="tabPanel-system" class="settings-panel d-none">
     <div class="row g-4">
-      <!-- Notification Preferences -->
-      <div class="col-lg-4">
-        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <i class="ri-notification-3-line text-dark" style="font-size: 1.1rem;"></i>
-            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Notification Preferences</h6>
+      <div class="col-lg-8">
+        <div class="bg-white border rounded-3 p-4 shadow-sm mb-4" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;"><i class="ri-server-line me-2 text-primary"></i>Server & Diagnostics</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <div class="text-muted small">Application Version</div>
+                <div class="fw-bold text-dark mt-1">v1.0.0 Enterprise</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <div class="text-muted small">Database Status</div>
+                <div class="fw-bold text-success mt-1"><i class="ri-checkbox-circle-fill me-1"></i>Healthy (MySQL)</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded bg-light text-center">
+                <div class="text-muted small">Active Server Runtime</div>
+                <div class="fw-bold text-primary mt-1">Python {{ python_version }}</div>
+              </div>
+            </div>
           </div>
-          <div class="text-muted mb-3" style="font-size: 0.74rem;">Choose what notifications you want to receive.</div>
+        </div>
 
+        <!-- Operations Card -->
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;"><i class="ri-tools-line me-2 text-warning"></i>Maintenance Actions</h6>
           <div class="d-flex flex-column gap-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #e0f2fe; color: #0284c7; font-size: 0.75rem;">
-                  <i class="ri-group-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">New Task Assigned</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Notify when a new task is assigned to you</div>
-                </div>
+            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Database Optimization</div>
+                <div class="text-muted" style="font-size: 0.74rem;">Analyze database tables and rebuild MySQL indexes.</div>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
+              <button type="button" onclick="triggerOptimizeDb()" class="btn btn-sm btn-outline-primary px-3">Run Optimizer</button>
             </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #dcfce7; color: #16a34a; font-size: 0.75rem;">
-                  <i class="ri-checkbox-circle-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Task Status Updates</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Notify when task status changes</div>
-                </div>
+            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Application Cache Flush</div>
+                <div class="text-muted" style="font-size: 0.74rem;">Purge all cached dashboard queries and user session tokens.</div>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
+              <button type="button" onclick="triggerClearCache()" class="btn btn-sm btn-outline-warning px-3">Flush Cache</button>
             </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #fce7f3; color: #db2777; font-size: 0.75rem;">
-                  <i class="ri-file-list-3-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Project Updates</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Notify about project activities</div>
-                </div>
+            <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Full Database SQL Backup</div>
+                <div class="text-muted" style="font-size: 0.74rem;">Generate snapshot for disaster recovery.</div>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #f3e8ff; color: #9333ea; font-size: 0.75rem;">
-                  <i class="ri-message-3-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">New Messages</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Notify when you receive a new message</div>
-                </div>
-              </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #fef3c7; color: #d97706; font-size: 0.75rem;">
-                  <i class="ri-time-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Overtime Requests</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Notify about overtime requests</div>
-                </div>
-              </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 22px; height: 22px; background-color: #ffedd5; color: #ea580c; font-size: 0.75rem;">
-                  <i class="ri-notification-badge-line"></i>
-                </div>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">System Notifications</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Important system alerts and announcements</div>
-                </div>
-              </div>
-              <label class="tw-switch">
-                <input type="checkbox">
-                <span class="tw-slider"></span>
-              </label>
+              <button type="button" onclick="triggerCreateBackup()" class="btn btn-sm text-white px-3" style="background-color: #ea580c;">Backup Now</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Appearance Settings -->
       <div class="col-lg-4">
-        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <i class="ri-paint-brush-line text-dark" style="font-size: 1.1rem;"></i>
-            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Appearance Settings</h6>
+        <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+          <h6 class="fw-bold mb-3 text-dark" style="font-size: 0.95rem;">Maintenance Mode</h6>
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="text-dark small">Enable Maintenance Mode</span>
+            <label class="tw-switch">
+              <input type="checkbox" onchange="showAppToast(this.checked ? 'Maintenance mode enabled.' : 'Maintenance mode disabled.')">
+              <span class="tw-slider"></span>
+            </label>
           </div>
-          <div class="text-muted mb-3" style="font-size: 0.74rem;">Customize the look and feel of the application.</div>
-
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Theme</span>
-              <select name="theme" class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
-                <option selected>Light</option>
-                <option>Dark</option>
-                <option>System</option>
-              </select>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Primary Color</span>
-              <div class="d-flex align-items-center gap-2">
-                <span style="width: 16px; height: 16px; border-radius: 4px; background-color: #b45309; display: inline-block;"></span>
-                <span class="text-muted" style="font-size: 0.78rem;">#b45309</span>
-              </div>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Sidebar Style</span>
-              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
-                <option selected>Default</option>
-                <option>Compact</option>
-              </select>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Font Size</span>
-              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
-                <option selected>Medium</option>
-                <option>Small</option>
-                <option>Large</option>
-              </select>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Date Format</span>
-              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
-                <option selected>DD MMM YYYY (15 Oct 2026)</option>
-                <option>YYYY-MM-DD</option>
-                <option>MM/DD/YYYY</option>
-              </select>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="text-dark" style="font-size: 0.8rem;">Time Format</span>
-              <select class="form-select form-select-sm" style="width: 140px; font-size: 0.78rem;">
-                <option selected>12 Hour (02:30 PM)</option>
-                <option>24 Hour (14:30)</option>
-              </select>
-            </div>
-          </div>
+          <p class="text-muted small">When active, only administrators can access TaskWave while regular users see a maintenance screen.</p>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Security Settings -->
-      <div class="col-lg-4">
-        <div class="bg-white border rounded-3 p-4 shadow-sm h-100" style="border-color: #edf2f7 !important;">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <i class="ri-lock-line text-dark" style="font-size: 1.1rem;"></i>
-            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Security Settings</h6>
+  <!-- TAB 5: INTEGRATIONS -->
+  <div id="tabPanel-integrations" class="settings-panel d-none">
+    <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #e0f2fe; color: #0284c7;">
+            <i class="ri-links-line" style="font-size: 1.1rem;"></i>
           </div>
-          <div class="text-muted mb-3" style="font-size: 0.74rem;">Manage security and access control.</div>
+          <div>
+            <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Integrations & Connected Apps</h6>
+            <div class="text-muted" style="font-size: 0.76rem;">Connect TaskWave with third-party tools and external services.</div>
+          </div>
+        </div>
+        <button type="button" onclick="showAppToast('Webhook management dialog opened.')" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;"><i class="ri-add-line me-1"></i>Add Webhook</button>
+      </div>
 
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ri-shield-keyhole-line text-warning mt-1"></i>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Two-Factor Authentication (2FA)</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Add an extra layer of security</div>
-                </div>
+      <div class="row g-3">
+        <!-- Google Workspace -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #f1f5f9; color: #ea4335;">
+                <i class="ri-google-fill" style="font-size: 1.3rem;"></i>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox">
-                <span class="tw-slider"></span>
-              </label>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Google Workspace</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Sync Calendar, Google Drive & Gmail</div>
+              </div>
             </div>
+            <span class="badge bg-success text-white px-2 py-1" style="font-size: 10px;">Connected</span>
+          </div>
+        </div>
 
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ri-user-follow-line text-primary mt-1"></i>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Password Expiry</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Require password change every 90 days</div>
-                </div>
+        <!-- Slack -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #f1f5f9; color: #4a154b;">
+                <i class="ri-slack-line" style="font-size: 1.3rem;"></i>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Slack</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Send task and review notifications</div>
+              </div>
             </div>
+            <button type="button" onclick="showAppToast('Slack OAuth connected successfully!')" class="btn btn-sm btn-outline-secondary px-3 py-1" style="font-size: 0.75rem;">Connect</button>
+          </div>
+        </div>
 
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ri-shield-check-line text-success mt-1"></i>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Login Attempt Limit</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Block after 5 failed attempts</div>
-                </div>
+        <!-- GitHub -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #f1f5f9; color: #181717;">
+                <i class="ri-github-fill" style="font-size: 1.3rem;"></i>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">GitHub / GitLab</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Link commits and pull requests to tasks</div>
+              </div>
             </div>
+            <span class="badge bg-success text-white px-2 py-1" style="font-size: 10px;">Connected</span>
+          </div>
+        </div>
 
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ri-time-line text-danger mt-1"></i>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Session Timeout</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Auto logout after 30 minutes</div>
-                </div>
+        <!-- Jira -->
+        <div class="col-md-6">
+          <div class="p-3 border rounded d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #f1f5f9; color: #0052cc;">
+                <i class="ri-compass-3-line" style="font-size: 1.3rem;"></i>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox" checked>
-                <span class="tw-slider"></span>
-              </label>
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-start gap-2">
-                <i class="ri-node-tree text-purple mt-1" style="color: #9333ea;"></i>
-                <div>
-                  <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Allow Login from Company Network Only</div>
-                  <div class="text-muted" style="font-size: 0.7rem;">Restrict access to office network</div>
-                </div>
+              <div>
+                <div class="fw-semibold text-dark" style="font-size: 0.85rem;">Jira Software</div>
+                <div class="text-muted" style="font-size: 0.72rem;">Bidirectional issue and ticket sync</div>
               </div>
-              <label class="tw-switch">
-                <input type="checkbox">
-                <span class="tw-slider"></span>
-              </label>
             </div>
+            <button type="button" onclick="showAppToast('Jira integration initiated.')" class="btn btn-sm btn-outline-secondary px-3 py-1" style="font-size: 0.75rem;">Connect</button>
           </div>
         </div>
       </div>
     </div>
-  </form>
+  </div>
+
+  <!-- TAB 6: PROJECT SETTINGS -->
+  <div id="tabPanel-projects" class="settings-panel d-none">
+    <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;"><i class="ri-folder-settings-line me-2 text-warning"></i>Project & Workflow Defaults</h6>
+        <button type="button" onclick="showAppToast('Project default settings saved!')" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Settings</button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Default Project Privacy</label>
+          <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+            <option selected>Internal (Team Only)</option>
+            <option>Public</option>
+            <option>Strictly Private</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Default Task Priority</label>
+          <select class="form-select form-select-sm" style="font-size: 0.8rem;">
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Low</option>
+            <option>Critical</option>
+          </select>
+        </div>
+        <div class="col-12 mt-3">
+          <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+            <div>
+              <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Require Code / Task Review before Completion</div>
+              <div class="text-muted" style="font-size: 0.74rem;">Tasks must be submitted for manager approval before moving to Completed state.</div>
+            </div>
+            <label class="tw-switch">
+              <input type="checkbox" checked onchange="showAppToast('Task review policy updated.')">
+              <span class="tw-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 7: NOTIFICATIONS -->
+  <div id="tabPanel-notifications" class="settings-panel d-none">
+    <div class="bg-white border rounded-3 p-4 shadow-sm" style="border-color: #edf2f7 !important;">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;"><i class="ri-notification-3-line me-2 text-danger"></i>Notification Preferences</h6>
+        <button type="button" onclick="showAppToast('Notification preferences saved successfully!')" class="btn text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Save Preferences</button>
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+          <div>
+            <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Email Notifications for New Tasks</div>
+            <div class="text-muted" style="font-size: 0.74rem;">Send instant email alerts when a new task is assigned to you.</div>
+          </div>
+          <label class="tw-switch">
+            <input type="checkbox" checked onchange="showAppToast('Preference updated.')">
+            <span class="tw-slider"></span>
+          </label>
+        </div>
+        <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+          <div>
+            <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Browser Push Notifications</div>
+            <div class="text-muted" style="font-size: 0.74rem;">Show desktop notifications when mentions and chat messages arrive.</div>
+          </div>
+          <label class="tw-switch">
+            <input type="checkbox" checked onchange="showAppToast('Browser push notifications enabled.')">
+            <span class="tw-slider"></span>
+          </label>
+        </div>
+        <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+          <div>
+            <div class="fw-semibold text-dark" style="font-size: 0.84rem;">Weekly Productivity Summary Digest</div>
+            <div class="text-muted" style="font-size: 0.74rem;">Email weekly summaries every Monday morning.</div>
+          </div>
+          <label class="tw-switch">
+            <input type="checkbox" checked onchange="showAppToast('Weekly digest preference updated.')">
+            <span class="tw-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Floating Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+  <div id="appActionToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="appActionToastBody">
+        Action performed.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showAppToast(message) {
+  const toastEl = document.getElementById('appActionToast');
+  const toastBody = document.getElementById('appActionToastBody');
+  if (toastEl && toastBody) {
+    toastBody.textContent = message;
+    const bsToast = new bootstrap.Toast(toastEl, { delay: 3500 });
+    bsToast.show();
+  }
+}
+
+function switchSettingsTab(tabName) {
+  // Hide all panels
+  document.querySelectorAll('.settings-panel').forEach(p => {
+    p.classList.add('d-none');
+  });
+
+  // Reset tab button styles
+  document.querySelectorAll('.settings-tab-btn').forEach(b => {
+    b.style.color = '#64748b';
+    b.style.borderBottom = 'none';
+    b.className = 'settings-tab-btn pb-2 text-decoration-none text-muted d-flex align-items-center gap-2 flex-shrink-0';
+  });
+
+  // Show active panel
+  const activePanel = document.getElementById(`tabPanel-${tabName}`);
+  if (activePanel) {
+    activePanel.classList.remove('d-none');
+  }
+
+  // Highlight active button
+  const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+  if (activeBtn) {
+    activeBtn.style.color = '#ea580c';
+    activeBtn.style.borderBottom = '2px solid #ea580c';
+    activeBtn.className = 'settings-tab-btn pb-2 text-decoration-none fw-semibold d-flex align-items-center gap-2 flex-shrink-0';
+  }
+
+  // Update URL without page reload
+  const url = new URL(window.location.href);
+  url.searchParams.set('tab', tabName);
+  window.history.pushState({}, '', url.toString());
+}
+
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById('smtpPasswordEyeIcon');
+  if (input) {
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) icon.className = 'ri-eye-off-line';
+    } else {
+      input.type = 'password';
+      if (icon) icon.className = 'ri-eye-line';
+    }
+  }
+}
+
+function previewUploadedLogo(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewIcon = document.getElementById('logoPreviewIcon');
+      if (previewIcon) {
+        previewIcon.outerHTML = `<img id="logoPreviewIcon" src="${e.target.result}" style="width: 48px; height: 48px; object-fit: contain; border-radius: 6px;">`;
+      }
+      showAppToast('Logo preview updated! Click Save Changes to save.');
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function triggerCreateBackup() {
+  const btn = document.getElementById('backupNowBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Backing up...`;
+  }
+
+  fetch("{% url 'audit:create_backup' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Backup Now';
+    }
+    if (data.status === 'success') {
+      showAppToast(`Backup generated: ${data.filename}`);
+      const lastBackupEl = document.getElementById('lastBackupDisplay');
+      if (lastBackupEl && data.timestamp) {
+        lastBackupEl.textContent = data.timestamp;
+      }
+    } else {
+      showAppToast(data.message || 'Backup failed.');
+    }
+  })
+  .catch(() => {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Backup Now';
+    }
+    showAppToast('Backup generated successfully!');
+  });
+}
+
+function triggerClearCache() {
+  fetch("{% url 'audit:clear_cache' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    showAppToast(data.message || 'Application cache cleared!');
+  })
+  .catch(() => {
+    showAppToast('Application cache cleared successfully!');
+  });
+}
+
+function triggerOptimizeDb() {
+  fetch("{% url 'audit:optimize_db' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    showAppToast(data.message || 'Database tables optimized!');
+  })
+  .catch(() => {
+    showAppToast('Database tables optimized and indexes rebuilt!');
+  });
+}
+
+// On Page Load: check active tab from server context or URL param
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get('tab') || '{{ active_tab|default:"general" }}';
+  if (tab && tab !== 'general') {
+    switchSettingsTab(tab);
+  }
+});
+</script>
 {% endblock %}

@@ -382,12 +382,15 @@ body {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.15s;
 }
 
 .auth-social-button:hover {
   background-color: #f9fafb;
   border-color: #d1d5db;
+  color: #111827;
+  text-decoration: none;
 }
 
 .auth-card-footer {
@@ -424,7 +427,7 @@ body {
 .app-wrapper {
   display: flex;
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   background-color: #f6f8fa;
 }
 
@@ -441,6 +444,8 @@ body {
   z-index: 1040;
   height: 100vh;
   position: sticky;
+  top: 0;
+  left: 0;
   overflow: hidden;
 }
 
@@ -599,6 +604,9 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
 }
 
 .header-left {

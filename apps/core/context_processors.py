@@ -15,6 +15,14 @@ def global_context(request):
     }
     
     if request.user.is_authenticated:
+        user = request.user
+        context['is_admin'] = user.is_admin_user
+        context['is_pm'] = user.is_project_manager
+        context['is_team_lead'] = user.is_team_lead
+        context['is_employee'] = user.is_employee
+        context['is_manager_or_above'] = user.is_manager_or_above
+        context['is_lead_or_above'] = user.is_lead_or_above
+
         try:
             context['unread_notifications_count'] = Notification.objects.filter(
                 recipient=request.user, is_read=False
@@ -31,5 +39,13 @@ def global_context(request):
             ).distinct().count()
         except Exception:
             context['unread_messages_count'] = 0
+    else:
+        context['is_admin'] = False
+        context['is_pm'] = False
+        context['is_team_lead'] = False
+        context['is_employee'] = False
+        context['is_manager_or_above'] = False
+        context['is_lead_or_above'] = False
 
     return context
+

@@ -19,294 +19,263 @@
     </div>
   </div>
 
-  <!-- 4 Stat KPI Cards Grid -->
+  <!-- Messages Alert -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show py-2 px-3 mb-4" role="alert" style="font-size: 0.84rem; border-radius: 8px;">
+        <i class="ri-information-line me-1"></i> {{ message }}
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- 4 Stat KPI Cards Grid (Interactive & Clickable) -->
   <div class="dash-kpi-grid mb-4">
-    <div class="dash-kpi-card">
+    <!-- Total Roles -->
+    <div class="dash-kpi-card kpi-interactive {% if selected_status != 'active' %}border-primary shadow-sm{% endif %}"
+         id="kpiCardTotalRoles"
+         role="button"
+         tabindex="0"
+         title="Click to view all roles"
+         style="cursor: pointer; transition: all 0.2s ease;">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #f3e8ff; color: #9333ea;">
           <i class="ri-shield-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Roles</span>
-          <span class="dash-kpi-value">6</span>
+          <span class="dash-kpi-value" id="kpiTotalRoles">{{ total_roles }}</span>
+          <span class="badge bg-light text-secondary mt-1" style="font-size: 0.65rem; width: fit-content;">Show all roles</span>
         </div>
       </div>
     </div>
 
-    <div class="dash-kpi-card">
+    <!-- Active Roles -->
+    <div class="dash-kpi-card kpi-interactive {% if selected_status == 'active' %}border-success shadow-sm" style="border: 2px solid #16a34a !important; background-color: #f0fdf4 !important;{% endif %}"
+         id="kpiCardActiveRoles"
+         role="button"
+         tabindex="0"
+         title="Click to toggle active roles filter"
+         style="cursor: pointer; transition: all 0.2s ease;">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #dcfce7; color: #16a34a;">
           <i class="ri-user-star-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Active Roles</span>
-          <span class="dash-kpi-value">6</span>
+          <span class="dash-kpi-value" id="kpiActiveRoles">{{ active_roles }}</span>
+          <span class="badge {% if selected_status == 'active' %}bg-success text-white{% else %}bg-light text-secondary{% endif %} mt-1" id="activeRolesBadgeHint" style="font-size: 0.65rem; width: fit-content;">
+            {% if selected_status == 'active' %}Filtered Active{% else %}Filter active{% endif %}
+          </span>
         </div>
       </div>
     </div>
 
-    <div class="dash-kpi-card">
+    <!-- Total Permissions -->
+    <div class="dash-kpi-card kpi-interactive"
+         id="kpiCardTotalPermissions"
+         role="button"
+         tabindex="0"
+         data-bs-toggle="modal"
+         data-bs-target="#totalPermissionsModal"
+         title="Click to inspect all system permissions"
+         style="cursor: pointer; transition: all 0.2s ease;">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-orange">
           <i class="ri-user-settings-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Permissions</span>
-          <span class="dash-kpi-value">48</span>
+          <span class="dash-kpi-value" id="kpiTotalPermissions">{{ total_permissions }}</span>
+          <span class="badge bg-light text-secondary mt-1" style="font-size: 0.65rem; width: fit-content;">Directory ({{ total_permissions }}) <i class="ri-arrow-right-s-line"></i></span>
         </div>
       </div>
     </div>
 
-    <div class="dash-kpi-card">
+    <!-- Modules -->
+    <div class="dash-kpi-card kpi-interactive"
+         id="kpiCardModules"
+         role="button"
+         tabindex="0"
+         title="Click to view module overview & scroll to matrix"
+         style="cursor: pointer; transition: all 0.2s ease;">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #e0f2fe; color: #0284c7;">
           <i class="ri-stack-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Modules</span>
-          <span class="dash-kpi-value">12</span>
+          <span class="dash-kpi-value" id="kpiTotalModules">{{ total_modules }}</span>
+          <span class="badge bg-light text-secondary mt-1" style="font-size: 0.65rem; width: fit-content;">Explore 12 modules <i class="ri-arrow-down-line"></i></span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 3-Column Layout: Roles List + Permissions Matrix + Create Role Drawer -->
+  <!-- Active Roles Filter Notice Bar -->
+  <div id="rolesActiveFilterNotice" class="alert alert-success py-2 px-3 align-items-center justify-content-between mb-3" style="font-size: 0.78rem; border-radius: 8px; {% if selected_status == 'active' %}display: flex;{% else %}display: none;{% endif %}">
+    <div class="d-flex align-items-center gap-2">
+      <i class="ri-filter-3-line text-success fw-bold"></i>
+      <span>Showing <strong>Active Roles</strong> only (<span id="filteredActiveRolesCount">{{ active_roles }}</span> roles).</span>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2 fw-semibold" id="btnClearActiveRolesFilter" style="font-size: 0.72rem; border-radius: 4px;">
+      Show All Roles
+    </button>
+  </div>
+
+  <!-- 3-Column Layout: Roles List + Permissions Matrix + Create Role Form -->
   <div class="row g-4">
     <!-- Col 1: Roles List -->
     <div class="col-xl-3 col-lg-4">
       <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Roles</h6>
-          <button class="btn btn-sm text-white px-2 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">+ Create Role</button>
+          <button type="button" class="btn btn-sm text-white px-2 py-1" id="btnFocusCreateRole" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">
+            + Create Role
+          </button>
         </div>
 
         <div class="mb-3" style="position: relative;">
           <i class="ri-search-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
-          <input type="text" class="form-control form-control-sm" placeholder="Search roles..." style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
+          <input type="text" id="roleSearchInput" class="form-control form-control-sm" placeholder="Search roles..." style="padding-left: 30px; font-size: 0.78rem; border-radius: 6px;">
         </div>
 
-        <div class="d-flex flex-column gap-2">
-          <!-- Administrator (Selected) -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff7ed; border-color: #ffedd5 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #ffedd5; color: #ea580c; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-vip-crown-line"></i>
+        <div class="d-flex flex-column gap-2" id="rolesListContainer">
+          {% for r in roles %}
+          <div class="role-card p-3 rounded-3 border d-flex align-items-start gap-3 {% if forloop.first %}active-role{% endif %}"
+               id="roleCard-{{ r.id }}"
+               data-role-id="{{ r.id }}"
+               data-role-name="{{ r.name }}"
+               data-role-desc="{{ r.description }}"
+               data-role-active="{{ r.is_active|yesno:'true,false' }}"
+               data-role-perms='{{ r.permissions_codenames_json|safe }}'
+               data-role-count="{{ r.permissions_count }}"
+               style="cursor: pointer; transition: all 0.15s ease; {% if forloop.first %}background-color: #fff7ed; border-color: #ffedd5 !important;{% else %}background-color: #fff; border-color: #edf2f7 !important;{% endif %}">
+            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: {{ r.icon_bg }}; color: {{ r.icon_color }}; flex-shrink: 0; font-size: 1.1rem;">
+              <i class="{{ r.icon }}"></i>
             </div>
-            <div class="flex-grow-1">
+            <div class="flex-grow-1" style="min-width: 0;">
               <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">Administrator</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">48</span>
+                <span class="fw-bold text-dark role-card-name" style="font-size: 0.84rem;">{{ r.name }}</span>
+                <span class="badge bg-light text-secondary border role-perm-badge" id="roleBadge-{{ r.id }}" style="font-size: 0.68rem;">{{ r.permissions_count }}</span>
               </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">Full access to all modules and settings.</div>
+              <div class="text-muted mt-1 text-truncate role-card-desc" style="font-size: 0.72rem; line-height: 1.3;" title="{{ r.description }}">{{ r.description }}</div>
+              
+              <!-- Role Active/Inactive Status Pill -->
+              <div class="mt-2 d-flex align-items-center justify-content-between">
+                <span class="badge role-status-pill {% if r.is_active %}bg-success-subtle text-success border border-success-subtle{% else %}bg-secondary-subtle text-secondary border border-secondary-subtle{% endif %}"
+                      id="roleStatusPill-{{ r.id }}"
+                      data-role-id="{{ r.id }}"
+                      data-role-name="{{ r.name }}"
+                      title="Click to toggle status (Active / Inactive)"
+                      style="font-size: 0.62rem; cursor: pointer; padding: 2px 6px;">
+                  {% if r.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+                <span class="text-muted" style="font-size: 0.68rem;">Click to edit</span>
+              </div>
             </div>
           </div>
-
-          <!-- Project Manager -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff; border-color: #edf2f7 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #f3e8ff; color: #9333ea; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-user-shared-line"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">Project Manager</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">32</span>
-              </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">Manage projects, tasks and team members.</div>
-            </div>
-          </div>
-
-          <!-- Team Lead -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff; border-color: #edf2f7 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #dcfce7; color: #16a34a; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-user-star-line"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">Team Lead</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">28</span>
-              </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">Manage team tasks and members.</div>
-            </div>
-          </div>
-
-          <!-- Employee -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff; border-color: #edf2f7 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #e0f2fe; color: #0284c7; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-user-3-line"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">Employee</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">16</span>
-              </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">View and work on assigned tasks.</div>
-            </div>
-          </div>
-
-          <!-- HR Manager -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff; border-color: #edf2f7 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fce7f3; color: #db2777; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-user-heart-line"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">HR Manager</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">24</span>
-              </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">Manage members, departments and reports.</div>
-            </div>
-          </div>
-
-          <!-- Viewer -->
-          <div class="p-3 rounded-3 border d-flex align-items-start gap-3" style="background-color: #fff; border-color: #edf2f7 !important; cursor: pointer;">
-            <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #f1f5f9; color: #64748b; flex-shrink: 0; font-size: 1.1rem;">
-              <i class="ri-eye-line"></i>
-            </div>
-            <div class="flex-grow-1">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="fw-bold text-dark" style="font-size: 0.84rem;">Viewer</span>
-                <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">8</span>
-              </div>
-              <div class="text-muted mt-1" style="font-size: 0.72rem; line-height: 1.3;">Read-only access to basic features.</div>
-            </div>
-          </div>
+          {% empty %}
+          <div class="text-center py-4 text-muted" style="font-size: 0.8rem;">No roles found.</div>
+          {% endfor %}
         </div>
       </div>
     </div>
 
     <!-- Col 2: Permissions Matrix -->
-    <div class="col-xl-5 col-lg-5">
-      <div class="bg-white border rounded-3 p-3 shadow-sm h-100" style="border-color: #edf2f7 !important;">
-        <div class="d-flex align-items-center justify-content-between mb-1">
-          <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">Permissions - Administrator</h6>
-          <button class="btn btn-sm btn-white border px-2 py-1 text-secondary" style="font-size: 0.74rem; border-radius: 6px;">
-            <i class="ri-file-copy-line me-1"></i> Copy Permissions
-          </button>
-        </div>
-        <div class="text-muted mb-3" style="font-size: 0.74rem;">Configure permissions for this role. Select which modules and actions are allowed.</div>
+    <div class="col-xl-5 col-lg-5" id="permissionsMatrixSection">
+      <div class="bg-white border rounded-3 p-3 shadow-sm h-100 d-flex flex-column justify-content-between" style="border-color: #edf2f7 !important;">
+        <div>
+          <div class="d-flex align-items-center justify-content-between mb-1 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.95rem;">
+                Permissions - <span id="matrixRoleTitle">Administrator</span>
+              </h6>
+              <!-- Role Active Switch in Matrix Header -->
+              <div class="d-inline-flex align-items-center gap-1 ms-1" id="roleStatusSwitchWrapper" title="Toggle active status for this role">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" id="roleActiveSwitch" checked style="cursor: pointer; width: 28px; height: 16px;">
+                </div>
+                <span id="roleActiveStatusText" class="badge bg-success-subtle text-success" style="font-size: 0.65rem;">Active</span>
+              </div>
+            </div>
 
-        <div class="table-responsive">
-          <table class="table align-middle mb-0" style="font-size: 0.82rem;">
-            <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.72rem;">
-              <tr>
-                <th>Module / Feature</th>
-                <th class="text-center">View</th>
-                <th class="text-center">Create</th>
-                <th class="text-center">Edit</th>
-                <th class="text-center">Delete</th>
-                <th class="text-center">Manage</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Dashboard -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-dashboard-line me-2 text-muted"></i>Dashboard</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Projects -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-folder-line me-2 text-muted"></i>Projects</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Tasks -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-checkbox-line me-2 text-muted"></i>Tasks</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Kanban Board -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-layout-column-line me-2 text-muted"></i>Kanban Board</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Calendar -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-calendar-line me-2 text-muted"></i>Calendar</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Members -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-group-line me-2 text-muted"></i>Members</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Departments -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-node-tree me-2 text-muted"></i>Departments</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Messages -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-message-3-line me-2 text-muted"></i>Messages</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Notifications -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-notification-3-line me-2 text-muted"></i>Notifications</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Reports -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-file-chart-line me-2 text-muted"></i>Reports</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Analytics -->
-              <tr style="border-bottom: 1px solid #f1f5f9;">
-                <td><i class="ri-bar-chart-2-line me-2 text-muted"></i>Analytics</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-              <!-- Settings -->
-              <tr>
-                <td><i class="ri-settings-3-line me-2 text-muted"></i>Settings</td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-                <td class="text-center"><input type="checkbox" class="form-check-input" checked></td>
-              </tr>
-            </tbody>
-          </table>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-white border px-2 py-1 text-secondary" id="btnCopyPerms" data-bs-toggle="modal" data-bs-target="#copyPermsModal" style="font-size: 0.74rem; border-radius: 6px;">
+                <i class="ri-file-copy-line me-1"></i> Copy Permissions
+              </button>
+              <button type="button" class="btn btn-sm text-white px-3 py-1 shadow-sm" id="btnSavePermissions" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.76rem;">
+                <i class="ri-save-line me-1"></i> Save
+              </button>
+            </div>
+          </div>
+          <div class="text-muted mb-3" style="font-size: 0.74rem;">
+            Configure permissions for this role. Select which modules and actions are allowed.
+          </div>
+
+          <!-- Quick Action & Module Filter Bar -->
+          <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2 px-1 text-muted" style="font-size: 0.72rem;">
+            <div class="d-flex align-items-center gap-2">
+              <a href="javascript:void(0)" id="btnSelectAllMatrix" class="text-decoration-none text-muted"><i class="ri-checkbox-line text-primary"></i> Select All</a>
+              <span>•</span>
+              <a href="javascript:void(0)" id="btnClearAllMatrix" class="text-decoration-none text-muted"><i class="ri-checkbox-blank-line"></i> Clear All</a>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <input type="text" id="matrixModuleFilter" class="form-control form-control-sm py-0 px-2" placeholder="Filter module..." style="font-size: 0.72rem; width: 130px; border-radius: 4px;">
+              <span id="matrixStatusIndicator" class="text-success fw-medium" style="display: none;"><i class="ri-check-line"></i> Saved</span>
+            </div>
+          </div>
+
+          <!-- Permissions Table -->
+          <div class="table-responsive" id="matrixTableScrollContainer" style="max-height: 520px; overflow-y: auto;">
+            <table class="table align-middle mb-0" style="font-size: 0.82rem;">
+              <thead style="background-color: #f8fafc; border-bottom: 1px solid #edf2f7; color: #64748b; font-size: 0.72rem; position: sticky; top: 0; z-index: 10;">
+                <tr>
+                  <th style="background-color: #f8fafc; width: 38%;">Module / Feature</th>
+                  <th class="text-center" style="background-color: #f8fafc; cursor: pointer;" title="Click to toggle entire View column" onclick="toggleColumn('view')">View</th>
+                  <th class="text-center" style="background-color: #f8fafc; cursor: pointer;" title="Click to toggle entire Create column" onclick="toggleColumn('create')">Create</th>
+                  <th class="text-center" style="background-color: #f8fafc; cursor: pointer;" title="Click to toggle entire Edit column" onclick="toggleColumn('edit')">Edit</th>
+                  <th class="text-center" style="background-color: #f8fafc; cursor: pointer;" title="Click to toggle entire Delete column" onclick="toggleColumn('delete')">Delete</th>
+                  <th class="text-center" style="background-color: #f8fafc; cursor: pointer;" title="Click to toggle entire Manage column" onclick="toggleColumn('manage')">Manage</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTableBody">
+                {% for mod in modules %}
+                <tr class="matrix-module-row" id="matrixRow-{{ mod.slug }}" data-module-name="{{ mod.name|lower }}" style="border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s ease;">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <input type="checkbox" class="form-check-input module-row-toggle" data-module="{{ mod.slug }}" title="Toggle all permissions for {{ mod.name }}" style="cursor: pointer;">
+                      <i class="{{ mod.icon }} text-muted"></i>
+                      <span class="fw-medium text-dark module-name-label" style="cursor: pointer;" title="Click to toggle {{ mod.name }} permissions" onclick="toggleModuleRow('{{ mod.slug }}')">{{ mod.name }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input perm-matrix-cb" data-module="{{ mod.slug }}" data-action="view" data-perm="view_{{ mod.slug }}" style="cursor: pointer;">
+                  </td>
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input perm-matrix-cb" data-module="{{ mod.slug }}" data-action="create" data-perm="create_{{ mod.slug }}" style="cursor: pointer;">
+                  </td>
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input perm-matrix-cb" data-module="{{ mod.slug }}" data-action="edit" data-perm="edit_{{ mod.slug }}" style="cursor: pointer;">
+                  </td>
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input perm-matrix-cb" data-module="{{ mod.slug }}" data-action="delete" data-perm="delete_{{ mod.slug }}" style="cursor: pointer;">
+                  </td>
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input perm-matrix-cb" data-module="{{ mod.slug }}" data-action="manage" data-perm="manage_{{ mod.slug }}" style="cursor: pointer;">
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-3" style="border-color: #edf2f7 !important;">
+          <span class="text-muted" style="font-size: 0.72rem;">Selected: <strong id="selectedPermsCount">0</strong> permissions</span>
+          <button type="button" class="btn btn-sm text-white px-3 py-1" id="btnSavePermissionsBottom" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.78rem;">
+            <i class="ri-save-line me-1"></i> Save Permissions
+          </button>
         </div>
       </div>
     </div>
@@ -314,110 +283,778 @@
     <!-- Col 3: Create New Role Form -->
     <div class="col-xl-4 col-lg-3">
       <div class="bg-white border rounded-3 p-3 shadow-sm h-100 d-flex flex-column justify-content-between" style="border-color: #edf2f7 !important;">
-        <div>
-          <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">Create New Role</h6>
-          <div class="text-muted mb-3" style="font-size: 0.74rem;">Define a new role and set its permissions.</div>
+        <form method="POST" action="{% url 'users:role_create' %}" id="createRoleForm" class="d-flex flex-column h-100 justify-content-between">
+          {% csrf_token %}
+          <div>
+            <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.95rem;">Create New Role</h6>
+            <div class="text-muted mb-3" style="font-size: 0.74rem;">Define a new role and set its module permissions.</div>
 
-          <div class="mb-3">
-            <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Role Name *</label>
-            <div style="position: relative;">
-              <i class="ri-user-line" style="position: absolute; left: 10px; top: 7px; color: #94a3b8; font-size: 0.85rem;"></i>
-              <input type="text" class="form-control form-control-sm" placeholder="Enter role name" style="padding-left: 30px; font-size: 0.8rem; border-radius: 6px;">
+            <div class="mb-3">
+              <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Role Name *</label>
+              <div style="position: relative;">
+                <i class="ri-user-line" style="position: absolute; left: 10px; top: 7px; color: #94a3b8; font-size: 0.85rem;"></i>
+                <input type="text" name="name" id="inputNewRoleName" class="form-control form-control-sm" placeholder="Enter role name" required style="padding-left: 30px; font-size: 0.8rem; border-radius: 6px;">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Description *</label>
+              <div style="position: relative;">
+                <i class="ri-file-text-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
+                <textarea name="description" id="inputNewRoleDesc" class="form-control form-control-sm" rows="3" placeholder="Enter role description" required style="padding-left: 30px; font-size: 0.8rem; border-radius: 6px;"></textarea>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <label class="form-label text-muted mb-0" style="font-size: 0.75rem;">Module Permissions</label>
+                <div class="d-flex gap-2" style="font-size: 0.7rem;">
+                  <a href="javascript:void(0)" id="btnSelectAllModules" class="text-decoration-none text-muted">Select All</a>
+                  <span>•</span>
+                  <a href="javascript:void(0)" id="btnClearAllModules" class="text-decoration-none text-muted">Clear</a>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-2" style="max-height: 220px; overflow-y: auto; padding-right: 4px;" id="createRoleModulesList">
+                {% for mod in modules %}
+                <div class="border rounded p-2 d-flex align-items-center justify-content-between module-choice-row"
+                     id="modChoiceRow-{{ mod.slug }}"
+                     style="font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease; {% if forloop.counter <= 3 %}background-color: #fff7ed; border-color: #fed7aa !important;{% endif %}">
+                  <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; width: 100%;">
+                    <input type="checkbox" name="module_permissions" value="{{ mod.name }}" class="form-check-input new-role-mod-cb" {% if forloop.counter <= 3 %}checked{% endif %}>
+                    <i class="{{ mod.icon }} text-muted"></i>
+                    <span>{{ mod.name }}</span>
+                  </label>
+                  <i class="ri-arrow-right-s-line text-muted"></i>
+                </div>
+                {% endfor %}
+              </div>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Description *</label>
-            <div style="position: relative;">
-              <i class="ri-file-text-line" style="position: absolute; left: 10px; top: 8px; color: #94a3b8; font-size: 0.85rem;"></i>
-              <textarea class="form-control form-control-sm" rows="3" placeholder="Enter role description" style="padding-left: 30px; font-size: 0.8rem; border-radius: 6px;"></textarea>
-            </div>
+          <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top mt-3" style="border-color: #edf2f7 !important;">
+            <button type="reset" class="btn btn-sm btn-light border px-3 py-1" id="btnCancelCreate" style="border-radius: 6px; font-size: 0.8rem;">Cancel</button>
+            <button type="submit" class="btn btn-sm text-white px-3 py-1 shadow-sm" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">
+              Create Role
+            </button>
           </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-          <div class="mb-3">
-            <label class="form-label text-muted mb-2" style="font-size: 0.75rem;">Module Permissions</label>
-            <div class="d-flex flex-column gap-2" style="max-height: 220px; overflow-y: auto;">
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input" checked>
-                  <i class="ri-dashboard-line text-muted"></i>
-                  <span>Dashboard</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input" checked>
-                  <i class="ri-folder-line text-muted"></i>
-                  <span>Projects</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input" checked>
-                  <i class="ri-checkbox-line text-muted"></i>
-                  <span>Tasks</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input">
-                  <i class="ri-layout-column-line text-muted"></i>
-                  <span>Kanban Board</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input">
-                  <i class="ri-calendar-line text-muted"></i>
-                  <span>Calendar</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input">
-                  <i class="ri-group-line text-muted"></i>
-                  <span>Members</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input">
-                  <i class="ri-node-tree text-muted"></i>
-                  <span>Departments</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-
-              <div class="border rounded p-2 d-flex align-items-center justify-content-between" style="font-size: 0.8rem;">
-                <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer;">
-                  <input type="checkbox" class="form-check-input">
-                  <i class="ri-message-3-line text-muted"></i>
-                  <span>Messages</span>
-                </label>
-                <i class="ri-arrow-right-s-line text-muted"></i>
-              </div>
-            </div>
+<!-- Modal 1: Total Permissions Directory -->
+<div class="modal fade" id="totalPermissionsModal" tabindex="-1" aria-labelledby="totalPermissionsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom py-3 px-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #ffedd5; color: #ea580c;">
+            <i class="ri-user-settings-line"></i>
+          </div>
+          <div>
+            <h6 class="modal-title fw-bold text-dark mb-0" id="totalPermissionsModalLabel" style="font-size: 1rem;">
+              Total Permissions Directory ({{ total_permissions }})
+            </h6>
+            <div class="text-muted" style="font-size: 0.72rem;">Browse granular permissions available across all {{ total_modules }} system modules.</div>
           </div>
         </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3" style="position: relative;">
+          <i class="ri-search-line" style="position: absolute; left: 12px; top: 9px; color: #94a3b8; font-size: 0.9rem;"></i>
+          <input type="text" id="permModalSearchInput" class="form-control form-control-sm" placeholder="Search permissions by name, module, or codename..." style="padding-left: 34px; border-radius: 6px; font-size: 0.82rem;">
+        </div>
 
-        <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top" style="border-color: #edf2f7 !important;">
-          <button type="button" class="btn btn-sm btn-light border px-3 py-1" style="border-radius: 6px; font-size: 0.8rem;">Cancel</button>
-          <button type="button" class="btn btn-sm text-white px-3 py-1" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Create Role</button>
+        <div style="max-height: 420px; overflow-y: auto;">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.8rem;">
+              <thead style="background-color: #f8fafc; color: #64748b; font-size: 0.72rem; position: sticky; top: 0; z-index: 10;">
+                <tr>
+                  <th style="background-color: #f8fafc;">#</th>
+                  <th style="background-color: #f8fafc;">Module</th>
+                  <th style="background-color: #f8fafc;">Permission Name</th>
+                  <th style="background-color: #f8fafc;">Codename</th>
+                  <th style="background-color: #f8fafc;">Description</th>
+                </tr>
+              </thead>
+              <tbody id="permModalTableBody">
+                {% for p in all_permissions %}
+                <tr class="perm-modal-row" data-text="{{ p.module|lower }} {{ p.name|lower }} {{ p.codename|lower }}">
+                  <td class="text-muted">{{ forloop.counter }}</td>
+                  <td><span class="badge bg-light text-dark border">{{ p.module }}</span></td>
+                  <td class="fw-medium text-dark">{{ p.name }}</td>
+                  <td><code style="font-size: 0.72rem; color: #ea580c;">{{ p.codename }}</code></td>
+                  <td class="text-muted" style="font-size: 0.74rem;">{{ p.description|default:"Standard module action permission" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top py-2 px-4 d-flex justify-content-between" style="border-color: #edf2f7 !important;">
+        <span class="text-muted" style="font-size: 0.75rem;">Showing {{ total_permissions }} system permissions</span>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-size: 0.8rem;">Close</button>
+          <button type="button" class="btn btn-sm text-white px-3" id="btnGrantAllFromModal" style="background-color: #ea580c; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+            Grant All to Active Role
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal 2: Modules Overview Directory -->
+<div class="modal fade" id="modulesDirectoryModal" tabindex="-1" aria-labelledby="modulesDirectoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom py-3 px-4" style="border-color: #edf2f7 !important;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background-color: #e0f2fe; color: #0284c7;">
+            <i class="ri-stack-line"></i>
+          </div>
+          <div>
+            <h6 class="modal-title fw-bold text-dark mb-0" id="modulesDirectoryModalLabel" style="font-size: 1rem;">
+              System Modules ({{ total_modules }})
+            </h6>
+            <div class="text-muted" style="font-size: 0.72rem;">Click "Configure" on any module to jump to its row in the permissions matrix.</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-3" style="max-height: 420px; overflow-y: auto;">
+          {% for mod in modules %}
+          <div class="col-md-6">
+            <div class="border rounded-3 p-3 h-100 d-flex flex-column justify-content-between" style="border-color: #edf2f7 !important; background-color: #f8fafc;">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; background-color: #fff; border: 1px solid #e2e8f0; color: #0284c7;">
+                      <i class="{{ mod.icon }}"></i>
+                    </div>
+                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ mod.name }}</span>
+                  </div>
+                  <span class="badge bg-light text-secondary border" style="font-size: 0.68rem;">{{ mod.perms_count|default:"5" }} actions</span>
+                </div>
+                <div class="text-muted" style="font-size: 0.74rem; line-height: 1.4;">{{ mod.desc }}</div>
+              </div>
+              <div class="pt-3 mt-2 border-top d-flex justify-content-end" style="border-color: #e2e8f0 !important;">
+                <button type="button" class="btn btn-sm btn-white border px-2 py-1 text-primary btn-jump-to-module" data-module="{{ mod.slug }}" style="font-size: 0.72rem; border-radius: 6px;">
+                  Configure in Matrix <i class="ri-arrow-right-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer border-top py-2 px-4" style="border-color: #edf2f7 !important;">
+        <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-size: 0.8rem;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Copy Permissions -->
+<div class="modal fade" id="copyPermsModal" tabindex="-1" aria-labelledby="copyPermsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom py-2 px-3" style="border-color: #edf2f7 !important;">
+        <h6 class="modal-title fw-bold text-dark" id="copyPermsModalLabel" style="font-size: 0.95rem;">
+          <i class="ri-file-copy-line text-primary me-1"></i> Copy Permissions
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size: 0.75rem;"></button>
+      </div>
+      <div class="modal-body p-3">
+        <p class="text-muted mb-3" style="font-size: 0.78rem;">
+          Copy all permission settings from an existing role to <strong id="copyTargetRoleName">Administrator</strong>.
+        </p>
+        <div class="mb-3">
+          <label class="form-label text-muted mb-1" style="font-size: 0.75rem;">Source Role</label>
+          <select class="form-select form-select-sm" id="copySourceRoleSelect" style="font-size: 0.8rem;">
+            {% for r in roles %}
+            <option value="{{ r.id }}" data-name="{{ r.name }}" {% if forloop.counter == 2 %}selected{% endif %}>
+              {{ r.name }} ({{ r.permissions_count }} permissions)
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer border-top py-2 px-3" style="border-color: #edf2f7 !important;">
+        <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-size: 0.8rem;">Cancel</button>
+        <button type="button" class="btn btn-sm text-white px-3" id="btnConfirmCopyPerms" style="background-color: #ea580c; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">
+          Apply & Copy
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let currentRoleId = null;
+  let currentRoleName = '';
+  let isFilteringActive = {% if selected_status == 'active' %}true{% else %}false{% endif %};
+
+  const roleCards = document.querySelectorAll('.role-card');
+  const matrixCbs = document.querySelectorAll('.perm-matrix-cb');
+  const matrixRoleTitle = document.getElementById('matrixRoleTitle');
+  const copyTargetRoleName = document.getElementById('copyTargetRoleName');
+  const selectedPermsCount = document.getElementById('selectedPermsCount');
+  const matrixStatusIndicator = document.getElementById('matrixStatusIndicator');
+
+  const kpiCardTotalRoles = document.getElementById('kpiCardTotalRoles');
+  const kpiCardActiveRoles = document.getElementById('kpiCardActiveRoles');
+  const activeRolesBadgeHint = document.getElementById('activeRolesBadgeHint');
+  const rolesActiveFilterNotice = document.getElementById('rolesActiveFilterNotice');
+  const btnClearActiveRolesFilter = document.getElementById('btnClearActiveRolesFilter');
+  const filteredActiveRolesCount = document.getElementById('filteredActiveRolesCount');
+
+  const roleActiveSwitch = document.getElementById('roleActiveSwitch');
+  const roleActiveStatusText = document.getElementById('roleActiveStatusText');
+
+  // Update permissions counter & row master toggles
+  function updatePermsCount() {
+    let count = 0;
+    matrixCbs.forEach(cb => { if (cb.checked) count++; });
+    if (selectedPermsCount) selectedPermsCount.textContent = count;
+
+    document.querySelectorAll('.module-row-toggle').forEach(rowToggle => {
+      const slug = rowToggle.getAttribute('data-module');
+      const rowCbs = document.querySelectorAll(`.perm-matrix-cb[data-module="${slug}"]`);
+      if (rowCbs.length > 0) {
+        const allChecked = Array.from(rowCbs).every(cb => cb.checked);
+        const anyChecked = Array.from(rowCbs).some(cb => cb.checked);
+        rowToggle.checked = allChecked;
+        rowToggle.indeterminate = anyChecked && !allChecked;
+      }
+    });
+  }
+
+  function selectRole(card) {
+    if (!card) return;
+    roleCards.forEach(c => {
+      c.classList.remove('active-role');
+      c.style.backgroundColor = '#fff';
+      c.style.borderColor = '#edf2f7';
+    });
+
+    card.classList.add('active-role');
+    card.style.backgroundColor = '#fff7ed';
+    card.style.borderColor = '#ffedd5';
+
+    currentRoleId = card.getAttribute('data-role-id');
+    currentRoleName = card.getAttribute('data-role-name');
+    const isRoleActive = card.getAttribute('data-role-active') === 'true';
+
+    if (matrixRoleTitle) matrixRoleTitle.textContent = currentRoleName;
+    if (copyTargetRoleName) copyTargetRoleName.textContent = currentRoleName;
+
+    // Sync Active switch in matrix header
+    if (roleActiveSwitch) {
+      roleActiveSwitch.checked = isRoleActive;
+      // Disable deactivating Administrator
+      roleActiveSwitch.disabled = (currentRoleName === 'Administrator');
+    }
+    if (roleActiveStatusText) {
+      if (isRoleActive) {
+        roleActiveStatusText.textContent = 'Active';
+        roleActiveStatusText.className = 'badge bg-success-subtle text-success';
+      } else {
+        roleActiveStatusText.textContent = 'Inactive';
+        roleActiveStatusText.className = 'badge bg-secondary-subtle text-secondary';
+      }
+    }
+
+    let perms = [];
+    try {
+      perms = JSON.parse(card.getAttribute('data-role-perms') || '[]');
+    } catch(e) {
+      perms = [];
+    }
+
+    matrixCbs.forEach(cb => {
+      const permKey = cb.getAttribute('data-perm');
+      cb.checked = perms.includes(permKey);
+    });
+
+    updatePermsCount();
+  }
+
+  // Bind role card click
+  roleCards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // If clicking directly on status pill, handled by status pill listener
+      if (e.target.classList.contains('role-status-pill')) return;
+      selectRole(this);
+    });
+  });
+
+  // Select first role on load
+  const firstRole = document.querySelector('.role-card');
+  if (firstRole) {
+    selectRole(firstRole);
+  }
+
+  // Active Roles Filter toggle
+  function applyActiveRolesFilter(filterActive) {
+    isFilteringActive = filterActive;
+    let visibleCount = 0;
+
+    roleCards.forEach(card => {
+      const isActive = card.getAttribute('data-role-active') === 'true';
+      if (filterActive) {
+        if (isActive) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      } else {
+        card.style.display = 'flex';
+        visibleCount++;
+      }
+    });
+
+    if (filterActive) {
+      kpiCardActiveRoles.style.border = '2px solid #16a34a';
+      kpiCardActiveRoles.style.backgroundColor = '#f0fdf4';
+      if (activeRolesBadgeHint) {
+        activeRolesBadgeHint.textContent = 'Filtered Active (Click to clear)';
+        activeRolesBadgeHint.className = 'badge bg-success text-white mt-1';
+      }
+      if (rolesActiveFilterNotice) rolesActiveFilterNotice.style.display = 'flex';
+      if (filteredActiveRolesCount) filteredActiveRolesCount.textContent = visibleCount;
+      if (kpiCardTotalRoles) {
+        kpiCardTotalRoles.style.border = '1px solid #edf2f7';
+      }
+
+      // If currently selected role is hidden, select first visible
+      const activeCard = document.querySelector('.role-card.active-role');
+      if (activeCard && activeCard.style.display === 'none') {
+        const firstVisible = document.querySelector('.role-card[data-role-active="true"]');
+        if (firstVisible) selectRole(firstVisible);
+      }
+    } else {
+      kpiCardActiveRoles.style.border = '1px solid #edf2f7';
+      kpiCardActiveRoles.style.backgroundColor = '#fff';
+      if (activeRolesBadgeHint) {
+        activeRolesBadgeHint.textContent = 'Filter active';
+        activeRolesBadgeHint.className = 'badge bg-light text-secondary mt-1';
+      }
+      if (rolesActiveFilterNotice) rolesActiveFilterNotice.style.display = 'none';
+      if (kpiCardTotalRoles) {
+        kpiCardTotalRoles.style.border = '1px solid #3b82f6';
+      }
+    }
+  }
+
+  if (kpiCardActiveRoles) {
+    kpiCardActiveRoles.addEventListener('click', function() {
+      applyActiveRolesFilter(!isFilteringActive);
+    });
+  }
+
+  if (kpiCardTotalRoles) {
+    kpiCardTotalRoles.addEventListener('click', function() {
+      applyActiveRolesFilter(false);
+      const roleSearchInput = document.getElementById('roleSearchInput');
+      if (roleSearchInput) roleSearchInput.value = '';
+    });
+  }
+
+  if (btnClearActiveRolesFilter) {
+    btnClearActiveRolesFilter.addEventListener('click', function() {
+      applyActiveRolesFilter(false);
+    });
+  }
+
+  if (isFilteringActive) {
+    applyActiveRolesFilter(true);
+  }
+
+  // Role Status Toggle in MySQL (via status pill or header switch)
+  function toggleRoleStatus(roleId) {
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/members/roles/${roleId}/toggle-status/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const card = document.getElementById(`roleCard-${roleId}`);
+        if (card) {
+          card.setAttribute('data-role-active', data.is_active ? 'true' : 'false');
+        }
+
+        const pill = document.getElementById(`roleStatusPill-${roleId}`);
+        if (pill) {
+          if (data.is_active) {
+            pill.textContent = 'Active';
+            pill.className = 'badge role-status-pill bg-success-subtle text-success border border-success-subtle';
+          } else {
+            pill.textContent = 'Inactive';
+            pill.className = 'badge role-status-pill bg-secondary-subtle text-secondary border border-secondary-subtle';
+          }
+        }
+
+        // If currently selected role, sync switch
+        if (currentRoleId == roleId) {
+          if (roleActiveSwitch) roleActiveSwitch.checked = data.is_active;
+          if (roleActiveStatusText) {
+            roleActiveStatusText.textContent = data.is_active ? 'Active' : 'Inactive';
+            roleActiveStatusText.className = data.is_active ? 'badge bg-success-subtle text-success' : 'badge bg-secondary-subtle text-secondary';
+          }
+        }
+
+        // Update Active Roles KPI counter
+        const kpiActive = document.getElementById('kpiActiveRoles');
+        if (kpiActive && data.active_count !== undefined) {
+          kpiActive.textContent = data.active_count;
+        }
+
+        // Reapply filter if active
+        if (isFilteringActive) {
+          applyActiveRolesFilter(true);
+        }
+      } else {
+        alert(data.error || 'Could not update role status.');
+        if (roleActiveSwitch && currentRoleId == roleId) {
+          roleActiveSwitch.checked = !roleActiveSwitch.checked;
+        }
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('An error occurred while updating role status.');
+    });
+  }
+
+  // Status pill click listener
+  document.querySelectorAll('.role-status-pill').forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const roleId = this.getAttribute('data-role-id');
+      const roleName = this.getAttribute('data-role-name');
+      if (roleName === 'Administrator') {
+        alert('Administrator role cannot be deactivated.');
+        return;
+      }
+      toggleRoleStatus(roleId);
+    });
+  });
+
+  // Header status switch toggle listener
+  if (roleActiveSwitch) {
+    roleActiveSwitch.addEventListener('change', function() {
+      if (currentRoleName === 'Administrator') {
+        alert('Administrator role cannot be deactivated.');
+        this.checked = true;
+        return;
+      }
+      if (currentRoleId) {
+        toggleRoleStatus(currentRoleId);
+      }
+    });
+  }
+
+  // Checkbox change listener
+  matrixCbs.forEach(cb => {
+    cb.addEventListener('change', updatePermsCount);
+  });
+
+  // Toggle Module Row master toggle
+  document.querySelectorAll('.module-row-toggle').forEach(rowToggle => {
+    rowToggle.addEventListener('change', function() {
+      const slug = this.getAttribute('data-module');
+      const shouldCheck = this.checked;
+      document.querySelectorAll(`.perm-matrix-cb[data-module="${slug}"]`).forEach(cb => {
+        cb.checked = shouldCheck;
+      });
+      updatePermsCount();
+    });
+  });
+
+  window.toggleModuleRow = function(slug) {
+    const rowCbs = document.querySelectorAll(`.perm-matrix-cb[data-module="${slug}"]`);
+    const anyUnchecked = Array.from(rowCbs).some(cb => !cb.checked);
+    rowCbs.forEach(cb => cb.checked = anyUnchecked);
+    updatePermsCount();
+  };
+
+  // Toggle Column function
+  window.toggleColumn = function(action) {
+    const colCbs = document.querySelectorAll(`.perm-matrix-cb[data-action="${action}"]`);
+    const anyUnchecked = Array.from(colCbs).some(cb => !cb.checked);
+    colCbs.forEach(cb => cb.checked = anyUnchecked);
+    updatePermsCount();
+  };
+
+  // Select / Clear all matrix checkboxes
+  const btnSelectAllMatrix = document.getElementById('btnSelectAllMatrix');
+  if (btnSelectAllMatrix) {
+    btnSelectAllMatrix.addEventListener('click', function() {
+      matrixCbs.forEach(cb => cb.checked = true);
+      updatePermsCount();
+    });
+  }
+
+  const btnClearAllMatrix = document.getElementById('btnClearAllMatrix');
+  if (btnClearAllMatrix) {
+    btnClearAllMatrix.addEventListener('click', function() {
+      matrixCbs.forEach(cb => cb.checked = false);
+      updatePermsCount();
+    });
+  }
+
+  // Matrix Module filter input
+  const matrixModuleFilter = document.getElementById('matrixModuleFilter');
+  if (matrixModuleFilter) {
+    matrixModuleFilter.addEventListener('input', function() {
+      const val = this.value.toLowerCase().trim();
+      document.querySelectorAll('.matrix-module-row').forEach(row => {
+        const name = row.getAttribute('data-module-name') || '';
+        row.style.display = name.includes(val) ? '' : 'none';
+      });
+    });
+  }
+
+  // Search roles
+  const roleSearchInput = document.getElementById('roleSearchInput');
+  if (roleSearchInput) {
+    roleSearchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      roleCards.forEach(card => {
+        const name = (card.getAttribute('data-role-name') || '').toLowerCase();
+        const desc = (card.getAttribute('data-role-desc') || '').toLowerCase();
+        const matchesQuery = name.includes(q) || desc.includes(q);
+        const isActive = card.getAttribute('data-role-active') === 'true';
+
+        if (isFilteringActive) {
+          card.style.display = (matchesQuery && isActive) ? 'flex' : 'none';
+        } else {
+          card.style.display = matchesQuery ? 'flex' : 'none';
+        }
+      });
+    });
+  }
+
+  // KPI Card 4: Modules
+  const kpiCardModules = document.getElementById('kpiCardModules');
+  if (kpiCardModules) {
+    kpiCardModules.addEventListener('click', function() {
+      const modal = new bootstrap.Modal(document.getElementById('modulesDirectoryModal'));
+      modal.show();
+    });
+  }
+
+  // Jump to module from modal
+  document.querySelectorAll('.btn-jump-to-module').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const slug = this.getAttribute('data-module');
+      const modalEl = document.getElementById('modulesDirectoryModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+
+      setTimeout(() => {
+        const targetRow = document.getElementById(`matrixRow-${slug}`);
+        if (targetRow) {
+          targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetRow.style.backgroundColor = '#fed7aa';
+          setTimeout(() => { targetRow.style.backgroundColor = ''; }, 2000);
+        }
+      }, 350);
+    });
+  });
+
+  // Modal 1 search permissions
+  const permModalSearchInput = document.getElementById('permModalSearchInput');
+  if (permModalSearchInput) {
+    permModalSearchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      document.querySelectorAll('.perm-modal-row').forEach(row => {
+        const text = row.getAttribute('data-text') || '';
+        row.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // Grant All from Permissions Modal
+  const btnGrantAllFromModal = document.getElementById('btnGrantAllFromModal');
+  if (btnGrantAllFromModal) {
+    btnGrantAllFromModal.addEventListener('click', function() {
+      matrixCbs.forEach(cb => cb.checked = true);
+      updatePermsCount();
+      const modalEl = document.getElementById('totalPermissionsModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+      savePermissions();
+    });
+  }
+
+  // Save Permissions logic
+  function savePermissions() {
+    if (!currentRoleId) return;
+    const checkedPerms = [];
+    matrixCbs.forEach(cb => {
+      if (cb.checked) {
+        checkedPerms.push(cb.getAttribute('data-perm'));
+      }
+    });
+
+    const saveBtns = [document.getElementById('btnSavePermissions'), document.getElementById('btnSavePermissionsBottom')];
+    saveBtns.forEach(btn => {
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+      }
+    });
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch(`/members/roles/${currentRoleId}/update-permissions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ permissions: checkedPerms })
+    })
+    .then(res => res.json())
+    .then(data => {
+      saveBtns.forEach(btn => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ri-save-line me-1"></i> Save';
+        }
+      });
+
+      if (data.success) {
+        const badge = document.getElementById(`roleBadge-${currentRoleId}`);
+        if (badge) badge.textContent = checkedPerms.length;
+
+        const currentCard = document.getElementById(`roleCard-${currentRoleId}`);
+        if (currentCard) {
+          currentCard.setAttribute('data-role-perms', JSON.stringify(checkedPerms));
+        }
+
+        if (matrixStatusIndicator) {
+          matrixStatusIndicator.style.display = 'inline-block';
+          setTimeout(() => { matrixStatusIndicator.style.display = 'none'; }, 3000);
+        }
+      } else {
+        alert(data.error || 'Failed to update permissions.');
+      }
+    })
+    .catch(err => {
+      saveBtns.forEach(btn => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ri-save-line me-1"></i> Save';
+        }
+      });
+      console.error(err);
+      alert('An error occurred while saving permissions.');
+    });
+  }
+
+  const btnSaveTop = document.getElementById('btnSavePermissions');
+  if (btnSaveTop) btnSaveTop.addEventListener('click', savePermissions);
+
+  const btnSaveBottom = document.getElementById('btnSavePermissionsBottom');
+  if (btnSaveBottom) btnSaveBottom.addEventListener('click', savePermissions);
+
+  // Copy Permissions Modal logic
+  const btnConfirmCopy = document.getElementById('btnConfirmCopyPerms');
+  if (btnConfirmCopy) {
+    btnConfirmCopy.addEventListener('click', function() {
+      const select = document.getElementById('copySourceRoleSelect');
+      const sourceRoleId = select.value;
+      const sourceCard = document.getElementById(`roleCard-${sourceRoleId}`);
+      if (sourceCard) {
+        try {
+          const sourcePerms = JSON.parse(sourceCard.getAttribute('data-role-perms') || '[]');
+          matrixCbs.forEach(cb => {
+            const permKey = cb.getAttribute('data-perm');
+            cb.checked = sourcePerms.includes(permKey);
+          });
+          updatePermsCount();
+        } catch(e) {
+          console.error(e);
+        }
+      }
+      const modalEl = document.getElementById('copyPermsModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+    });
+  }
+
+  // Create Role Module choice row interaction
+  document.querySelectorAll('.module-choice-row').forEach(row => {
+    row.addEventListener('click', function(e) {
+      if (e.target.tagName !== 'INPUT') {
+        const cb = this.querySelector('.new-role-mod-cb');
+        if (cb) {
+          cb.checked = !cb.checked;
+          updateModuleChoiceStyle(this, cb.checked);
+        }
+      } else {
+        updateModuleChoiceStyle(this, e.target.checked);
+      }
+    });
+  });
+
+  function updateModuleChoiceStyle(row, isChecked) {
+    if (isChecked) {
+      row.style.backgroundColor = '#fff7ed';
+      row.style.borderColor = '#fed7aa';
+    } else {
+      row.style.backgroundColor = '#fff';
+      row.style.borderColor = '#edf2f7';
+    }
+  }
+
+  // Create role quick links
+  const btnFocusCreateRole = document.getElementById('btnFocusCreateRole');
+  if (btnFocusCreateRole) {
+    btnFocusCreateRole.addEventListener('click', function() {
+      const input = document.getElementById('inputNewRoleName');
+      if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  const btnSelectAllModules = document.getElementById('btnSelectAllModules');
+  if (btnSelectAllModules) {
+    btnSelectAllModules.addEventListener('click', function() {
+      document.querySelectorAll('.new-role-mod-cb').forEach(cb => {
+        cb.checked = true;
+        const row = cb.closest('.module-choice-row');
+        if (row) updateModuleChoiceStyle(row, true);
+      });
+    });
+  }
+
+  const btnClearAllModules = document.getElementById('btnClearAllModules');
+  if (btnClearAllModules) {
+    btnClearAllModules.addEventListener('click', function() {
+      document.querySelectorAll('.new-role-mod-cb').forEach(cb => {
+        cb.checked = false;
+        const row = cb.closest('.module-choice-row');
+        if (row) updateModuleChoiceStyle(row, false);
+      });
+    });
+  }
+});
+</script>
 {% endblock %}

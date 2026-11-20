@@ -6,29 +6,31 @@
 {% block content %}
 <div class="dash-viewport">
   <!-- Page Header -->
-  <div class="dash-header-row">
+  <div class="dash-header-row mb-4">
     <div>
       <h1 class="dash-title">Members</h1>
       <p class="dash-subtitle">Manage team members, roles, departments, and permissions.</p>
     </div>
+    {% if is_admin %}
     <div>
-      <a href="{% url 'users:member_create' %}" class="btn-new-entity">
+      <button class="btn text-white px-3 py-2 shadow-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#addMemberModal" style="background-color: #ea580c; border-radius: 8px; font-weight: 600; font-size: 0.85rem;">
         <i class="ri-add-line"></i> Add Member
-      </a>
+      </button>
     </div>
+    {% endif %}
   </div>
 
   <!-- KPI Stat Cards Row (4 cards) -->
-  <div class="dash-kpi-grid">
+  <div class="dash-kpi-grid mb-4">
     <!-- Total Members -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'users:member_list' %}" class="dash-kpi-card text-decoration-none" title="All Members">
       <div class="kpi-left-group">
-        <div class="dash-kpi-icon icon-amber" style="background-color: #dbeafe; color: #2563eb;">
+        <div class="dash-kpi-icon" style="background-color: #dbeafe; color: #2563eb;">
           <i class="ri-group-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Total Members</span>
-          <span class="dash-kpi-value">24</span>
+          <span class="dash-kpi-value text-dark">{{ total_members }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 20%</span>
             <span class="trend-vs">vs last month</span>
@@ -36,17 +38,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Active Members -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'users:member_list' %}?status=active" class="dash-kpi-card text-decoration-none {% if selected_status == 'active' %}border-success{% endif %}" title="Filter Active">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-green">
           <i class="ri-user-follow-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Active Members</span>
-          <span class="dash-kpi-value">22</span>
+          <span class="dash-kpi-value text-dark">{{ active_members }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up"><i class="ri-arrow-up-line"></i> 10%</span>
             <span class="trend-vs">vs last month</span>
@@ -54,17 +56,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Inactive Members -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'users:member_list' %}?status=inactive" class="dash-kpi-card text-decoration-none {% if selected_status == 'inactive' %}border-danger{% endif %}" title="Filter Inactive">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon icon-red">
           <i class="ri-user-unfollow-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Inactive Members</span>
-          <span class="dash-kpi-value">2</span>
+          <span class="dash-kpi-value text-dark">{{ inactive_members }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-down"><i class="ri-arrow-down-line"></i> 50%</span>
             <span class="trend-vs">vs last month</span>
@@ -72,17 +74,17 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
 
     <!-- Departments -->
-    <div class="dash-kpi-card">
+    <a href="{% url 'departments:department_list' %}" class="dash-kpi-card text-decoration-none" title="View Departments">
       <div class="kpi-left-group">
         <div class="dash-kpi-icon" style="background-color: #ede9fe; color: #7c3aed;">
           <i class="ri-community-line"></i>
         </div>
         <div class="dash-kpi-info">
           <span class="dash-kpi-label">Departments</span>
-          <span class="dash-kpi-value">6</span>
+          <span class="dash-kpi-value text-dark">{{ total_departments }}</span>
           <div class="dash-kpi-trend">
             <span class="trend-up" style="color: #64748b;"><i class="ri-arrow-up-line"></i> 0%</span>
             <span class="trend-vs">vs last month</span>
@@ -90,40 +92,59 @@
         </div>
       </div>
       <button class="dash-card-menu-btn" type="button"><i class="ri-more-2-line"></i></button>
-    </div>
+    </a>
   </div>
 
   <!-- Filter Bar -->
-  <div class="dash-filter-bar">
+  <div class="dash-filter-bar mb-4">
     <div class="filter-search-box">
       <i class="ri-search-line"></i>
-      <input type="text" placeholder="Search members...">
+      <input type="text" id="memberSearchInput" placeholder="Search members..." value="{{ query }}">
     </div>
-    <div class="dash-select-pill">
-      <span>All Departments</span>
-      <i class="ri-arrow-down-s-line"></i>
+    
+    <!-- Department Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select id="memberDeptFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Departments</option>
+        {% for d in departments %}
+          <option value="{{ d.name }}" {% if selected_dept == d.name or selected_dept == d.id|stringformat:'s' %}selected{% endif %}>{{ d.name }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <span>All Roles</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Role Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select id="memberRoleFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Roles</option>
+        {% for r in roles %}
+          <option value="{{ r.name }}" {% if selected_role == r.name or selected_role == r.id|stringformat:'s' %}selected{% endif %}>{{ r.name }}</option>
+        {% endfor %}
+      </select>
     </div>
-    <div class="dash-select-pill">
-      <span>All Status</span>
-      <i class="ri-arrow-down-s-line"></i>
+
+    <!-- Status Filter -->
+    <div class="dash-select-pill p-0 overflow-hidden d-inline-flex align-items-center px-2">
+      <select id="memberStatusFilter" class="border-0 bg-transparent py-1 pe-1" style="outline: none; font-size: 0.82rem; color: #334155; cursor: pointer; font-weight: 500;">
+        <option value="">All Status</option>
+        <option value="active" {% if selected_status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inactive</option>
+      </select>
     </div>
-    <button class="dash-clear-btn" type="button">Clear</button>
+
+    <!-- Clear Filter Button -->
+    <button class="dash-clear-btn" type="button" id="btnMemberClear">Clear</button>
   </div>
 
   <!-- Split Grid: Table on Left, Details Drawer on Right -->
   <div class="row g-4">
     <!-- Left Table -->
     <div class="col-xl-8">
-      <div class="dash-card">
+      <div class="dash-card bg-white rounded-3 border shadow-sm p-0 overflow-hidden" style="border-color: #edf2f7 !important;">
         <div class="table-responsive">
-          <table class="dash-custom-table">
+          <table class="dash-custom-table mb-0 w-100" id="membersTable">
             <thead>
-              <tr>
-                <th style="width: 32px;"><input type="checkbox" class="form-check-input"></th>
+              <tr class="bg-light border-bottom">
+                <th style="width: 32px; padding: 12px 14px;"><input type="checkbox" id="selectAllCheckbox" class="form-check-input"></th>
                 <th style="width: 36px;">#</th>
                 <th>Name</th>
                 <th>Role</th>
@@ -131,259 +152,92 @@
                 <th>Status</th>
                 <th>Tasks</th>
                 <th>Joined Date</th>
-                <th style="text-align: right;">Actions</th>
+                <th style="text-align: right; padding-right: 14px;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>1</td>
+              {% for m in members %}
+              <tr class="member-table-row {% if forloop.first %}selected-row{% endif %}" 
+                  id="row-{{ m.id }}" 
+                  data-member-id="{{ m.id }}"
+                  data-full-name="{{ m.full_name }}"
+                  data-email="{{ m.email }}"
+                  data-phone="{{ m.phone }}"
+                  data-role="{{ m.role_name }}"
+                  data-dept="{{ m.department_name }}"
+                  data-status="{{ m.status }}"
+                  data-joined="{{ m.joined_date }}"
+                  data-avatar="{{ m.avatar }}"
+                  data-skills="{{ m.skills|join:',' }}"
+                  data-projects='{{ m.projects|safe|escapejs }}'
+                  data-tasks='{{ m.tasks|safe|escapejs }}'
+                  style="cursor: pointer; transition: background-color 0.15s ease;">
+                
+                <td style="padding: 12px 14px;" onclick="event.stopPropagation();">
+                  <input type="checkbox" class="form-check-input member-row-cb">
+                </td>
+                <td class="text-muted small">{{ forloop.counter }}</td>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                    {% if m.avatar %}
+                      <img src="{% if m.avatar|slice:':4' == 'img/' %}{% static m.avatar %}{% else %}{{ m.avatar }}{% endif %}" class="rounded-circle border" width="28" height="28" style="object-fit: cover;">
+                    {% else %}
+                      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light border text-secondary fw-semibold" style="width: 28px; height: 28px; font-size: 10px;">
+                        {{ m.full_name|slice:":1" }}
+                      </div>
+                    {% endif %}
                     <div>
-                      <div class="fw-semibold text-dark">Rahul Kumar</div>
-                      <div class="small text-muted" style="font-size: 11px;">rahul@taskwave.com</div>
+                      <div class="fw-semibold text-dark member-name-text" style="font-size: 0.85rem;">{{ m.full_name }}</div>
+                      <div class="small text-muted member-email-text" style="font-size: 11px;">{{ m.email }}</div>
                     </div>
                   </div>
                 </td>
-                <td><span class="priority-pill badge-high">Admin</span></td>
-                <td class="text-muted">Management</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">12</td>
-                <td class="text-muted">1 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>2</td>
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/priya_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Priya Singh</div>
-                      <div class="small text-muted" style="font-size: 11px;">priya@taskwave.com</div>
-                    </div>
+                  <span class="badge {{ m.role_style }}" style="font-size: 0.72rem; font-weight: 500; padding: 3px 8px; border-radius: 4px;">
+                    {{ m.role_name }}
+                  </span>
+                </td>
+                <td class="text-muted small member-dept-text">{{ m.department_name }}</td>
+                <td>
+                  <span class="badge {% if m.is_active %}badge-low{% else %}badge-high{% endif %} status-pill-badge" style="font-size: 0.72rem; font-weight: 500; padding: 3px 8px; border-radius: 4px; {% if m.is_active %}background-color: #dcfce7; color: #16a34a;{% else %}background-color: #fee2e2; color: #ef4444;{% endif %}">
+                    {{ m.status }}
+                  </span>
+                </td>
+                <td class="text-muted small">{{ m.tasks_count }}</td>
+                <td class="text-muted small">{{ m.joined_date }}</td>
+                <td style="text-align: right; padding-right: 14px;" onclick="event.stopPropagation();">
+                  <div class="dropdown d-inline-block">
+                    <button class="dash-item-menu border-0 bg-transparent text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                      <i class="ri-more-2-line"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="font-size: 0.8rem; border-radius: 8px;">
+                      <li><a class="dropdown-item" href="{% url 'users:member_detail' pk=m.id %}"><i class="ri-eye-line me-2 text-primary"></i>View Full Profile</a></li>
+                      <li><button class="dropdown-item" type="button" onclick="openEditMemberModal({{ m.id }})"><i class="ri-edit-line me-2 text-warning"></i>Edit Member</button></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button class="dropdown-item toggle-status-menu-btn" type="button" data-id="{{ m.id }}" data-action="{% if m.is_active %}deactivate{% else %}activate{% endif %}">
+                          <i class="{% if m.is_active %}ri-user-unfollow-line text-danger{% else %}ri-user-follow-line text-success{% endif %} me-2"></i>
+                          {% if m.is_active %}Deactivate Member{% else %}Activate Member{% endif %}
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 </td>
-                <td><span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Project Manager</span></td>
-                <td class="text-muted">Development</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">18</td>
-                <td class="text-muted">5 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
               </tr>
+              {% empty %}
               <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>3</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/aman_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Aman Sharma</div>
-                      <div class="small text-muted" style="font-size: 11px;">aman@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #ede9fe; color: #7c3aed;">Developer</span></td>
-                <td class="text-muted">Development</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">24</td>
-                <td class="text-muted">10 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
+                <td colspan="9" class="text-center py-5 text-muted">No members found matching your search.</td>
               </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>4</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/neha_tiwari.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Neha Tiwari</div>
-                      <div class="small text-muted" style="font-size: 11px;">neha@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill badge-medium">UI/UX Designer</span></td>
-                <td class="text-muted">Design</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">16</td>
-                <td class="text-muted">12 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>5</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/vikram_singh.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Vikram Singh</div>
-                      <div class="small text-muted" style="font-size: 11px;">vikram@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #ccfbf1; color: #0d9488;">QA Engineer</span></td>
-                <td class="text-muted">Quality Assurance</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">14</td>
-                <td class="text-muted">15 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>6</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/arjun_patel.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Arjun Patel</div>
-                      <div class="small text-muted" style="font-size: 11px;">arjun@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">DevOps Engineer</span></td>
-                <td class="text-muted">Infrastructure</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">10</td>
-                <td class="text-muted">18 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>7</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/sneha_gupta.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Sneha Gupta</div>
-                      <div class="small text-muted" style="font-size: 11px;">sneha@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #fce7f3; color: #db2777;">Business Analyst</span></td>
-                <td class="text-muted">Business</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">8</td>
-                <td class="text-muted">20 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>8</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/karan_mehta.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Karan Mehta</div>
-                      <div class="small text-muted" style="font-size: 11px;">karan@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #ede9fe; color: #7c3aed;">Content Writer</span></td>
-                <td class="text-muted">Marketing</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">6</td>
-                <td class="text-muted">22 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>9</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/pooja_sharma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Pooja Sharma</div>
-                      <div class="small text-muted" style="font-size: 11px;">pooja@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill badge-medium">HR</span></td>
-                <td class="text-muted">Human Resources</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">5</td>
-                <td class="text-muted">25 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>10</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/rohan_das.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Rohan Das</div>
-                      <div class="small text-muted" style="font-size: 11px;">rohan@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #e0f2fe; color: #0284c7;">Support</span></td>
-                <td class="text-muted">Customer Support</td>
-                <td><span class="priority-pill badge-low">Active</span></td>
-                <td class="text-muted">7</td>
-                <td class="text-muted">28 Aug 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>11</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/anjali_verma.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Anjali Verma</div>
-                      <div class="small text-muted" style="font-size: 11px;">anjali@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #fee2e2; color: #dc2626;">Intern</span></td>
-                <td class="text-muted">Development</td>
-                <td><span class="priority-pill badge-high">Inactive</span></td>
-                <td class="text-muted">3</td>
-                <td class="text-muted">1 Sep 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox" class="form-check-input"></td>
-                <td>12</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/avatars/sahil_khan.jpg' %}" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
-                    <div>
-                      <div class="fw-semibold text-dark">Sahil Khan</div>
-                      <div class="small text-muted" style="font-size: 11px;">sahil@taskwave.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="priority-pill" style="background-color: #fee2e2; color: #dc2626;">Intern</span></td>
-                <td class="text-muted">Design</td>
-                <td><span class="priority-pill badge-high">Inactive</span></td>
-                <td class="text-muted">2</td>
-                <td class="text-muted">5 Sep 2026</td>
-                <td style="text-align: right;"><button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button></td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-          <div class="small text-muted">Showing 1 to 12 of 24 members</div>
-          <div class="d-flex align-items-center gap-3">
-            <div class="d-flex align-items-center gap-2">
-              <span class="small text-muted">Rows per page</span>
-              <div class="dash-select-pill">
-                <span>12</span>
-                <i class="ri-arrow-down-s-line"></i>
-              </div>
-            </div>
-            <div class="dash-pagination-btns">
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-left-s-line"></i></button>
-              <button class="dash-page-btn active" type="button">1</button>
-              <button class="dash-page-btn" type="button">2</button>
-              <button class="dash-page-btn" type="button"><i class="ri-arrow-right-s-line"></i></button>
-            </div>
+        <!-- Pagination / Count Footer -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light" style="font-size: 0.8rem;">
+          <div class="text-muted" id="memberTableCount">Showing {{ members|length }} of {{ total_members }} members</div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted">TaskWave Workspace</span>
           </div>
         </div>
       </div>
@@ -391,106 +245,678 @@
 
     <!-- Right Member Detail Drawer -->
     <div class="col-xl-4">
-      <div class="dash-card">
+      <div class="dash-card bg-white p-4 rounded-3 border shadow-sm" style="border-color: #edf2f7 !important;">
+        <!-- Profile Header -->
         <div class="d-flex justify-content-between align-items-start mb-3">
           <div class="d-flex align-items-center gap-3">
-            <img src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle" width="48" height="48" style="object-fit: cover;">
+            <div id="drawerAvatarWrapper">
+              <img id="drawerAvatarImg" src="{% static 'img/avatars/rahul_kumar.jpg' %}" class="rounded-circle border" width="48" height="48" style="object-fit: cover;">
+            </div>
             <div>
-              <h3 class="fs-6 fw-bold text-dark mb-0">Rahul Kumar</h3>
-              <div class="small text-muted">Admin</div>
-              <div class="small text-success mt-1"><span class="stat-green-dot me-1"></span>Online</div>
+              <h3 class="fs-6 fw-bold text-dark mb-0" id="drawerFullName">Rahul Kumar</h3>
+              <div class="small text-muted" id="drawerRole">Administrator</div>
+              <div class="small mt-1" id="drawerStatusText" style="color: #16a34a;"><span class="stat-green-dot me-1" style="width: 6px; height: 6px; border-radius: 50%; display: inline-block; background-color: #16a34a;"></span>Online • Active</div>
             </div>
           </div>
-          <button class="dash-item-menu" type="button"><i class="ri-more-2-line"></i></button>
+          <div class="dropdown">
+            <button class="dash-item-menu border-0 bg-transparent text-muted" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+              <i class="ri-more-2-line"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 0.8rem;">
+              <li><a class="dropdown-item" id="drawerDetailLink" href="#"><i class="ri-profile-line me-2"></i>Full Profile</a></li>
+              <li><button class="dropdown-item" type="button" id="drawerQuickEditBtn"><i class="ri-edit-line me-2"></i>Quick Edit</button></li>
+            </ul>
+          </div>
         </div>
 
         <!-- Tabs -->
-        <div class="d-flex gap-3 border-bottom pb-2 mb-3 small fw-semibold">
-          <span class="text-orange border-bottom border-2 border-warning pb-2">Overview</span>
-          <span class="text-muted">Tasks</span>
-          <span class="text-muted">Projects</span>
-          <span class="text-muted">Activity</span>
+        <div class="d-flex gap-3 border-bottom pb-2 mb-3 small fw-semibold" id="drawerTabHeaders">
+          <span class="drawer-tab active text-orange border-bottom border-2 border-warning pb-2" data-tab="overview" style="cursor: pointer; color: #ea580c !important;">Overview</span>
+          <span class="drawer-tab text-muted pb-2" data-tab="tasks" style="cursor: pointer;">Tasks</span>
+          <span class="drawer-tab text-muted pb-2" data-tab="projects" style="cursor: pointer;">Projects</span>
+          <span class="drawer-tab text-muted pb-2" data-tab="activity" style="cursor: pointer;">Activity</span>
         </div>
 
-        <!-- Details List -->
-        <div class="d-flex flex-column gap-2 mb-4 small">
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-mail-line me-2"></i>Email</span>
-            <span class="text-dark fw-medium">rahul@taskwave.com</span>
+        <!-- TAB 1: OVERVIEW -->
+        <div class="drawer-tab-pane" id="drawerTab-overview">
+          <!-- Details List -->
+          <div class="d-flex flex-column gap-2 mb-4 small">
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-mail-line me-2"></i>Email</span>
+              <span class="text-dark fw-medium text-truncate ms-2" id="drawerEmail">rahul@taskwave.com</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-building-line me-2"></i>Department</span>
+              <span class="text-dark fw-medium" id="drawerDept">Management</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-phone-line me-2"></i>Phone</span>
+              <span class="text-dark fw-medium" id="drawerPhone">+91 98765 43210</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-calendar-line me-2"></i>Joined Date</span>
+              <span class="text-dark fw-medium" id="drawerJoined">1 Aug 2026</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-shield-user-line me-2"></i>Role</span>
+              <span class="text-dark fw-medium" id="drawerRoleField">Admin</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="ri-checkbox-circle-line me-2"></i>Status</span>
+              <span class="priority-pill badge-low" id="drawerStatusBadge">Active</span>
+            </div>
           </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-building-line me-2"></i>Department</span>
-            <span class="text-dark fw-medium">Management</span>
+
+          <!-- Skills -->
+          <h4 class="small fw-bold text-dark mb-2">Skills</h4>
+          <div class="d-flex flex-wrap gap-1 mb-4" id="drawerSkillsContainer">
+            <span class="tag-pill" style="background-color: #e0f2fe; color: #0284c7;">Project Management</span>
+            <span class="tag-pill" style="background-color: #e0f2fe; color: #0284c7;">Team Leadership</span>
+            <span class="tag-pill" style="background-color: #ede9fe; color: #7c3aed;">Communication</span>
+            <span class="tag-pill" style="background-color: #ede9fe; color: #7c3aed;">Planning</span>
           </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-phone-line me-2"></i>Phone</span>
-            <span class="text-dark fw-medium">+91 98765 43210</span>
+
+          <!-- Assigned Projects -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="small fw-bold text-dark mb-0">Assigned Projects</h4>
+            <a href="{% url 'projects:project_list' %}" class="small text-decoration-none fw-semibold" style="color: #ea580c;">View All</a>
           </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-calendar-line me-2"></i>Joined Date</span>
-            <span class="text-dark fw-medium">1 Aug 2026</span>
-          </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-shield-user-line me-2"></i>Role</span>
-            <span class="text-dark fw-medium">Admin</span>
-          </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted"><i class="ri-checkbox-circle-line me-2"></i>Status</span>
-            <span class="priority-pill badge-low">Active</span>
+          <div class="d-flex flex-column gap-2 mb-4" id="drawerProjectsContainer">
+            <div class="p-2 border rounded-2">
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="fw-semibold text-dark">TaskWave</span>
+                <span class="text-muted">80%</span>
+              </div>
+              <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+                <div style="width: 80%; height: 100%; background-color: #22c55e;"></div>
+              </div>
+            </div>
+            <div class="p-2 border rounded-2">
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="fw-semibold text-dark">College Portal</span>
+                <span class="text-muted">65%</span>
+              </div>
+              <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+                <div style="width: 65%; height: 100%; background-color: #f59e0b;"></div>
+              </div>
+            </div>
+            <div class="p-2 border rounded-2">
+              <div class="d-flex justify-content-between align-items-center small">
+                <span class="fw-semibold text-dark">Mobile App</span>
+                <span class="text-muted">40%</span>
+              </div>
+              <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+                <div style="width: 40%; height: 100%; background-color: #f97316;"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Skills -->
-        <h4 class="small fw-bold text-dark mb-2">Skills</h4>
-        <div class="d-flex flex-wrap gap-1 mb-4">
-          <span class="tag-pill" style="background-color: #e0f2fe; color: #0284c7;">Project Management</span>
-          <span class="tag-pill" style="background-color: #e0f2fe; color: #0284c7;">Team Leadership</span>
-          <span class="tag-pill" style="background-color: #ede9fe; color: #7c3aed;">Communication</span>
-          <span class="tag-pill" style="background-color: #ede9fe; color: #7c3aed;">Planning</span>
+        <!-- TAB 2: TASKS -->
+        <div class="drawer-tab-pane d-none" id="drawerTab-tasks">
+          <div class="d-flex flex-column gap-2 mb-4" id="drawerTasksContainer">
+            <!-- Populated dynamically -->
+          </div>
         </div>
 
-        <!-- Assigned Projects -->
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 class="small fw-bold text-dark mb-0">Assigned Projects (3)</h4>
-          <a href="#" class="small text-orange text-decoration-none fw-semibold">View All</a>
+        <!-- TAB 3: PROJECTS -->
+        <div class="drawer-tab-pane d-none" id="drawerTab-projects">
+          <div class="d-flex flex-column gap-2 mb-4" id="drawerProjectsFullContainer">
+            <!-- Populated dynamically -->
+          </div>
         </div>
-        <div class="d-flex flex-column gap-2 mb-4">
-          <div class="p-2 border rounded-2">
-            <div class="d-flex justify-content-between align-items-center small">
-              <span class="fw-semibold text-dark">TaskWave</span>
-              <span class="text-muted">80%</span>
+
+        <!-- TAB 4: ACTIVITY -->
+        <div class="drawer-tab-pane d-none" id="drawerTab-activity">
+          <div class="d-flex flex-column gap-3 small text-muted mb-4">
+            <div class="d-flex gap-2">
+              <i class="ri-check-line text-success fs-6"></i>
+              <div>Completed sprint task <strong>API Integration</strong> <span class="d-block text-secondary" style="font-size: 10px;">2 hours ago</span></div>
             </div>
-            <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0;">
-              <div class="project-box-progress-fill" style="width: 80%; background-color: #22c55e;"></div>
+            <div class="d-flex gap-2">
+              <i class="ri-chat-3-line text-primary fs-6"></i>
+              <div>Commented on <strong>Database Schema Migration</strong> <span class="d-block text-secondary" style="font-size: 10px;">5 hours ago</span></div>
             </div>
-          </div>
-          <div class="p-2 border rounded-2">
-            <div class="d-flex justify-content-between align-items-center small">
-              <span class="fw-semibold text-dark">College Portal</span>
-              <span class="text-muted">65%</span>
-            </div>
-            <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0;">
-              <div class="project-box-progress-fill" style="width: 65%; background-color: #f59e0b;"></div>
-            </div>
-          </div>
-          <div class="p-2 border rounded-2">
-            <div class="d-flex justify-content-between align-items-center small">
-              <span class="fw-semibold text-dark">Mobile App</span>
-              <span class="text-muted">40%</span>
-            </div>
-            <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0;">
-              <div class="project-box-progress-fill" style="width: 40%; background-color: #f97316;"></div>
+            <div class="d-flex gap-2">
+              <i class="ri-git-commit-line text-warning fs-6"></i>
+              <div>Updated task status to In Progress <span class="d-block text-secondary" style="font-size: 10px;">Yesterday</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Actions Buttons -->
-        <div class="d-flex gap-2">
-          <button class="btn-import-tw flex-grow-1" type="button">Edit Member</button>
-          <button class="btn-new-entity flex-grow-1" type="button" style="background-color: #b45309;">Deactivate</button>
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2 pt-2 border-top">
+          <button class="btn btn-sm btn-white border flex-grow-1 py-2 text-dark fw-medium" type="button" id="drawerActionEdit" style="border-radius: 8px; font-size: 0.84rem;">
+            Edit Member
+          </button>
+          <button class="btn btn-sm text-white flex-grow-1 py-2 fw-medium" type="button" id="drawerActionToggleStatus" style="background-color: #ea580c; border-radius: 8px; font-size: 0.84rem;">
+            Deactivate
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ================= ADD MEMBER MODAL ================= -->
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <form method="POST" action="{% url 'users:member_create' %}" id="addMemberForm">
+        {% csrf_token %}
+        <div class="modal-header border-bottom pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fff7ed; color: #ea580c;">
+              <i class="ri-user-add-line"></i>
+            </div>
+            <h5 class="modal-title fw-bold text-dark fs-6" id="addMemberModalLabel">Add New Member</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">First Name *</label>
+              <input type="text" name="first_name" class="form-control form-control-sm" placeholder="First Name" required style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Last Name *</label>
+              <input type="text" name="last_name" class="form-control form-control-sm" placeholder="Last Name" required style="border-radius: 6px;">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Corporate Email *</label>
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="name@taskwave.com" required style="border-radius: 6px;">
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department *</label>
+              <select name="department" class="form-select form-select-sm" required style="border-radius: 6px;">
+                <option value="">Select Department</option>
+                {% for d in departments %}
+                  <option value="{{ d.id }}">{{ d.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Role *</label>
+              <select name="role" class="form-select form-select-sm" required style="border-radius: 6px;">
+                <option value="">Select Role</option>
+                {% for r in roles %}
+                  <option value="{{ r.id }}">{{ r.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Phone Number</label>
+              <input type="text" name="phone" class="form-control form-control-sm" placeholder="+91 98765 00000" style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Account Status</label>
+              <select name="account_status" class="form-select form-select-sm" style="border-radius: 6px;">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Initial Password *</label>
+            <input type="password" name="initial_password" class="form-control form-control-sm" placeholder="At least 8 characters" minlength="8" required style="border-radius: 6px;">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label text-dark fw-medium small mb-1">Skills (comma-separated)</label>
+            <input type="text" name="skills" class="form-control form-control-sm" placeholder="e.g. React, Python, UI Design, QA" style="border-radius: 6px;">
+          </div>
+        </div>
+
+        <div class="modal-footer border-top p-3 bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Create Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EDIT MEMBER MODAL ================= -->
+<div class="modal fade" id="editMemberModal" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+      <form method="POST" id="editMemberForm">
+        {% csrf_token %}
+        <div class="modal-header border-bottom pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #fff7ed; color: #ea580c;">
+              <i class="ri-edit-line"></i>
+            </div>
+            <h5 class="modal-title fw-bold text-dark fs-6" id="editMemberModalLabel">Edit Member Details</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">First Name</label>
+              <input type="text" name="first_name" id="editFirstName" class="form-control form-control-sm" required style="border-radius: 6px;">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Last Name</label>
+              <input type="text" name="last_name" id="editLastName" class="form-control form-control-sm" required style="border-radius: 6px;">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Department</label>
+              <select name="department" id="editDepartment" class="form-select form-select-sm" style="border-radius: 6px;">
+                {% for d in departments %}
+                  <option value="{{ d.id }}">{{ d.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label text-dark fw-medium small mb-1">Role</label>
+              <select name="role" id="editRole" class="form-select form-select-sm" style="border-radius: 6px;">
+                {% for r in roles %}
+                  <option value="{{ r.id }}">{{ r.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-medium small mb-1">Phone Number</label>
+            <input type="text" name="phone" id="editPhone" class="form-control form-control-sm" style="border-radius: 6px;">
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label text-dark fw-medium small mb-1">Skills (comma-separated)</label>
+            <input type="text" name="skills" id="editSkills" class="form-control form-control-sm" style="border-radius: 6px;">
+          </div>
+        </div>
+
+        <div class="modal-footer border-top p-3 bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <button type="button" class="btn btn-sm btn-white border px-3" data-bs-dismiss="modal" style="border-radius: 6px;">Cancel</button>
+          <button type="submit" class="btn btn-sm text-white px-3" style="background-color: #ea580c; border-radius: 6px; font-weight: 600;">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.selected-row {
+  background-color: #fff7ed !important;
+}
+.member-table-row:hover {
+  background-color: #f8fafc;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('memberSearchInput');
+  const deptFilter = document.getElementById('memberDeptFilter');
+  const roleFilter = document.getElementById('memberRoleFilter');
+  const statusFilter = document.getElementById('memberStatusFilter');
+  const btnClear = document.getElementById('btnMemberClear');
+
+  const tableRows = document.querySelectorAll('.member-table-row');
+  const tableCountSpan = document.getElementById('memberTableCount');
+  const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+  let activeMemberId = null;
+
+  // 1. Select All Checkbox
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      const isChecked = this.checked;
+      document.querySelectorAll('.member-row-cb').forEach(cb => cb.checked = isChecked);
+    });
+  }
+
+  // 2. Client-side Live Filtering
+  function applyTableFilters() {
+    const q = (searchInput.value || '').toLowerCase().trim();
+    const dept = (deptFilter.value || '').toLowerCase().trim();
+    const role = (roleFilter.value || '').toLowerCase().trim();
+    const status = (statusFilter.value || '').toLowerCase().trim();
+
+    let visibleCount = 0;
+
+    tableRows.forEach(row => {
+      const name = (row.dataset.fullName || '').toLowerCase();
+      const email = (row.dataset.email || '').toLowerCase();
+      const rDept = (row.dataset.dept || '').toLowerCase();
+      const rRole = (row.dataset.role || '').toLowerCase();
+      const rStatus = (row.dataset.status || '').toLowerCase();
+      const skills = (row.dataset.skills || '').toLowerCase();
+
+      let match = true;
+
+      if (q && !name.includes(q) && !email.includes(q) && !skills.includes(q)) match = false;
+      if (match && dept && !rDept.includes(dept)) match = false;
+      if (match && role && !rRole.includes(role)) match = false;
+      if (match && status && !rStatus.includes(status)) match = false;
+
+      if (match) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (tableCountSpan) {
+      tableCountSpan.textContent = `Showing ${visibleCount} of ${tableRows.length} members`;
+    }
+  }
+
+  searchInput.addEventListener('input', applyTableFilters);
+  deptFilter.addEventListener('change', applyTableFilters);
+  roleFilter.addEventListener('change', applyTableFilters);
+  statusFilter.addEventListener('change', applyTableFilters);
+
+  btnClear.addEventListener('click', function() {
+    searchInput.value = '';
+    deptFilter.value = '';
+    roleFilter.value = '';
+    statusFilter.value = '';
+    applyTableFilters();
+  });
+
+  // 3. Row Selection & Right Drawer Dynamic Population
+  function selectMemberRow(row) {
+    tableRows.forEach(r => r.classList.remove('selected-row'));
+    row.classList.add('selected-row');
+
+    const mId = row.dataset.memberId;
+    activeMemberId = mId;
+
+    const fullName = row.dataset.fullName;
+    const email = row.dataset.email;
+    const phone = row.dataset.phone;
+    const role = row.dataset.role;
+    const dept = row.dataset.dept;
+    const status = row.dataset.status;
+    const joined = row.dataset.joined;
+    const avatar = row.dataset.avatar;
+    const skills = (row.dataset.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+
+    let projects = [];
+    let tasks = [];
+    try {
+      projects = JSON.parse(row.dataset.projects || '[]');
+      tasks = JSON.parse(row.dataset.tasks || '[]');
+    } catch (e) {}
+
+    // Populate drawer elements
+    document.getElementById('drawerFullName').textContent = fullName;
+    document.getElementById('drawerRole').textContent = role;
+    document.getElementById('drawerRoleField').textContent = role;
+    document.getElementById('drawerEmail').textContent = email;
+    document.getElementById('drawerDept').textContent = dept;
+    document.getElementById('drawerPhone').textContent = phone;
+    document.getElementById('drawerJoined').textContent = joined;
+    
+    const statusText = document.getElementById('drawerStatusText');
+    const statusBadge = document.getElementById('drawerStatusBadge');
+    const actionToggleBtn = document.getElementById('drawerActionToggleStatus');
+
+    if (status.toLowerCase() === 'active') {
+      statusText.innerHTML = '<span class="stat-green-dot me-1" style="width: 6px; height: 6px; border-radius: 50%; display: inline-block; background-color: #16a34a;"></span>Online • Active';
+      statusText.style.color = '#16a34a';
+      statusBadge.textContent = 'Active';
+      statusBadge.className = 'priority-pill badge-low';
+      actionToggleBtn.textContent = 'Deactivate';
+      actionToggleBtn.style.backgroundColor = '#ea580c';
+    } else {
+      statusText.innerHTML = '<span class="stat-green-dot me-1" style="width: 6px; height: 6px; border-radius: 50%; display: inline-block; background-color: #ef4444;"></span>Offline • Inactive';
+      statusText.style.color = '#ef4444';
+      statusBadge.textContent = 'Inactive';
+      statusBadge.className = 'priority-pill badge-high';
+      actionToggleBtn.textContent = 'Activate';
+      actionToggleBtn.style.backgroundColor = '#16a34a';
+    }
+
+    // Avatar
+    const imgEl = document.getElementById('drawerAvatarImg');
+    if (avatar) {
+      imgEl.src = avatar.startsWith('img/') ? ('/static/' + avatar) : avatar;
+    } else {
+      imgEl.src = '/static/img/avatars/rahul_kumar.jpg';
+    }
+
+    // Skills
+    const skillsContainer = document.getElementById('drawerSkillsContainer');
+    skillsContainer.innerHTML = '';
+    skills.forEach(sk => {
+      const span = document.createElement('span');
+      span.className = 'tag-pill';
+      span.style.backgroundColor = '#e0f2fe';
+      span.style.color = '#0284c7';
+      span.textContent = sk;
+      skillsContainer.appendChild(span);
+    });
+
+    // Assigned Projects in Overview
+    const projContainer = document.getElementById('drawerProjectsContainer');
+    projContainer.innerHTML = '';
+    projects.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'p-2 border rounded-2';
+      div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center small">
+          <span class="fw-semibold text-dark">${p.name}</span>
+          <span class="text-muted">${p.progress}%</span>
+        </div>
+        <div class="project-box-progress-bar mt-1" style="height: 4px; margin-bottom: 0; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+          <div style="width: ${p.progress}%; height: 100%; background-color: #22c55e;"></div>
+        </div>
+      `;
+      projContainer.appendChild(div);
+    });
+
+    // Full Projects Tab
+    const fullProjContainer = document.getElementById('drawerProjectsFullContainer');
+    fullProjContainer.innerHTML = '';
+    projects.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'p-3 border rounded-3 bg-white shadow-xs';
+      div.innerHTML = `
+        <div class="fw-bold text-dark fs-6 mb-1">${p.name}</div>
+        <div class="d-flex justify-content-between small text-muted mb-2">
+          <span>Progress</span>
+          <span class="fw-semibold text-dark">${p.progress}%</span>
+        </div>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-bar bg-success" style="width: ${p.progress}%;"></div>
+        </div>
+      `;
+      fullProjContainer.appendChild(div);
+    });
+
+    // Tasks Tab
+    const tasksContainer = document.getElementById('drawerTasksContainer');
+    tasksContainer.innerHTML = '';
+    if (tasks.length === 0) {
+      tasksContainer.innerHTML = '<div class="text-center py-4 text-muted small">No active tasks assigned</div>';
+    } else {
+      tasks.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'p-2 border rounded-2 bg-white';
+        div.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center small mb-1">
+            <span class="fw-semibold text-dark text-truncate">${t.title}</span>
+            <span class="badge bg-light text-secondary border" style="font-size: 10px;">${t.status}</span>
+          </div>
+          <div class="small text-muted" style="font-size: 11px;"><i class="ri-calendar-line me-1"></i>Due: ${t.due_date}</div>
+        `;
+        tasksContainer.appendChild(div);
+      });
+    }
+
+    // Detail link
+    document.getElementById('drawerDetailLink').href = `/members/${mId}/`;
+  }
+
+  tableRows.forEach(row => {
+    row.addEventListener('click', function() {
+      selectMemberRow(this);
+    });
+  });
+
+  // Select first row by default
+  if (tableRows.length > 0) {
+    selectMemberRow(tableRows[0]);
+  }
+
+  // 4. Drawer Tabs Switching
+  const drawerTabs = document.querySelectorAll('.drawer-tab');
+  drawerTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      drawerTabs.forEach(t => {
+        t.classList.remove('active', 'border-bottom', 'border-2', 'border-warning');
+        t.style.color = '#64748b';
+        t.classList.add('text-muted');
+      });
+      this.classList.add('active', 'border-bottom', 'border-2', 'border-warning');
+      this.classList.remove('text-muted');
+      this.style.color = '#ea580c';
+
+      const target = this.dataset.tab;
+      document.querySelectorAll('.drawer-tab-pane').forEach(p => p.classList.add('d-none'));
+      const activePane = document.getElementById(`drawerTab-${target}`);
+      if (activePane) activePane.classList.remove('d-none');
+    });
+  });
+
+  // 5. Drawer Toggle Status Button
+  document.getElementById('drawerActionToggleStatus').addEventListener('click', async function() {
+    if (!activeMemberId) return;
+    try {
+      const res = await fetch(`/members/${activeMemberId}/toggle-status/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Update row
+        const row = document.getElementById(`row-${activeMemberId}`);
+        if (row) {
+          row.dataset.status = data.new_status;
+          const statusPill = row.querySelector('.status-pill-badge');
+          if (statusPill) {
+            statusPill.textContent = data.new_status.charAt(0).toUpperCase() + data.new_status.slice(1);
+            if (data.new_status === 'active') {
+              statusPill.style.backgroundColor = '#dcfce7';
+              statusPill.style.color = '#16a34a';
+            } else {
+              statusPill.style.backgroundColor = '#fee2e2';
+              statusPill.style.color = '#ef4444';
+            }
+          }
+          selectMemberRow(row);
+        }
+      }
+    } catch (e) {
+      alert('Failed to update status');
+    }
+  });
+
+  // Row 3-dots toggle status buttons
+  document.querySelectorAll('.toggle-status-menu-btn').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      const mId = this.dataset.id;
+      try {
+        const res = await fetch(`/members/${mId}/toggle-status/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.reload();
+        }
+      } catch (err) {}
+    });
+  });
+
+  // 6. Edit Member Modal Handling
+  const editMemberModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
+  const editMemberForm = document.getElementById('editMemberForm');
+
+  window.openEditMemberModal = function(mId) {
+    const row = document.getElementById(`row-${mId}`);
+    if (!row) return;
+
+    editMemberForm.action = `/members/${mId}/edit/`;
+
+    const parts = (row.dataset.fullName || '').split(' ');
+    document.getElementById('editFirstName').value = parts[0] || '';
+    document.getElementById('editLastName').value = parts.slice(1).join(' ') || '';
+    document.getElementById('editPhone').value = row.dataset.phone || '';
+    document.getElementById('editSkills').value = row.dataset.skills || '';
+
+    // Select dept
+    const deptName = (row.dataset.dept || '').toLowerCase();
+    const deptSelect = document.getElementById('editDepartment');
+    for (let opt of deptSelect.options) {
+      if (opt.text.toLowerCase() === deptName) {
+        opt.selected = true;
+        break;
+      }
+    }
+
+    // Select role
+    const roleName = (row.dataset.role || '').toLowerCase();
+    const roleSelect = document.getElementById('editRole');
+    for (let opt of roleSelect.options) {
+      if (opt.text.toLowerCase() === roleName) {
+        opt.selected = true;
+        break;
+      }
+    }
+
+    editMemberModal.show();
+  };
+
+  document.getElementById('drawerActionEdit').addEventListener('click', () => {
+    if (activeMemberId) openEditMemberModal(activeMemberId);
+  });
+  document.getElementById('drawerQuickEditBtn').addEventListener('click', () => {
+    if (activeMemberId) openEditMemberModal(activeMemberId);
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+});
+</script>
 {% endblock %}

@@ -105,13 +105,34 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_admin_user(self):
-        return self.is_superuser or (self.role and self.role.name == 'Administrator')
+        return self.is_superuser or bool(self.role and self.role.name == 'Administrator')
+
+    @property
+    def is_project_manager(self):
+        return bool(self.role and self.role.name == 'Project Manager')
+
+    @property
+    def is_team_lead(self):
+        return bool(self.role and self.role.name == 'Team Lead')
+
+    @property
+    def is_employee(self):
+        return bool(self.role and self.role.name == 'Employee')
+
+    @property
+    def is_manager_or_above(self):
+        return self.is_superuser or bool(self.role and self.role.name in ('Administrator', 'Project Manager'))
+
+    @property
+    def is_lead_or_above(self):
+        return self.is_superuser or bool(self.role and self.role.name in ('Administrator', 'Project Manager', 'Team Lead'))
 
     @property
     def profile_picture_url(self):
         if self.profile_picture:
             return self.profile_picture.url
         return None
+
 
 
 class Role(models.Model):

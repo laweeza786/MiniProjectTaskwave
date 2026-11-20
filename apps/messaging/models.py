@@ -38,9 +38,8 @@ class Conversation(models.Model):
         return self.messages.order_by('-sent_at').first()
 
     def get_unread_count(self, user):
-        return self.messages.exclude(sender=user).filter(
-            messagestatus__user=user, messagestatus__is_read=False
-        ).count()
+        read_msg_ids = MessageStatus.objects.filter(user=user, is_read=True).values_list('message_id', flat=True)
+        return self.messages.exclude(sender=user).exclude(id__in=read_msg_ids).count()
 
 
 class ConversationMember(models.Model):
